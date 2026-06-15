@@ -37,6 +37,7 @@ app.post(
         photo1,
         photo2,
         description: req.body['product description'] || req.body.description || '',
+        generateVideo: req.body.generateVideo === 'true' || req.body.generateVideo === 'on',
         prompts: {
           imageEdit: req.body.promptImageEdit,
           imageToVideo: req.body.promptImageToVideo,

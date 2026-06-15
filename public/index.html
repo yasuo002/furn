@@ -1,116 +1,193 @@
 <!doctype html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generate ads</title>
+  <title>Furnish — Mobilyanı Odanda Gör</title>
   <style>
-    :root { color-scheme: light dark; }
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-    h1 { margin-bottom: .25rem; }
-    .sub { color: #888; margin-top: 0; }
-    .badge { display: inline-block; padding: .15rem .5rem; border-radius: 6px; font-size: .75rem; font-weight: 600; }
-    .mock { background: #fde68a; color: #92400e; }
-    .live { background: #bbf7d0; color: #166534; }
-    label { display: block; margin: 1rem 0 .25rem; font-weight: 600; }
-    input[type=file], textarea, input[type=text] { width: 100%; padding: .5rem; border: 1px solid #8884; border-radius: 8px; background: transparent; color: inherit; }
-    textarea { min-height: 4rem; resize: vertical; }
-    details { margin-top: 1rem; }
-    button { margin-top: 1.5rem; padding: .7rem 1.4rem; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-size: 1rem; cursor: pointer; }
-    button:disabled { opacity: .5; cursor: progress; }
-    #log { background: #0001; border-radius: 8px; padding: .75rem 1rem; margin-top: 1.5rem; font-family: ui-monospace, monospace; font-size: .85rem; white-space: pre-wrap; display: none; }
-    #result { margin-top: 1.5rem; display: none; }
-    #result a { word-break: break-all; }
-    video, img.preview { max-width: 100%; border-radius: 8px; margin-top: .5rem; }
+    :root{
+      --bg:#0f1115; --card:#171a21; --line:#2a2f3a; --text:#e7e9ee; --muted:#9aa3b2;
+      --accent:#7c5cff; --accent2:#22c1a4; --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:
+      radial-gradient(1200px 600px at 80% -10%, #1d1740 0%, transparent 60%),
+      radial-gradient(1000px 500px at -10% 10%, #0c2c2a 0%, transparent 55%), var(--bg);
+      color:var(--text);min-height:100vh;line-height:1.55}
+    .wrap{max-width:1000px;margin:0 auto;padding:2.2rem 1.2rem 4rem}
+    header{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.3rem;letter-spacing:.2px}
+    .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:1.1rem}
+    .badge{font-size:.72rem;font-weight:700;padding:.25rem .6rem;border-radius:999px}
+    .mock{background:#3a2e0a;color:#f7d774;border:1px solid #5c4a14}
+    .live{background:#0c3329;color:#5ee0bf;border:1px solid #14513f}
+    h1{font-size:2rem;margin:1.6rem 0 .3rem;line-height:1.15}
+    .lead{color:var(--muted);margin:0 0 1.8rem;max-width:620px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:720px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.1rem}
+    .drop{position:relative;border:1.5px dashed var(--line);border-radius:14px;padding:1.1rem;text-align:center;cursor:pointer;transition:.15s;min-height:170px;display:grid;place-items:center;overflow:hidden}
+    .drop:hover,.drop.drag{border-color:var(--accent);background:#1b1f2b}
+    .drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .drop .ph{color:var(--muted);font-size:.92rem}
+    .drop .ph b{color:var(--text);display:block;margin-bottom:.2rem}
+    .drop img{max-width:100%;max-height:240px;border-radius:10px}
+    .tag{font-size:.78rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem;display:block}
+    .req{color:#ff6b6b}
+    textarea{width:100%;background:#10131a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:.7rem;font:inherit;resize:vertical;min-height:3.2rem}
+    .row{display:flex;align-items:center;gap:.6rem;margin-top:1rem}
+    .switch{position:relative;width:46px;height:26px;flex:0 0 auto}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;inset:0;background:#2a2f3a;border-radius:999px;transition:.2s;cursor:pointer}
+    .slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+    .switch input:checked + .slider{background:var(--accent)}
+    .switch input:checked + .slider:before{transform:translateX(20px)}
+    .cta{margin-top:1.6rem;width:100%;padding:.95rem;border:0;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;transition:.15s}
+    .cta:hover{filter:brightness(1.08)}
+    .cta:disabled{opacity:.55;cursor:progress}
+    details{margin-top:1rem}
+    summary{cursor:pointer;color:var(--muted);font-size:.9rem}
+    .log{margin-top:1.2rem;background:#0b0e14;border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;font-family:ui-monospace,monospace;font-size:.82rem;color:#a9b2c2;white-space:pre-wrap;display:none}
+    .result{margin-top:1.4rem;display:none}
+    .result h2{margin:.2rem 0 1rem}
+    .result img,.result video{width:100%;border-radius:14px;border:1px solid var(--line)}
+    .ba{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:720px){.ba{grid-template-columns:1fr}}
+    .cap{font-size:.78rem;color:var(--muted);margin:.4rem 0 0}
+    a{color:var(--accent2)}
+    .err{color:#ff7b7b}
   </style>
 </head>
 <body>
-  <h1>Generate ads</h1>
-  <p class="sub">Upload a painting and a room photo — Gemini places it on the wall, WAN animates it. <span id="mode" class="badge"></span></p>
+  <div class="wrap">
+    <header>
+      <div class="brand"><span class="logo">🛋️</span> Furnish</div>
+      <span id="mode" class="badge"></span>
+    </header>
 
-  <form id="form">
-    <label>Photo 1 — painting / product <span style="color:#e11">*</span></label>
-    <input type="file" name="photo1" accept="image/*" required />
+    <h1>Mobilyanı odanda gör.</h1>
+    <p class="lead">Mobilyanın fotoğrafını ve odanın fotoğrafını yükle — yapay zeka mobilyayı
+      perspektif, ölçek ve ışığa uygun şekilde odanın içine yerleştirsin.</p>
 
-    <label>Photo 2 — room (optional)</label>
-    <input type="file" name="photo2" accept="image/*" />
+    <form id="form">
+      <div class="grid">
+        <div class="card">
+          <span class="tag">1 · Mobilya <span class="req">*</span></span>
+          <label class="drop" id="drop1">
+            <input type="file" name="photo1" accept="image/*" required />
+            <div class="ph" data-ph><b>Mobilya fotoğrafı</b>tıkla veya sürükle</div>
+          </label>
+        </div>
+        <div class="card">
+          <span class="tag">2 · Oda / ortam</span>
+          <label class="drop" id="drop2">
+            <input type="file" name="photo2" accept="image/*" />
+            <div class="ph" data-ph><b>Oda fotoğrafı</b>tıkla veya sürükle</div>
+          </label>
+        </div>
+      </div>
 
-    <label>Product description</label>
-    <textarea name="product description" placeholder="Describe the product"></textarea>
+      <div class="card" style="margin-top:1rem">
+        <span class="tag">Açıklama (opsiyonel)</span>
+        <textarea name="product description" placeholder="Örn: koyu yeşil kadife üçlü koltuk"></textarea>
 
-    <details>
-      <summary>Advanced prompts</summary>
-      <label>Image edit prompt</label>
-      <textarea name="promptImageEdit" id="promptImageEdit"></textarea>
-      <label>Image-to-video prompt</label>
-      <textarea name="promptImageToVideo" id="promptImageToVideo"></textarea>
-    </details>
+        <div class="row">
+          <label class="switch"><input type="checkbox" name="generateVideo" id="vid"><span class="slider"></span></label>
+          <div><b>Tanıtım videosu da oluştur</b> <span style="color:var(--muted)">— daha yavaş, kamera hareketli klip</span></div>
+        </div>
 
-    <button type="submit" id="submit">Generate</button>
-  </form>
+        <details>
+          <summary>Gelişmiş — yapay zeka komutları</summary>
+          <span class="tag" style="margin-top:.8rem">Yerleştirme komutu</span>
+          <textarea name="promptImageEdit" id="promptImageEdit"></textarea>
+          <span class="tag" style="margin-top:.8rem">Video komutu</span>
+          <textarea name="promptImageToVideo" id="promptImageToVideo"></textarea>
+        </details>
+      </div>
 
-  <pre id="log"></pre>
+      <button type="submit" class="cta" id="submit">✨ Odaya yerleştir</button>
+    </form>
 
-  <div id="result">
-    <h2>Result</h2>
-    <div id="resultBody"></div>
+    <pre class="log" id="log"></pre>
+
+    <div class="result" id="result">
+      <h2>Sonuç</h2>
+      <div id="resultBody"></div>
+    </div>
   </div>
 
   <script>
-    const $ = (s) => document.querySelector(s);
-    const logEl = $('#log'), resultEl = $('#result'), resultBody = $('#resultBody');
+    const $=s=>document.querySelector(s);
+    const log=$('#log'),result=$('#result'),resultBody=$('#resultBody');
 
-    fetch('/api/config').then(r => r.json()).then(c => {
-      $('#promptImageEdit').value = c.prompts.imageEdit;
-      $('#promptImageToVideo').value = c.prompts.imageToVideo;
-      const mode = $('#mode');
-      mode.textContent = c.mock ? 'MOCK MODE' : 'LIVE';
-      mode.className = 'badge ' + (c.mock ? 'mock' : 'live');
+    fetch('/api/config').then(r=>r.json()).then(c=>{
+      $('#promptImageEdit').value=c.prompts.imageEdit;
+      $('#promptImageToVideo').value=c.prompts.imageToVideo;
+      const m=$('#mode');
+      m.textContent=c.mock?'DEMO MODU':'CANLI';
+      m.className='badge '+(c.mock?'mock':'live');
+      if(c.mock) $('.lead').insertAdjacentHTML('beforeend',
+        '<br><span style="color:#f7d774">Demo modu: gerçek üretim için sunucuda FAL_KEY ayarla.</span>');
     });
 
-    function appendLog(line) {
-      logEl.style.display = 'block';
-      logEl.textContent += line + '\n';
-      logEl.scrollTop = logEl.scrollHeight;
+    // image previews
+    function wireDrop(id){
+      const drop=$('#'+id),input=drop.querySelector('input'),ph=drop.querySelector('[data-ph]');
+      input.addEventListener('change',()=>{
+        const f=input.files[0]; if(!f)return;
+        const url=URL.createObjectURL(f);
+        ph.outerHTML=`<img src="${url}" data-ph>`;
+      });
+      ['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('drag')}));
+      ['dragleave','drop'].forEach(e=>drop.addEventListener(e,()=>drop.classList.remove('drag')));
     }
+    wireDrop('drop1');wireDrop('drop2');
 
-    $('#form').addEventListener('submit', async (e) => {
+    function appendLog(l){log.style.display='block';log.textContent+=l+'\n';log.scrollTop=log.scrollHeight}
+
+    $('#form').addEventListener('submit',async e=>{
       e.preventDefault();
-      logEl.textContent = ''; resultEl.style.display = 'none';
-      $('#submit').disabled = true;
+      log.textContent='';result.style.display='none';
+      const btn=$('#submit');btn.disabled=true;btn.textContent='⏳ İşleniyor…';
 
-      const res = await fetch('/api/generate', { method: 'POST', body: new FormData(e.target) });
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = '';
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        const events = buf.split('\n\n');
-        buf = events.pop();
-        for (const chunk of events) {
-          const ev = chunk.match(/event: (.*)/)?.[1];
-          const data = JSON.parse(chunk.match(/data: (.*)/s)?.[1] || '{}');
-          if (ev === 'log') appendLog(data.message);
-          else if (ev === 'error') appendLog('❌ ERROR: ' + data.error);
-          else if (ev === 'done') showResult(data);
+      const fd=new FormData(e.target);
+      fd.set('generateVideo', $('#vid').checked ? 'true':'false');
+
+      try{
+        const res=await fetch('/api/generate',{method:'POST',body:fd});
+        const reader=res.body.getReader(),dec=new TextDecoder();let buf='';
+        while(true){
+          const {value,done}=await reader.read(); if(done)break;
+          buf+=dec.decode(value,{stream:true});
+          const parts=buf.split('\n\n');buf=parts.pop();
+          for(const chunk of parts){
+            const ev=chunk.match(/event: (.*)/)?.[1];
+            const data=JSON.parse(chunk.match(/data: (.*)/s)?.[1]||'{}');
+            if(ev==='log')appendLog('• '+data.message);
+            else if(ev==='error')appendLog('❌ HATA: '+data.error);
+            else if(ev==='done')showResult(data);
+          }
         }
-      }
-      $('#submit').disabled = false;
+      }catch(err){appendLog('❌ '+err)}
+      btn.disabled=false;btn.textContent='✨ Odaya yerleştir';
     });
 
-    function showResult(r) {
-      resultEl.style.display = 'block';
-      resultBody.innerHTML = `
-        ${r.mock ? '<p>⚠️ MOCK output (no real API keys configured).</p>' : ''}
-        <p><strong>Edited image:</strong><br><a href="${r.editedImageUrl}" target="_blank">${r.editedImageUrl}</a></p>
-        ${r.mock ? '' : `<img class="preview" src="${r.editedImageUrl}" />`}
-        <p><strong>Video:</strong><br><a href="${r.videoUrl}" target="_blank">${r.videoUrl}</a></p>
-        ${r.mock ? '' : `<video src="${r.videoUrl}" controls></video>`}
-        <p><strong>Social post:</strong> ${r.post.skipped ? 'skipped' : 'posted to ' + r.post.platforms.join(', ')}</p>
-      `;
+    function showResult(r){
+      result.style.display='block';
+      const demo=r.mock?'<p class="err">⚠️ Demo çıktısı (gerçek API anahtarı yok).</p>':'';
+      let html=demo;
+      if(r.mock){
+        html+=`<p>Yerleştirilen görsel: <a href="${r.editedImageUrl}" target="_blank">${r.editedImageUrl}</a></p>`;
+      }else{
+        html+=`<img src="${r.editedImageUrl}" alt="sonuç"><p class="cap">Mobilya odaya yerleştirildi · <a href="${r.editedImageUrl}" target="_blank">tam boyut</a></p>`;
+      }
+      if(r.videoUrl){
+        html+= r.mock
+          ? `<p>Video: <a href="${r.videoUrl}" target="_blank">${r.videoUrl}</a></p>`
+          : `<video src="${r.videoUrl}" controls autoplay muted loop></video><p class="cap">Tanıtım videosu</p>`;
+      }
+      resultBody.innerHTML=html;
+      result.scrollIntoView({behavior:'smooth'});
     }
   </script>
 </body>

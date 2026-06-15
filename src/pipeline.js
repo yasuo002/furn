@@ -15,8 +15,10 @@
 
 export const PROMPTS = {
   imageEdit:
-    'Place the painting in the room on the back wall, respecting the painting ' +
-    'perfectly and the background room and the camera frame in the photo of the room.',
+    'Place the furniture from the first image realistically into the room from the ' +
+    'second image. Match the perspective, scale, lighting and shadows so the furniture ' +
+    'looks naturally and physically placed on the floor of the room. Keep the room ' +
+    'background, walls and camera framing unchanged. Photorealistic result.',
   imageToVideo:
     'Camera pan right and gentle truck/dolly right for the whole clip; the painting ' +
     'stays centered and in focus; reveal the right edge and frame depth; camera height ' +
@@ -157,38 +159,42 @@ export async function uploadPost(videoUrl, { title, caption, platforms }, log = 
 }
 
 // --- Orchestrator: runs the whole graph -------------------------------------
-export async function runPipeline({ photo1, photo2, description, prompts = {}, onLog = () => {} }) {
+export async function runPipeline({
+  photo1, photo2, description, prompts = {}, generateVideo = false, onLog = () => {},
+}) {
   const log = (m) => onLog(m);
   const imageEditPrompt = prompts.imageEdit || PROMPTS.imageEdit;
   const i2vPrompt = prompts.imageToVideo || PROMPTS.imageToVideo;
 
-  log('1/6 Hosting source image(s)…');
+  log('Görseller hazırlanıyor…');
   const imageUrls = [];
   imageUrls.push(await hostImage(photo1, log));
   if (photo2) imageUrls.push(await hostImage(photo2, log));
 
-  log('2/6 Editing image with Gemini 2.5 Flash…');
+  log('Mobilya odaya yerleştiriliyor (Gemini 2.5 Flash)…');
   const editedUrl = await geminiEditImage(imageUrls, imageEditPrompt, log);
 
   // Gemini returns a hosted fal.media URL already; only re-host via imgbb if configured.
   let hostedEditedUrl = editedUrl;
   if (!MOCK && USE_IMGBB) {
-    log('3/6 Re-hosting edited image on imgbb…');
+    log('Sonuç görseli imgbb üzerinde barındırılıyor…');
     const imgRes = await fetch(editedUrl);
     const buf = Buffer.from(await imgRes.arrayBuffer());
     hostedEditedUrl = await hostImage(buf, log);
   }
 
-  log('4/6 Generating video with WAN i2v (queue + poll)…');
-  const videoUrl = await wanImageToVideo(hostedEditedUrl, i2vPrompt, log);
+  let videoUrl = null;
+  let post = { skipped: true };
+  if (generateVideo) {
+    log('Video oluşturuluyor (WAN i2v, kuyruk + bekleme)…');
+    videoUrl = await wanImageToVideo(hostedEditedUrl, i2vPrompt, log);
+    post = await uploadPost(videoUrl, {
+      title: description || 'Generated ad',
+      caption: description || '',
+      platforms: ['tiktok', 'instagram', 'youtube'],
+    }, log);
+  }
 
-  log('5/6 Video ready.');
-  const post = await uploadPost(videoUrl, {
-    title: description || 'Generated ad',
-    caption: description || '',
-    platforms: ['tiktok', 'instagram', 'youtube'],
-  }, log);
-
-  log('6/6 Done.');
+  log('Tamamlandı.');
   return { sourceImageUrls: imageUrls, editedImageUrl: hostedEditedUrl, videoUrl, post, mock: MOCK };
 }
