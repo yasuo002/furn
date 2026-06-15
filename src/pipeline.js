@@ -35,7 +35,10 @@ export const CONFIG = {
   pollMaxAttempts: Number(process.env.POLL_MAX_ATTEMPTS || 60),
 };
 
-export const MOCK = !CONFIG.falKey || !CONFIG.imgbbApiKey;
+// LIVE mode needs only a FAL key. imgbb is optional: without it, images are
+// passed to fal.ai as base64 data URIs instead of hosted URLs.
+export const MOCK = !CONFIG.falKey;
+export const USE_IMGBB = !!CONFIG.imgbbApiKey;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -43,11 +46,23 @@ function falHeaders(extra = {}) {
   return { Authorization: `Key ${CONFIG.falKey}`, ...extra };
 }
 
-// --- Upload * to imgbb -------------------------------------------------------
-export async function uploadToImgbb(buffer, log = () => {}) {
+// --- Upload * to imgbb (or data-URI fallback) --------------------------------
+function detectMime(buffer) {
+  if (buffer[0] === 0x89 && buffer[1] === 0x50) return 'image/png';
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) return 'image/jpeg';
+  if (buffer[0] === 0x47 && buffer[1] === 0x49) return 'image/gif';
+  if (buffer.slice(8, 12).toString() === 'WEBP') return 'image/webp';
+  return 'image/png';
+}
+
+export async function hostImage(buffer, log = () => {}) {
   if (MOCK) {
     log('imgbb: MOCK upload');
     return `https://i.ibb.co/mock/${Math.random().toString(36).slice(2)}.png`;
+  }
+  if (!USE_IMGBB) {
+    log('imgbb: skipped — using base64 data URI');
+    return `data:${detectMime(buffer)};base64,${buffer.toString('base64')}`;
   }
   const form = new FormData();
   form.append('key', CONFIG.imgbbApiKey);
@@ -147,20 +162,21 @@ export async function runPipeline({ photo1, photo2, description, prompts = {}, o
   const imageEditPrompt = prompts.imageEdit || PROMPTS.imageEdit;
   const i2vPrompt = prompts.imageToVideo || PROMPTS.imageToVideo;
 
-  log('1/6 Uploading source image(s) to imgbb…');
+  log('1/6 Hosting source image(s)…');
   const imageUrls = [];
-  imageUrls.push(await uploadToImgbb(photo1, log));
-  if (photo2) imageUrls.push(await uploadToImgbb(photo2, log));
+  imageUrls.push(await hostImage(photo1, log));
+  if (photo2) imageUrls.push(await hostImage(photo2, log));
 
   log('2/6 Editing image with Gemini 2.5 Flash…');
   const editedUrl = await geminiEditImage(imageUrls, imageEditPrompt, log);
 
-  log('3/6 Re-hosting edited image on imgbb…');
+  // Gemini returns a hosted fal.media URL already; only re-host via imgbb if configured.
   let hostedEditedUrl = editedUrl;
-  if (!MOCK) {
+  if (!MOCK && USE_IMGBB) {
+    log('3/6 Re-hosting edited image on imgbb…');
     const imgRes = await fetch(editedUrl);
     const buf = Buffer.from(await imgRes.arrayBuffer());
-    hostedEditedUrl = await uploadToImgbb(buf, log);
+    hostedEditedUrl = await hostImage(buf, log);
   }
 
   log('4/6 Generating video with WAN i2v (queue + poll)…');
