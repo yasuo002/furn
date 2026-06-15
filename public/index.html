@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generate ads</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1 { margin-bottom: .25rem; }
+    .sub { color: #888; margin-top: 0; }
+    .badge { display: inline-block; padding: .15rem .5rem; border-radius: 6px; font-size: .75rem; font-weight: 600; }
+    .mock { background: #fde68a; color: #92400e; }
+    .live { background: #bbf7d0; color: #166534; }
+    label { display: block; margin: 1rem 0 .25rem; font-weight: 600; }
+    input[type=file], textarea, input[type=text] { width: 100%; padding: .5rem; border: 1px solid #8884; border-radius: 8px; background: transparent; color: inherit; }
+    textarea { min-height: 4rem; resize: vertical; }
+    details { margin-top: 1rem; }
+    button { margin-top: 1.5rem; padding: .7rem 1.4rem; border: 0; border-radius: 8px; background: #2563eb; color: #fff; font-size: 1rem; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: progress; }
+    #log { background: #0001; border-radius: 8px; padding: .75rem 1rem; margin-top: 1.5rem; font-family: ui-monospace, monospace; font-size: .85rem; white-space: pre-wrap; display: none; }
+    #result { margin-top: 1.5rem; display: none; }
+    #result a { word-break: break-all; }
+    video, img.preview { max-width: 100%; border-radius: 8px; margin-top: .5rem; }
+  </style>
+</head>
+<body>
+  <h1>Generate ads</h1>
+  <p class="sub">Upload a painting and a room photo — Gemini places it on the wall, WAN animates it. <span id="mode" class="badge"></span></p>
+
+  <form id="form">
+    <label>Photo 1 — painting / product <span style="color:#e11">*</span></label>
+    <input type="file" name="photo1" accept="image/*" required />
+
+    <label>Photo 2 — room (optional)</label>
+    <input type="file" name="photo2" accept="image/*" />
+
+    <label>Product description</label>
+    <textarea name="product description" placeholder="Describe the product"></textarea>
+
+    <details>
+      <summary>Advanced prompts</summary>
+      <label>Image edit prompt</label>
+      <textarea name="promptImageEdit" id="promptImageEdit"></textarea>
+      <label>Image-to-video prompt</label>
+      <textarea name="promptImageToVideo" id="promptImageToVideo"></textarea>
+    </details>
+
+    <button type="submit" id="submit">Generate</button>
+  </form>
+
+  <pre id="log"></pre>
+
+  <div id="result">
+    <h2>Result</h2>
+    <div id="resultBody"></div>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const logEl = $('#log'), resultEl = $('#result'), resultBody = $('#resultBody');
+
+    fetch('/api/config').then(r => r.json()).then(c => {
+      $('#promptImageEdit').value = c.prompts.imageEdit;
+      $('#promptImageToVideo').value = c.prompts.imageToVideo;
+      const mode = $('#mode');
+      mode.textContent = c.mock ? 'MOCK MODE' : 'LIVE';
+      mode.className = 'badge ' + (c.mock ? 'mock' : 'live');
+    });
+
+    function appendLog(line) {
+      logEl.style.display = 'block';
+      logEl.textContent += line + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    $('#form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      logEl.textContent = ''; resultEl.style.display = 'none';
+      $('#submit').disabled = true;
+
+      const res = await fetch('/api/generate', { method: 'POST', body: new FormData(e.target) });
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const events = buf.split('\n\n');
+        buf = events.pop();
+        for (const chunk of events) {
+          const ev = chunk.match(/event: (.*)/)?.[1];
+          const data = JSON.parse(chunk.match(/data: (.*)/s)?.[1] || '{}');
+          if (ev === 'log') appendLog(data.message);
+          else if (ev === 'error') appendLog('❌ ERROR: ' + data.error);
+          else if (ev === 'done') showResult(data);
+        }
+      }
+      $('#submit').disabled = false;
+    });
+
+    function showResult(r) {
+      resultEl.style.display = 'block';
+      resultBody.innerHTML = `
+        ${r.mock ? '<p>⚠️ MOCK output (no real API keys configured).</p>' : ''}
+        <p><strong>Edited image:</strong><br><a href="${r.editedImageUrl}" target="_blank">${r.editedImageUrl}</a></p>
+        ${r.mock ? '' : `<img class="preview" src="${r.editedImageUrl}" />`}
+        <p><strong>Video:</strong><br><a href="${r.videoUrl}" target="_blank">${r.videoUrl}</a></p>
+        ${r.mock ? '' : `<video src="${r.videoUrl}" controls></video>`}
+        <p><strong>Social post:</strong> ${r.post.skipped ? 'skipped' : 'posted to ' + r.post.platforms.join(', ')}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
