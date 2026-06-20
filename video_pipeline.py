@@ -105,7 +105,7 @@ def preclean(src, dst, delogo_box, drop_soft_subs):
     return dst
 
 
-def split_scenes(src, outdir, threshold, min_len_sec, copy=False):
+def split_scenes(src, outdir, threshold, min_len_sec, copy=False, base=None):
     os.makedirs(outdir, exist_ok=True)
     fps = probe_fps(src)
     min_frames = max(1, int(round(min_len_sec * fps)))
@@ -119,7 +119,9 @@ def split_scenes(src, outdir, threshold, min_len_sec, copy=False):
         print("No cuts found — treating whole video as one scene.")
         spans = [(0.0, probe_duration(src))]
 
-    base = os.path.splitext(os.path.basename(src))[0]
+    # Name clips after the original input, not the temp _cleaned.mp4.
+    if base is None:
+        base = os.path.splitext(os.path.basename(src))[0]
     manifest = []
     for i, (s, e) in enumerate(spans, 1):
         out = os.path.join(outdir, f"{base}_scene{i:03d}.mp4")
@@ -168,8 +170,9 @@ def main():
     cleaned_path = os.path.join(args.outdir, "_cleaned.mp4")
     cleaned = preclean(args.input, cleaned_path, args.delogo, args.drop_soft_subs)
 
+    base = os.path.splitext(os.path.basename(args.input))[0]
     try:
-        split_scenes(cleaned, args.outdir, args.threshold, args.min_len, args.copy)
+        split_scenes(cleaned, args.outdir, args.threshold, args.min_len, args.copy, base)
     finally:
         # Remove the temp file unless asked to keep it (and only if we made one).
         if cleaned == cleaned_path and not args.keep_cleaned and os.path.exists(cleaned_path):

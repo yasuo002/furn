@@ -1,0 +1,4 @@
+# Python deps for video_pipeline.py (scene splitter).
+# Also requires ffmpeg + ffprobe on PATH (e.g. `apt-get install ffmpeg`).
+scenedetect>=0.7
+opencv-python-headless>=4.6
