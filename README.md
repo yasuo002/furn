@@ -36,6 +36,32 @@ npm start
 > The app loads `.env` automatically on startup (`src/env.js`). You can also just
 > export the variables in your shell instead of using a file.
 
+## Scene splitter (`video_pipeline.py`)
+
+A standalone companion tool that splits a video into one clip per camera
+angle / shot using [PySceneDetect](https://www.scenedetect.com/).
+
+```bash
+# system dep:
+apt-get install ffmpeg            # provides ffmpeg + ffprobe
+pip install -r requirements.txt
+
+python video_pipeline.py input.mp4 --outdir clips
+```
+
+Useful flags:
+
+| Flag                | Purpose                                                        |
+|---------------------|---------------------------------------------------------------|
+| `--threshold 27`    | ContentDetector sensitivity; **lower = more cuts**            |
+| `--min-len 1.0`     | minimum scene length in seconds                               |
+| `--copy`            | fast stream-copy split (cuts snap to keyframes)               |
+| `--delogo X Y W H`  | blank a fixed logo/sub box (fractions of frame)              |
+| `--drop-soft-subs`  | strip soft subtitle tracks before splitting                  |
+
+It prints a manifest (scene #, start, end, duration, file) and writes
+`<name>_scene001.mp4`, `<name>_scene002.mp4`, … into `--outdir`.
+
 ## Project layout
 
 | File                | Purpose                                             |
