@@ -39,30 +39,53 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
 /* alıntılar italik serif — kalın sans + italik ikilisi (bkz. STYLE.md §2) */
 #cap .q{font:italic 500 60px/1.18 PF;letter-spacing:0}
 
-/* --- dev anahtar kelime --- */
-#big{position:absolute;left:0;right:0;top:300px;text-align:center;z-index:7;
-  font:900 86px/.98 MT;letter-spacing:-.03em;color:var(--y);text-transform:uppercase}
-#big div{will-change:transform,opacity}
+/* --- 1) DENKLEM: videonun tezi — aynı bütçe, iki araba --- */
+#eqn{position:absolute;left:0;right:0;top:248px;z-index:7}
+#eqRow{display:flex;align-items:stretch;justify-content:center}
+.plate{width:272px;border-radius:22px;padding:26px 18px;text-align:center;
+  background:rgba(10,15,22,.88);border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 22px 50px rgba(0,0,0,.5);will-change:transform,opacity}
+.plate.b{background:var(--y);border-color:rgba(0,0,0,.12)}
+.plate .n{font:900 46px/1 MT;letter-spacing:-.02em;color:#fff}
+.plate.b .n{color:var(--ink)}
+.plate .s{margin-top:10px;font:700 19px/1.25 IN;letter-spacing:.05em;text-transform:uppercase;
+  color:rgba(255,255,255,.50)}
+.plate.b .s{color:rgba(8,13,20,.60)}
+#eqSign{width:84px;display:flex;align-items:center;justify-content:center;
+  font:900 58px/1 MT;color:#fff;will-change:transform,opacity}
+#eqLab{margin-top:24px;text-align:center;font:800 22px/1 IN;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--y);will-change:opacity}
 
-/* --- BMW impact sahnesi --- */
-#imp{position:absolute;inset:0;z-index:9;background:rgba(6,10,16,.62)}
-#impRays{position:absolute;left:50%;top:470px;width:1200px;height:1200px;margin:-600px 0 0 -600px}
-#impTxt{position:absolute;left:0;right:0;top:392px;text-align:center;
-  font:900 148px/1 MT;letter-spacing:-.04em;color:#fff}
-#impSub{position:absolute;left:0;right:0;top:580px;text-align:center;
-  font:800 27px/1 IN;letter-spacing:.28em;text-transform:uppercase;color:var(--y)}
+/* --- 2) ALGI ÇUBUĞU: "gemi gibi" sözünü görselleştirir --- */
+#gauge{position:absolute;left:80px;right:80px;top:288px;z-index:7}
+#gaLab{font:800 21px/1 IN;letter-spacing:.26em;text-transform:uppercase;
+  color:rgba(255,255,255,.72);margin-bottom:15px;text-align:center;
+  text-shadow:0 3px 14px rgba(0,0,0,.8)}
+#gaBar{display:flex;gap:8px;justify-content:center}
+#gaBar i{width:66px;height:36px;border-radius:8px;background:rgba(255,255,255,.18);
+  box-shadow:0 6px 16px rgba(0,0,0,.35);will-change:transform,background-color}
+#gaTag{margin-top:20px;text-align:center;font:900 44px/1 MT;color:var(--y);
+  will-change:transform,opacity}
 
-/* --- "kimse demez ki" kartları --- */
-#nolab{position:absolute;left:356px;top:196px;z-index:6}
-#nolab span{display:inline-block;font:800 20px/1 IN;letter-spacing:.16em;text-transform:uppercase;
-  color:#fff;background:var(--r);padding:9px 15px;border-radius:8px;
-  box-shadow:0 10px 26px rgba(0,0,0,.45)}
-.ncard{position:absolute;left:356px;width:330px;padding:20px 20px 20px 74px;border-radius:18px;
-  background:#fff;box-shadow:0 20px 46px rgba(0,0,0,.42);z-index:6;
-  font:700 26px/1.24 IN;color:#111820;will-change:transform,opacity}
-.ncard i{position:absolute;left:20px;top:20px;width:40px;height:40px;border-radius:50%;
-  background:var(--r);display:flex;align-items:center;justify-content:center}
-.ico{position:static;display:block}
+/* --- 3) SORULMAYANLAR: hiç işaretlenmeyen onay kutuları --- */
+#ask{position:absolute;left:296px;top:214px;width:392px;border-radius:22px;padding:22px 20px 24px;
+  background:rgba(10,15,22,.91);border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 26px 58px rgba(0,0,0,.5);z-index:7;will-change:transform,opacity}
+#askLab{font:800 19px/1 IN;letter-spacing:.22em;text-transform:uppercase;color:var(--r)}
+.askRow{display:flex;align-items:flex-start;gap:13px;margin-top:18px;
+  will-change:transform,opacity}
+.askRow b{flex:0 0 28px;height:28px;border-radius:7px;margin-top:2px;
+  border:2px solid rgba(255,255,255,.32);background:rgba(255,255,255,.05)}
+.askRow span{font:700 26px/1.25 IN;color:rgba(255,255,255,.92)}
+
+/* --- BMW impact: ışın yok, sert vuruş + genişleyen çizgi --- */
+#imp{position:absolute;inset:0;z-index:9;background:rgba(6,10,16,.74)}
+#impTxt{position:absolute;left:0;right:0;top:404px;text-align:center;
+  font:900 154px/1 MT;letter-spacing:-.045em;color:#fff}
+#impRule{position:absolute;left:50%;top:600px;height:5px;width:0;margin-left:0;
+  background:var(--y);border-radius:3px}
+#impSub{position:absolute;left:0;right:0;top:630px;text-align:center;
+  font:800 25px/1 IN;letter-spacing:.34em;text-transform:uppercase;color:var(--y)}
 
 /* --- blurlu istif listesi --- */
 #stack{position:absolute;left:78px;right:78px;top:352px;z-index:7}
@@ -93,21 +116,32 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
 <div id="stage">
   <div id="plate"></div>
 
-  <div id="nolab"><span>KİMSE DEMEZ Kİ</span></div>
-  <div class="ncard" id="nc1" style="top:250px"><i><svg viewBox="0 0 24 24" width="20" height="20"
-    class="ico"><path d="M5 5 L19 19 M19 5 L5 19" stroke="#fff" stroke-width="3.4"
-    stroke-linecap="round"/></svg></i>“Bu arabanın airbagleri açık.”</div>
-  <div class="ncard" id="nc2" style="top:412px"><i><svg viewBox="0 0 24 24" width="20" height="20"
-    class="ico"><path d="M5 5 L19 19 M19 5 L5 19" stroke="#fff" stroke-width="3.4"
-    stroke-linecap="round"/></svg></i>“Bu arabanın kilometresi yüksek.”</div>
+  <div id="eqn">
+    <div id="eqRow">
+      <div class="plate a" id="eqA"><div class="n">BMW 5</div><div class="s">sedan</div></div>
+      <div id="eqSign">=</div>
+      <div class="plate b" id="eqB"><div class="n">GOLF</div><div class="s">dizel · otomatik</div></div>
+    </div>
+    <div id="eqLab">aynı bütçe</div>
+  </div>
 
-  <div id="big"><div id="bigL1"></div><div id="bigL2"></div></div>
+  <div id="gauge">
+    <div id="gaLab">sokaktaki algı</div>
+    <div id="gaBar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="gaTag">gemi gibi</div>
+  </div>
+
+  <div id="ask">
+    <div id="askLab">kimse sormuyor</div>
+    <div class="askRow"><b></b><span>Airbag açılmış mı?</span></div>
+    <div class="askRow"><b></b><span>Kilometre gerçek mi?</span></div>
+  </div>
 
   <div id="stack"></div>
 
   <div id="imp">
-    <svg id="impRays" viewBox="-600 -600 1200 1200"></svg>
     <div id="impTxt">BMW!</div>
+    <i id="impRule"></i>
     <div id="impSub">der</div>
   </div>
 
@@ -169,25 +203,16 @@ const CAPS=[
 /* 12.91–15.06 arası istif listesiyle anlatılır (görüntü ffmpeg'de blurlanır) */
 const STACK={a:12.91,b:15.06,lines:['Ama diğer taraftan','başım hiç','ağrımasın','diyorsan da']};
 
-/* dev anahtar kelime anları */
-const BIGS=[
-  {a:0.78,b:2.35,l1:'GOLF',      l2:'PARASINA', rot:-3},
-  {a:4.28,b:5.45,l1:'GEMİ',      l2:'GİBİ',     rot: 2.5},
-  {a:9.90,b:11.55,l1:'KONFORLU', l2:'',         rot:-2},
-];
-const T={ imp:[5.57,6.36], cards:[6.40,9.78], fin:[16.22,D] };
-const FLASH=[2.53,5.57,6.36,9.81,12.91,15.06,15.80];
-
-/* ---------- ışın SVG'si (BMW impact) ---------- */
-(function(){
-  let s='';
-  for(let i=0;i<28;i++){
-    const a=i*(360/28), w=i%2?9:20;
-    s+='<path d="M0 0 L'+(-w)+' -640 L'+w+' -640 Z" fill="'+(i%2?'#FFC93C':'#ffffff')+
-       '" opacity="'+(i%2?.55:.30)+'" transform="rotate('+a+')"/>';
-  }
-  impRays.innerHTML=s;
-})();
+/* Grafik anları — her biri altyazının söylemediği bir şeyi gösterir,
+   metni büyütüp tekrarlamaz.                                            */
+const T={
+  eqn  :[0.88, 2.55],   // tez: BMW 5 = Golf, aynı bütçe
+  gauge:[4.10, 5.52],   // "gemi gibi" -> algı çubuğu dolar
+  imp  :[5.57, 6.36],   // "BMW!" vuruşu
+  ask  :[6.44, 9.74],   // kimse sormuyor: airbag / kilometre
+  fin  :[16.22, D],     // özet kartı
+};
+const FLASH=[5.57,12.91,15.80];
 
 /* ---------- kelime kelime altyazı ---------- */
 let capKey='';
@@ -271,20 +296,44 @@ window.setT=function(t){
     }
   }
 
-  /* ---------- dev anahtar kelime ---------- */
+  /* ---------- 1) DENKLEM ---------- */
   {
-    const g=BIGS.find(x=>t>=x.a&&t<x.b);
-    show(big,!!g);
-    if(g){
-      const l=t-g.a, o=outCubic(cl((g.b-t)/.28));
-      bigL1.textContent=g.l1; bigL2.textContent=g.l2;
-      [[bigL1,0],[bigL2,.10]].forEach(([el,d])=>{
-        const k=spring(cl((l-d)/.6));
-        el.style.opacity=(cl((l-d)/.16)*o).toFixed(3);
-        el.style.transform='translate3d(0,'+px((1-k)*36)+',0) scale('+lerp(.55,1,k).toFixed(4)+')';
+    const e=t>=T.eqn[0]&&t<T.eqn[1];
+    show(eqn,e);
+    if(e){
+      const l=t-T.eqn[0], o=outCubic(cl((T.eqn[1]-t)/.30));
+      [[eqA,-150,0],[eqB,150,.08]].forEach(([el,dx,d])=>{
+        const k=outExpo(cl((l-d)/.62));
+        el.style.opacity=(cl((l-d)/.18)*o).toFixed(3);
+        el.style.transform='translate3d('+px((1-k)*dx)+',0,0) scale('+lerp(.92,1,k).toFixed(4)+')';
       });
-      big.style.transform='rotate('+g.rot+'deg) scale('+lerp(1.06,1,outExpo(cl(l/.5)))+')';
-      big.className='sh';
+      const sg=spring(cl((l-.30)/.55));
+      eqSign.style.opacity=(cl((l-.30)/.16)*o).toFixed(3);
+      eqSign.style.transform='scale('+lerp(.2,1,sg).toFixed(4)+') rotate('+((1-sg)*-25).toFixed(1)+'deg)';
+      const lb=outExpo(cl((l-.52)/.5));
+      eqLab.style.opacity=(lb*o).toFixed(3);
+      eqLab.style.transform='translate3d(0,'+px((1-lb)*14)+',0)';
+    }
+  }
+
+  /* ---------- 2) ALGI ÇUBUĞU ---------- */
+  {
+    const e=t>=T.gauge[0]&&t<T.gauge[1];
+    show(gauge,e);
+    if(e){
+      const l=t-T.gauge[0], o=outCubic(cl((T.gauge[1]-t)/.28));
+      gauge.style.opacity=(cl(l/.16)*o).toFixed(3);
+      const cells=[...gaBar.children], per=.085;
+      cells.forEach((c,i)=>{
+        const k=spring(cl((l-.16-i*per)/.42));
+        c.style.transform='scaleY('+lerp(.35,1,k).toFixed(3)+')';
+        c.style.backgroundColor = k>.5
+          ? (i>=cells.length-2?'#FFC93C':'rgba(255,255,255,.92)')
+          : 'rgba(255,255,255,.18)';
+      });
+      const tg=spring(cl((l-.16-cells.length*per)/.55));
+      gaTag.style.opacity=cl((l-.16-cells.length*per)/.2).toFixed(3);
+      gaTag.style.transform='scale('+lerp(.6,1,tg).toFixed(4)+')';
     }
   }
 
@@ -293,35 +342,37 @@ window.setT=function(t){
     const e=t>=T.imp[0]&&t<T.imp[1];
     show(imp,e);
     if(e){
-      const l=t-T.imp[0], dur=T.imp[1]-T.imp[0], o=outCubic(cl((T.imp[1]-t)/.16));
-      imp.style.opacity=(cl(l/.07)*o).toFixed(3);
-      const k=spring(cl(l/.42));
-      impTxt.style.transform='scale('+lerp(1.7,1,k).toFixed(4)+')';
-      impTxt.style.opacity=cl(l/.06).toFixed(3);
+      const l=t-T.imp[0], o=outCubic(cl((T.imp[1]-t)/.16));
+      imp.style.opacity=(cl(l/.06)*o).toFixed(3);
+      const k=outExpo(cl(l/.30));
+      impTxt.style.transform='scale('+lerp(1.55,1,k).toFixed(4)+')';
+      impTxt.style.opacity=cl(l/.05).toFixed(3);
       impTxt.className='sh';
-      impRays.style.transform='rotate('+(l*26).toFixed(2)+'deg) scale('+
-        lerp(.25,1.15,outExpo(cl(l/.55))).toFixed(3)+')';
-      impRays.style.opacity=(lerp(.9,.25,cl(l/dur))*o).toFixed(3);
-      const s2=outExpo(cl((l-.22)/.4));
+      const r=outExpo(cl((l-.14)/.42));
+      impRule.style.width=px(r*300);
+      impRule.style.marginLeft=px(r*-150);
+      const s2=outExpo(cl((l-.26)/.4));
       impSub.style.opacity=(s2*o).toFixed(3);
-      impSub.style.letterSpacing=lerp(.55,.28,s2).toFixed(3)+'em';
     }
   }
 
-  /* ---------- "kimse demez ki" kartları ---------- */
+  /* ---------- 3) SORULMAYANLAR ---------- */
   {
-    const e=t>=T.cards[0]&&t<T.cards[1];
-    [nolab,nc1,nc2].forEach(el=>show(el,e));
+    const e=t>=T.ask[0]&&t<T.ask[1];
+    show(ask,e);
     if(e){
-      const l=t-T.cards[0], o=outCubic(cl((T.cards[1]-t)/.32));
-      const kl=spring(cl(l/.5));
-      nolab.style.opacity=(cl(l/.16)*o).toFixed(3);
-      nolab.style.transform='translate3d('+px((1-kl)*70)+',0,0)';
-      [[nc1,.12],[nc2,1.68]].forEach(([el,d])=>{
-        const k=spring(cl((l-d)/.62));
-        el.style.opacity=(cl((l-d)/.2)*o).toFixed(3);
-        el.style.transform='translate3d('+px((1-k)*300)+',0,0) rotate('+
-                           ((1-k)*3).toFixed(2)+'deg)';
+      const l=t-T.ask[0], o=outCubic(cl((T.ask[1]-t)/.32));
+      const k=outExpo(cl(l/.55));
+      ask.style.opacity=(cl(l/.18)*o).toFixed(3);
+      ask.style.transform='translate3d('+px((1-k)*90)+',0,0) scale('+lerp(.94,1,k).toFixed(4)+')';
+      const kl=outExpo(cl((l-.12)/.45));
+      askLab.style.opacity=kl.toFixed(3);
+      /* satırlar konuşmayla eşleşir: airbag ~0.2s, kilometre ~1.6s */
+      [[0,.22],[1,1.62]].forEach(([i,d])=>{
+        const row=ask.querySelectorAll('.askRow')[i];
+        const rk=spring(cl((l-d)/.6));
+        row.style.opacity=cl((l-d)/.22).toFixed(3);
+        row.style.transform='translate3d(0,'+px((1-rk)*22)+',0)';
       });
     }
   }

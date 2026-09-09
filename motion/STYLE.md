@@ -121,6 +121,23 @@ SFX ortalaması konuşmanın **8 dB altında** kalmalı — duyulsun ama bastır
 
 ## 6. Grafik dağarcığı
 
+**Önce iki kural** — ikisi de bu kurguda hata yapıp düzelterek öğrenildi:
+
+1. **Grafik, altyazının söylemediğini göstermeli.** Altyazıdaki bir kelimeyi
+   büyütüp ekrana basmak grafik değil, aynı bilginin ikinci kopyası. İzleyici
+   bunu gereksiz bulur. Kelime patlaması ancak *tek başına* varsa (altyazı o an
+   yoksa) iş görür. Doğru grafik bir karşılaştırma, bir ölçek, bir liste, bir
+   durum tablosudur.
+   *Örnek:* "Golf parasına bu arabayı alabilirsiniz" derken altyazıya
+   `GOLF PARASINA` yazmak yerine `BMW 5  =  GOLF (dizel·otomatik)` denklemini
+   göstermek — cümlenin tezi görselleşir.
+
+2. **SFX seyrek olmalı: ~2 saniyede bir, fazlası değil.** Her altyazı
+   değişimine tik koymak sesi çamura çeviriyor. 17 sn'lik bir klipte 28 olay
+   fazla, **8 olay doğru**. Her ses bir kesime, bir grafik girişine ya da bir
+   vurguya bağlanmalı; dolgu sesi olmamalı. Referanslardaki yüksek transient
+   sayısının çoğu konuşmanın kendisidir, eklenen efekt değil.
+
 - **Yüzen kart**: açık zeminde koyu ya da beyaz kart, 30 px köşe, `0 40px 90px rgba(0,0,0,.5)` gölge, üstte tarayıcı noktaları
 - **Bilgi kartı**: beyaz, sol üstte renkli daire ikon (✓ / ✕), tek satır alıntı
 - **PIP**: sol altta 20 px köşeli küçük kart, konuşan kişi

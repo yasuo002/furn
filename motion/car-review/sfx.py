@@ -89,36 +89,15 @@ def ding(dur=0.80):
 
 # --- olay listesi: (saniye, ses, kazanc, stereo_pan[-1..1]) ---
 EVENTS = [
-    # --- altyazi obegi tikleri (dokusal, 0.20 seviye) ---
-    (1.70, 'tick', 0.20,  0.10), (3.26, 'tick', 0.20, -0.10),
-    (7.18, 'tick', 0.20,  0.10), (8.91, 'tick', 0.20, -0.10),
-    (10.78,'tick', 0.20,  0.10), (12.33,'tick', 0.20, -0.10),
-    (16.76,'tick', 0.20,  0.10),
-    # --- istif listesi satirlari ---
-    (13.30,'tick', 0.24, -0.20), (13.68,'tick', 0.24, 0.00),
-    (14.07,'tick', 0.24,  0.20),
-    # --- kesimler ve grafik girisleri ---
-    (0.02, 'whoosh', 0.55, -0.25),
-    (2.53, 'whoosh', 0.50,  0.30),   # kaynak kamera kesimi
-    (3.98, 'whoosh', 0.44, -0.20),
-    (6.34, 'whoosh', 0.48,  0.35),   # kaynak kamera kesimi
-    (8.02, 'whoosh', 0.44, -0.35),
-    (9.81, 'whoosh', 0.46,  0.20),   # kaynak kamera kesimi
-    (15.80,'whoosh', 0.55, -0.20),
-    # --- kart / cip girisleri ---
-    (6.86, 'pop',    0.50,  0.40),
-    (8.48, 'pop',    0.50, -0.40),
-    (11.76,'pop',    0.55,  0.00),   # konusmaci degisimi
-    # --- vurgu darbeleri ---
-    (0.86, 'impact', 0.70,  0.00),   # GOLF PARASINA
-    (4.78, 'impact', 0.62,  0.00),   # GEMI GIBI
-    (5.60, 'impact', 0.95,  0.00),   # BMW!
-    (15.06,'impact', 0.85,  0.00),   # Golf alirsin
-    (16.28,'impact', 0.70,  0.00),   # final kart
-    # --- yukselisler (sonu hedefe hizalanir) ---
-    (5.50, 'riser',  0.42,  0.00),
-    (12.90,'riser',  0.40,  0.00),
-    (16.95,'ding',   0.45,  0.15),
+    # Az ve yerinde: her ses bir grafik ya da kesimle eslesir, dolgu yok.
+    (0.02,  'whoosh', 0.36, -0.20),   # acilis
+    (0.90,  'pop',    0.32,  0.00),   # denklem grafigi
+    (5.44,  'riser',  0.30,  0.00),   # "BMW!" oncesi (sonu 5.57'ye varir)
+    (5.60,  'impact', 0.72,  0.00),   # "BMW!" vurusu
+    (6.46,  'whoosh', 0.30,  0.30),   # sorulmayanlar paneli
+    (9.81,  'whoosh', 0.32, -0.20),   # kaynak kamera kesimi
+    (15.06, 'impact', 0.55,  0.00),   # "Golf alirsin"
+    (16.28, 'impact', 0.48,  0.00),   # ozet karti
 ]
 
 def main():
