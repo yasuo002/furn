@@ -2,70 +2,109 @@
 <title>overlay-founder</title>
 <style>
 @font-face{font-family:MT;src:url('../fonts/Montserrat-900.ttf');font-weight:900}
-@font-face{font-family:MT;src:url('../fonts/Montserrat-800.ttf');font-weight:800}
 @font-face{font-family:IN;src:url('../fonts/Inter-800.ttf');font-weight:800}
 @font-face{font-family:IN;src:url('../fonts/Inter-600.ttf');font-weight:600}
-@font-face{font-family:IN;src:url('../fonts/Inter-400.ttf');font-weight:400}
 @font-face{font-family:PF;src:url('../fonts/PlayfairIt-500.ttf');font-style:italic;font-weight:500}
+@font-face{font-family:BB;src:url('../fonts/Bebas-400.ttf')}                 /* sıkışık display */
+@font-face{font-family:GK;src:url('../fonts/Grotesk-700.ttf');font-weight:700}
+@font-face{font-family:GK;src:url('../fonts/Grotesk-500.ttf');font-weight:500}
+@font-face{font-family:MO;src:url('../fonts/Mono-700.ttf');font-weight:700}
+@font-face{font-family:MO;src:url('../fonts/Mono-500.ttf');font-weight:500}
 
-/* Palet doğrudan çekimden alındı: duvarın nanesi, ahşabın sıcaklığı, gömleğin
-   koyusu. Doygunluk düşük tutuldu — amaç göz yormayan bir katman.          */
-:root{
-  --mint:#BFD9C0; --mint2:#8FBF9B; --acc:#9FD8A8;
-  --cream:#F5F2EC; --warm:#D9A98F; --ink:#0E1613;
-}
+:root{ --mint:#BFD9C0; --mint2:#8FBF9B; --acc:#9FD8A8; --cream:#F5F2EC;
+       --warm:#D9A98F; --ink:#0E1613; }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:transparent}
 body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,sans-serif;
      -webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
 .sh{text-shadow:0 3px 22px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.45)}
 
-/* ---------- altyazı: siyah gömleğin üzerinde, plakasız ---------- */
+/* ---------- üst: ilerleme + bölüm etiketi ---------- */
+#prog{position:absolute;left:0;top:0;height:3px;width:100%;background:rgba(255,255,255,.12);z-index:12}
+#progB{position:absolute;left:0;top:0;height:100%;width:0;background:var(--acc);opacity:.75}
+#chap{position:absolute;left:48px;top:112px;z-index:11;display:flex;align-items:center;gap:12px}
+#chapR{width:0;height:2px;background:var(--mint2);opacity:.6}
+#chapT{font:700 18px/1 MO;letter-spacing:.16em;text-transform:uppercase;color:var(--mint2);
+  text-shadow:0 2px 12px rgba(0,0,0,.7);will-change:opacity,transform}
+
+/* ---------- altyazı ---------- */
 #cap{position:absolute;left:56px;right:56px;top:952px;height:180px;z-index:6;
   display:flex;align-items:flex-start;justify-content:center}
 #capTxt{width:100%;text-align:center;font:800 43px/1.24 IN;letter-spacing:-.012em;
   color:var(--cream);text-shadow:0 3px 20px rgba(0,0,0,.65),0 1px 2px rgba(0,0,0,.5)}
-#capTxt .wi{display:inline-block;margin:0 .11em;will-change:transform,opacity}
+#capTxt .wi{display:inline-block;margin:0 .11em;padding:0 .04em;
+  will-change:transform,opacity,clip-path}
 #capTxt .hi{color:var(--acc)}
 #capTxt .sm{font-size:33px;font-weight:600;opacity:.62}
 #capTxt .q{font:italic 500 47px/1.24 PF;letter-spacing:0}
+#capTxt .ch{display:inline-block;will-change:transform,opacity}
 
-/* ---------- panel: gömleğin üstünde, kutu yok ---------- */
+/* ---------- liste paneli ---------- */
 #pan{position:absolute;left:66px;right:66px;top:606px;z-index:5}
-#panT{font:800 19px/1 IN;letter-spacing:.24em;text-transform:uppercase;color:var(--mint2);
+#panT{font:700 18px/1 MO;letter-spacing:.22em;text-transform:uppercase;color:var(--mint2);
   margin-bottom:22px;will-change:opacity,transform}
 .prow{position:relative;display:flex;align-items:center;gap:16px;margin-top:16px;
   will-change:transform,opacity}
 .prow .dot{flex:0 0 9px;height:9px;border-radius:50%;background:var(--mint2)}
-.prow .txt{font:700 38px/1.2 IN;color:var(--cream);letter-spacing:-.01em}
-#pan.big .prow .txt{font:900 50px/1.1 MT;letter-spacing:-.02em;color:var(--mint)}
-#pan.big .prow .dot{background:var(--acc)}
+.prow .txt{font:700 38px/1.2 GK;color:var(--cream);letter-spacing:-.01em}
 .prow .strike{position:absolute;left:25px;top:52%;height:3px;width:0;border-radius:2px;
   background:var(--warm);opacity:.9}
 
-/* ---------- tam ekran soru kartı ---------- */
+/* ---------- düğüm diyagramı (üçlü) ---------- */
+#nodes{position:absolute;left:0;right:0;top:588px;height:250px;z-index:5}
+#nsvg{position:absolute;inset:0;width:720px;height:250px;overflow:visible}
+.nlab{position:absolute;text-align:center;width:220px;font:700 27px/1.2 GK;color:var(--cream);
+  text-shadow:0 3px 16px rgba(0,0,0,.7);will-change:opacity,transform}
+#nfoot{position:absolute;left:0;right:0;top:212px;text-align:center;
+  font:700 19px/1 MO;letter-spacing:.22em;text-transform:uppercase;color:var(--mint2);
+  will-change:opacity}
+
+/* ---------- tam ekran kinetik tipografi ---------- */
+#kin{position:absolute;inset:0;z-index:9;background:rgba(9,18,15,.92)}
+#kinIn{position:absolute;left:56px;right:56px;top:0;bottom:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+#kinK{font:700 19px/1 MO;letter-spacing:.28em;text-transform:uppercase;color:var(--mint2);
+  margin-bottom:26px}
+#kinL{text-align:center;font:400 118px/.94 BB;letter-spacing:.012em;color:var(--cream);
+  text-transform:uppercase}
+#kinL .kw{display:inline-block;margin:0 .07em;will-change:transform,opacity}
+#kinL .kw.a{color:var(--acc)}
+
+/* ---------- tam ekran soru ---------- */
 #ask{position:absolute;inset:0;z-index:9;background:rgba(10,20,16,.90)}
-#askIn{position:absolute;left:70px;right:70px;top:470px;text-align:center}
-#askK{font:800 20px/1 IN;letter-spacing:.30em;text-transform:uppercase;color:var(--mint2)}
+#askIn{position:absolute;left:70px;right:70px;top:462px;text-align:center}
+#askK{font:700 19px/1 MO;letter-spacing:.28em;text-transform:uppercase;color:var(--mint2)}
 #askL{margin-top:30px;font:900 66px/1.16 MT;letter-spacing:-.025em;color:var(--cream)}
 #askL b{color:var(--acc)}
 #askR{width:0;height:2px;margin:34px auto 0;background:var(--mint2);opacity:.7}
 
-/* ---------- marka rozeti ---------- */
+/* ---------- marka ---------- */
 #brand{position:absolute;left:0;right:0;top:660px;text-align:center;z-index:6}
 #brand .in{display:inline-flex;align-items:center;gap:14px;padding:16px 26px;border-radius:16px;
   background:rgba(12,22,18,.82);border:1px solid rgba(191,217,192,.22);
   will-change:transform,opacity}
 #brand .mk{width:38px;height:38px;border-radius:11px;background:var(--acc);
-  display:flex;align-items:center;justify-content:center;font:900 21px/1 MT;color:var(--ink)}
-#brand .nm{font:800 29px/1.15 IN;letter-spacing:.02em;color:var(--cream);text-align:left}
-#brand .nm i{display:block;font:600 17px/1.3 IN;font-style:normal;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--mint2);margin-top:3px}
-
+  display:flex;align-items:center;justify-content:center;font:400 26px/1 BB;color:var(--ink)}
+#brand .nm{font:700 29px/1.15 GK;letter-spacing:.01em;color:var(--cream);text-align:left}
+#brand .nm i{display:block;font:500 16px/1.3 MO;font-style:normal;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--mint2);margin-top:4px}
 </style>
 
 <div id="stage">
+  <div id="prog"><div id="progB"></div></div>
+  <div id="chap"><i id="chapR"></i><div id="chapT"></div></div>
+
   <div id="pan"><div id="panT"></div></div>
+
+  <div id="nodes">
+    <svg id="nsvg" viewBox="0 0 720 250"></svg>
+    <div class="nlab" id="nl0" style="left:40px;top:118px"></div>
+    <div class="nlab" id="nl1" style="left:250px;top:118px"></div>
+    <div class="nlab" id="nl2" style="left:460px;top:118px"></div>
+    <div id="nfoot"></div>
+  </div>
+
+  <div id="kin"><div id="kinIn"><div id="kinK"></div><div id="kinL"></div></div></div>
 
   <div id="ask">
     <div id="askIn">
@@ -85,18 +124,19 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
 
 <script>
 /* ============================================================
-   Sakin motion katmanı — window.setT(saniye)
-   Yay (spring) yok: her şey ease-out. Beyaz flaş, sert zıplama yok.
+   window.setT(saniye) — hareketli ama sakin: easing hep ease-out,
+   sadece vurgu anlarında hafif bir taşma var.
    ============================================================ */
-const D = 69.87;
+const D = 69.87, LAYER_END = 61.30;   /* kaynağın kendi outro'su 61.4'te giriyor */
 const cl=(x,a=0,b=1)=>x<a?a:(x>b?b:x);
-const soft=x=>1-Math.pow(1-x,3);            /* outCubic — tek easing */
+const soft=x=>1-Math.pow(1-x,3);
 const softer=x=>1-Math.pow(1-x,2);
+const nudge=(x,s=1.25)=>1+(s+1)*Math.pow(x-1,3)+s*Math.pow(x-1,2);  /* çok az taşar */
 const lerp=(a,b,x)=>a+(b-a)*x;
 const px=v=>v.toFixed(2)+'px';
 const show=(el,on)=>{ el.style.display=on?'':'none'; };
 
-/* ---------- altyazı: *vurgu  -küçük  ~italik serif ---------- */
+/* ---------- altyazı:  *vurgu  -küçük  ~italik ---------- */
 const C=[
  [0.22,1.28,'Girişimcilikte çoğu insan'],
  [1.28,2.34,'*odağı *yanlış *yerde.'],
@@ -105,19 +145,15 @@ const C=[
  [4.68,6.20,'ve daha fazla sermayenin peşinde.'],
  [6.20,7.72,'Ama hiç kimse -şunu konuşmuyor.'],
  [7.72,8.60,'Bir şirketi büyüten'],
- [8.60,9.48,'*sadece *para *değildir.'],
- [9.48,10.80,'Sistemdir, ekiptir, network’tür.'],
- [10.80,11.90,'Çünkü girişimcilik'],
- [11.90,13.14,'tek başına yapılacak -bir -iş -değil.'],
+ [8.60,9.44,'*sadece *para *değildir.'],
  [13.14,14.30,'Ben ilk girişimimde'],
  [14.30,15.44,'bunu çok sert yaşadım.'],
  [15.44,16.50,'Çok çalışıyordum,'],
  [16.50,17.88,'gerçekten durmadan çalışıyordum.'],
  [17.88,19.10,'Ve bir noktadan sonra'],
  [19.10,20.20,'şunu fark ettim:'],
- [20.20,21.54,'sorun *yetersiz *çalışmak değilmiş.'],
- [21.54,22.75,'~Sorun ~yalnız ~çalışmak.'],
- [22.75,24.02,'Çünkü doğru sistem yoksa'],
+ [20.20,21.44,'sorun *yetersiz *çalışmak değilmiş.'],
+ [23.06,24.02,'Çünkü doğru sistem yoksa'],
  [24.02,25.40,'işler büyüdükçe karmaşıklaşır.'],
  [25.40,26.58,'Doğru ekip yoksa'],
  [26.58,27.90,'en iyi fikir bile ilerlemez.'],
@@ -127,46 +163,57 @@ const C=[
  [31.70,32.76,'olan bakış açım'],
  [32.76,33.80,'*tamamen *değişti.'],
  [33.80,34.84,'Artık bir işe başlarken'],
- [34.84,35.90,'ilk baktığım şey şu:'],
+ [34.84,35.86,'ilk baktığım şey şu:'],
  [38.66,39.90,'her işi kendin yapmak değil.'],
  [39.90,40.80,'Doğru *sistemi,'],
  [40.80,41.80,'doğru *insanları'],
  [41.80,43.06,'ve doğru *ağı kurabilmek.'],
  [43.06,44.10,'Zaten bu yüzden de'],
  [45.60,47.44,'Çünkü Türkiye’de, özellikle Anadolu’da'],
- [47.44,48.70,'çok iyi fikirler var.'],
+ [47.44,48.54,'çok iyi fikirler var.'],
  [48.70,50.00,'Ama birçok insanın çevresi yok,'],
  [50.00,51.10,'yol gösterecek insanı yok,'],
  [51.10,52.50,'tecrübe paylaşabileceği ağı yok.'],
  [52.50,53.80,'O yüzden insanlar çoğu zaman'],
- [53.80,54.90,'-fikirden *değil,'],
- [54.90,56.10,'~yalnızlıktan ~kaybediyor.'],
- [56.10,57.32,'Ben artık şuna inanıyorum:'],
+ [53.80,54.82,'-fikirden *değil,'],
+ [56.24,57.32,'Ben artık şuna inanıyorum:'],
 ];
 const CAPS=C.map(([a,b,t])=>({a,b,w:t.split(' ')}));
 
-/* ---------- paneller: gömleğin üzerinde, kutu yok ---------- */
+/* ---------- liste panelleri ---------- */
 const PANELS=[
  {a:2.55,b:7.66,title:'herkesin peşinde olduğu',rows:[
    {t:'daha fazla satış',   at:2.70, strike:6.35},
    {t:'daha fazla reklam',  at:3.62, strike:6.55},
    {t:'daha fazla sermaye', at:4.80, strike:6.75}]},
- {a:9.44,b:13.10,title:'bir şirketi asıl büyüten',big:true,rows:[
-   {t:'sistem',  at:9.60},{t:'ekip', at:10.15},{t:'network', at:10.70}]},
- {a:22.70,b:29.00,title:'yoksa ne oluyor',rows:[
-   {t:'doğru sistem yoksa  ·  karmaşıklaşır', at:22.85},
+ {a:23.00,b:29.00,title:'yoksa ne oluyor',rows:[
+   {t:'doğru sistem yoksa  ·  karmaşıklaşır', at:23.10},
    {t:'doğru ekip yoksa  ·  ilerlemez',       at:25.45},
    {t:'doğru çevre yoksa  ·  aynı hata',      at:27.95}]},
  {a:48.60,b:55.00,title:'iyi fikir var, ama',rows:[
    {t:'çevre yok',        at:48.75},
    {t:'yol gösteren yok', at:50.05},
    {t:'paylaşacak ağ yok',at:51.20}]},
- {a:57.32,b:61.25,title:'bir girişimcinin en büyük sermayesi',big:true,rows:[
-   {t:'doğru network', at:57.45},{t:'doğru sistem', at:58.15},{t:'doğru ekip', at:58.85}]},
 ];
-/* Kaynağın kendi markalı kapanışı 61.4'te devreye giriyor; bu katman
-   ondan önce tamamen çekilir — kimsenin outro'sunun üzerine yazılmaz. */
-const T={ ask:[35.90,38.60], brand:[44.10,47.30], END:61.30 };
+
+/* ---------- düğüm diyagramı: tez ve kapanış (geri çağrı) ---------- */
+const NODES=[
+ {a:9.44,b:13.10,foot:'bir şirketi asıl büyüten',
+  n:[['sistem',9.60],['ekip',10.20],['network',10.80]]},
+ {a:57.32,b:LAYER_END,foot:'bir girişimcinin en büyük sermayesi',
+  n:[['doğru\nnetwork',57.45],['doğru\nsistem',58.10],['doğru\nekip',58.75]]},
+];
+
+/* ---------- tam ekran kinetik anlar ---------- */
+const KIN=[
+ {a:21.44,b:23.00,k:'asıl sorun',       w:[['SORUN',0],['YALNIZ',1],['ÇALIŞMAK',1]]},
+ {a:54.82,b:56.24,k:'o yüzden',         w:[['YALNIZLIKTAN',1],['KAYBEDİYOR',0]]},
+];
+
+/* ---------- bölüm etiketleri ---------- */
+const CHAP=[[0.60,'01 / odak'],[9.44,'02 / sistem'],[21.44,'03 / yalnızlık'],
+            [33.00,'04 / soru'],[43.00,'05 / ağ'],[57.32,'06 / sermaye']];
+const T={ ask:[35.86,38.60], brand:[44.10,47.30] };
 
 /* ---------- altyazı çizimi ---------- */
 let key='';
@@ -177,27 +224,44 @@ function draw(seg){
     while('*~-'.indexOf(t[0])>-1){
       if(t[0]==='*')hi=true; else if(t[0]==='~')q=true; else sm=true; t=t.slice(1);
     }
-    return '<span class="wi'+(hi?' hi':'')+(q?' q':'')+(sm?' sm':'')+'">'+t+'</span>';
+    const inner = hi ? [...t].map(c=>'<span class="ch">'+c+'</span>').join('') : t;
+    return '<span class="wi'+(hi?' hi':'')+(q?' q':'')+(sm?' sm':'')+'">'+inner+'</span>';
   }).join(' ');
 }
 function words(l,dur){
   const ws=[...capTxt.querySelectorAll('.wi')];
-  const span=Math.min(.52,dur*.42), per=span/Math.max(1,ws.length);
+  const span=Math.min(.56,dur*.46), per=span/Math.max(1,ws.length);
   ws.forEach((w,i)=>{
-    const p=cl((l-i*per)/.42), e=soft(p);        /* yumuşak, zıplamasız */
-    w.style.opacity=cl(p*1.6).toFixed(3);
-    w.style.transform='translate3d(0,'+px((1-e)*11)+',0)';
+    const p=cl((l-i*per)/.46), e=soft(p);
+    w.style.opacity=cl(p*1.7).toFixed(3);
+    const chs=w.querySelectorAll('.ch');
+    if(chs.length){                       /* vurgu: harf harf + kısa parıltı */
+      chs.forEach((c,j)=>{
+        const cp=cl((p*chs.length-j)/1.7), ce=nudge(cp);
+        c.style.opacity=cl(cp*1.9).toFixed(3);
+        c.style.transform='translate3d(0,'+px((1-ce)*16)+',0)';
+      });
+      const g=Math.exp(-Math.pow((p-.62)/.34,2));
+      w.style.textShadow='0 3px 20px rgba(0,0,0,.65),0 0 '+px(g*30)+
+                         ' rgba(159,216,168,'+(g*.75).toFixed(2)+')';
+      w.style.transform='translate3d(0,'+px((1-e)*6)+',0)';
+      w.style.clipPath='none';
+    } else if(w.classList.contains('q')){  /* alıntı: sağdan süzülür */
+      w.style.transform='translate3d('+px((1-e)*26)+',0,0)';
+      w.style.clipPath='none';
+    } else {                               /* normal: soldan maskeyle açılır */
+      w.style.transform='translate3d(0,'+px((1-e)*8)+',0)';
+      w.style.clipPath='inset(-18% '+((1-soft(cl(p*1.25)))*100).toFixed(1)+'% -18% -6%)';
+    }
   });
 }
 
-/* ---------- panel çizimi ---------- */
+/* ---------- liste paneli ---------- */
 let pkey='';
 function panel(P,l){
-  const k=P.a+''; 
-  if(pkey!==k){
-    pkey=k;
+  if(pkey!==P.a+''){
+    pkey=P.a+'';
     panT.textContent=P.title;
-    pan.className=P.big?'big':'';
     [...pan.querySelectorAll('.prow')].forEach(n=>n.remove());
     P.rows.forEach(r=>{
       const d=document.createElement('div'); d.className='prow';
@@ -205,13 +269,11 @@ function panel(P,l){
       pan.appendChild(d);
     });
   }
-  const o=soft(cl((P.b-(P.a+l))/.45));
-  const tp=soft(cl(l/.55));
+  const o=soft(cl((P.b-(P.a+l))/.45)), tp=soft(cl(l/.55));
   panT.style.opacity=(tp*o).toFixed(3);
   panT.style.transform='translate3d(0,'+px((1-tp)*-8)+',0)';
   [...pan.querySelectorAll('.prow')].forEach((row,i)=>{
-    const r=P.rows[i], rl=P.a+l-r.at;
-    const e=soft(cl(rl/.62));
+    const r=P.rows[i], rl=P.a+l-r.at, e=soft(cl(rl/.62));
     row.style.opacity=(cl(rl/.34)*o).toFixed(3);
     row.style.transform='translate3d('+px((1-e)*-26)+',0,0)';
     const st=row.querySelector('.strike');
@@ -220,37 +282,126 @@ function panel(P,l){
       st.style.width=px(s*(row.querySelector('.txt').offsetWidth+22));
       st.style.opacity=(s*.9*o).toFixed(3);
       row.querySelector('.txt').style.opacity=lerp(1,.42,s).toFixed(3);
-    } else { st.style.width='0'; }
+    } else st.style.width='0';
+  });
+}
+
+/* ---------- düğüm diyagramı ---------- */
+const NX=[150,360,570], NY=72, NR=34;
+(function(){
+  let s='';
+  for(let i=0;i<2;i++)
+    s+='<path class="nln" id="nln'+i+'" d="M'+(NX[i]+NR)+' '+NY+' L'+(NX[i+1]-NR)+' '+NY+
+       '" stroke="#8FBF9B" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  for(let i=0;i<3;i++)
+    s+='<circle class="ncr" id="ncr'+i+'" cx="'+NX[i]+'" cy="'+NY+'" r="'+NR+
+       '" fill="rgba(159,216,168,.14)" stroke="#9FD8A8" stroke-width="2.5"/>'+
+       '<circle id="nct'+i+'" cx="'+NX[i]+'" cy="'+NY+'" r="7" fill="#9FD8A8"/>';
+  nsvg.innerHTML=s;
+})();
+let nkey='';
+function diagram(N,l){
+  if(nkey!==N.a+''){
+    nkey=N.a+'';
+    N.n.forEach((x,i)=>{
+      document.getElementById('nl'+i).innerHTML=x[0].replace('\n','<br>');
+    });
+    nfoot.textContent=N.foot;
+  }
+  const o=soft(cl((N.b-(N.a+l))/.5));
+  N.n.forEach((x,i)=>{
+    const rl=N.a+l-x[1], e=nudge(cl(rl/.66));
+    const c=document.getElementById('ncr'+i), d=document.getElementById('nct'+i),
+          lb=document.getElementById('nl'+i);
+    const a=(cl(rl/.3)*o).toFixed(3);
+    c.setAttribute('opacity',a); d.setAttribute('opacity',a);
+    c.setAttribute('r',(NR*lerp(.4,1,e)).toFixed(1));
+    d.setAttribute('r',(7*lerp(.2,1,cl(rl/.5))).toFixed(1));
+    lb.style.opacity=(cl((rl-.12)/.4)*o).toFixed(3);
+    lb.style.transform='translate3d(0,'+px((1-soft(cl((rl-.12)/.6)))*12)+',0)';
+    if(i<2){
+      const ln=document.getElementById('nln'+i), L=NX[1]-NX[0]-2*NR;
+      const g=soft(cl((N.a+l-x[1]-.42)/.5));
+      ln.setAttribute('stroke-dasharray',L);
+      ln.setAttribute('stroke-dashoffset',(L*(1-g)).toFixed(1));
+      ln.setAttribute('opacity',(g*.85*o).toFixed(3));
+    }
+  });
+  nfoot.style.opacity=(soft(cl((l-.15)/.6))*o*.95).toFixed(3);
+}
+
+/* ---------- tam ekran kinetik ---------- */
+let kkey='';
+function kinetic(K,l){
+  if(kkey!==K.a+''){
+    kkey=K.a+'';
+    kinK.textContent=K.k;
+    kinL.innerHTML=K.w.map(([t,a])=>'<span class="kw'+(a?' a':'')+'">'+t+'</span>').join(' ');
+  }
+  const dur=K.b-K.a, o=soft(cl((dur-l)/.30));
+  kin.style.opacity=(soft(cl(l/.24))*o).toFixed(3);
+  kinK.style.opacity=(soft(cl((l-.06)/.4))*o).toFixed(3);
+  [...kinL.children].forEach((w,i)=>{
+    const p=cl((l-.10-i*.13)/.46), e=nudge(p,1.5);
+    w.style.opacity=(cl(p*1.8)*o).toFixed(3);
+    w.style.transform='translate3d(0,'+px((1-e)*34)+',0) scale('+lerp(.86,1,e).toFixed(4)+')';
   });
 }
 
 window.setT=function(t){
+  const over = t>=LAYER_END;                 /* kaynağın kendi kapanışı */
+  const inAsk=t>=T.ask[0]&&t<T.ask[1];
+  const K=KIN.find(k=>t>=k.a&&t<k.b);
+  const busy = inAsk || !!K;
+
+  /* ---------- üst şerit ---------- */
+  show(prog,!over); show(chap,!over&&!busy);
+  if(!over){
+    progB.style.width=(cl(t/LAYER_END)*100).toFixed(2)+'%';
+    let c=null; for(const x of CHAP) if(t>=x[0]) c=x;
+    if(c){
+      const l=t-c[0];
+      chapT.textContent=c[1];
+      const e=soft(cl(l/.7));
+      chapT.style.opacity=cl(l/.4).toFixed(3);
+      chapT.style.transform='translate3d('+px((1-e)*-14)+',0,0)';
+      chapR.style.width=px(e*26);
+    }
+  }
+
   /* ---------- altyazı ---------- */
   const seg=CAPS.find(s=>t>=s.a&&t<s.b);
-  const inAsk=t>=T.ask[0]&&t<T.ask[1], inEnd=t>=T.END;
-  show(cap,!!seg&&!inAsk&&!inEnd);
-  if(seg&&!inAsk&&!inEnd){
+  show(cap,!!seg&&!busy&&!over);
+  if(seg&&!busy&&!over){
     draw(seg);
-    const l=t-seg.a, dur=seg.b-seg.a;
-    words(l,dur);
-    cap.style.opacity=(cl(l/.14)*soft(cl((seg.b-t)/.20))).toFixed(3);
+    words(t-seg.a, seg.b-seg.a);
+    cap.style.opacity=(cl((t-seg.a)/.14)*soft(cl((seg.b-t)/.20))).toFixed(3);
   }
 
-  /* ---------- panel ---------- */
+  /* ---------- liste paneli ---------- */
   {
     const P=PANELS.find(p=>t>=p.a&&t<p.b);
-    show(pan,!!P&&!inAsk&&!inEnd);
-    if(P&&!inAsk&&!inEnd) panel(P,t-P.a);
+    show(pan,!!P&&!busy&&!over);
+    if(P&&!busy&&!over) panel(P,t-P.a);
   }
 
-  /* ---------- tam ekran soru ---------- */
+  /* ---------- düğüm diyagramı ---------- */
   {
-    show(ask,inAsk);
-    if(inAsk){
+    const N=NODES.find(n=>t>=n.a&&t<n.b);
+    show(nodes,!!N&&!busy&&!over);
+    if(N&&!busy&&!over) diagram(N,t-N.a);
+  }
+
+  /* ---------- kinetik tam ekran ---------- */
+  { show(kin,!!K&&!over); if(K&&!over) kinetic(K,t-K.a); }
+
+  /* ---------- soru kartı ---------- */
+  {
+    show(ask,inAsk&&!over);
+    if(inAsk&&!over){
       const l=t-T.ask[0], o=soft(cl((T.ask[1]-t)/.34));
       ask.style.opacity=(soft(cl(l/.34))*o).toFixed(3);
-      const k=soft(cl((l-.10)/.5));
-      askK.style.opacity=k.toFixed(3);
+      askK.style.opacity=soft(cl((l-.10)/.5)).toFixed(3);
       const q=soft(cl((l-.22)/.7));
       askL.style.opacity=q.toFixed(3);
       askL.style.transform='translate3d(0,'+px((1-q)*16)+',0)';
@@ -261,16 +412,14 @@ window.setT=function(t){
   /* ---------- marka ---------- */
   {
     const e=t>=T.brand[0]&&t<T.brand[1];
-    show(brand,e&&!inEnd);
-    if(e){
-      const l=t-T.brand[0], o=soft(cl((T.brand[1]-t)/.42));
-      const k=soft(cl(l/.62));
+    show(brand,e&&!over&&!busy);
+    if(e&&!over){
+      const l=t-T.brand[0], o=soft(cl((T.brand[1]-t)/.42)), k=nudge(cl(l/.7));
       brand.firstElementChild.style.opacity=(cl(l/.3)*o).toFixed(3);
       brand.firstElementChild.style.transform=
-        'translate3d(0,'+px((1-k)*18)+',0) scale('+lerp(.97,1,k).toFixed(4)+')';
+        'translate3d(0,'+px((1-k)*20)+',0) scale('+lerp(.94,1,k).toFixed(4)+')';
     }
   }
-
 };
 window.setT(0);
 document.documentElement.dataset.ready='1';

@@ -205,6 +205,37 @@ Kutuyu kaldırmak burada mümkün oldu çünkü konuşmacı **koyu bir üst** gi
 gömlek zaten temiz bir tuval, panel arka planı gerekmedi. Kaynağa bakıp böyle
 bir alan var mı diye kontrol et — varsa kullan, yoksa 6b'deki panel.
 
+## 6f. Tek plan videoyu izlenebilir kılmak
+
+60 sn+ tek plan bir konuşmada asıl sorun grafik azlığı değil, **kadrajın hiç
+değişmemesi**. En büyük kazanç sanal kesme: aynı çekimden geniş / orta / yakın
+kadrajlar üretip konuşmanın doğal sınırlarında sertçe geçmek.
+
+```
+scale=w='trunc(720*(Z)/2)*2':h='...':eval=frame,
+crop=720:1280:'(in_w-720)/2+(XO)':'(in_h-1280)/2+(YO)'
+```
+
+`framing.py` bir plan tablosunu bu ifadelere çeviriyor. Kurallar:
+
+- **Zoom tavanı 1.30.** Üstü 720p kaynakta gözle görülür yumuşuyor.
+- **Yakın planda pencereyi yukarı kaydır** (`y` negatif, −60…−80). Merkezden
+  kırpınca yüz kadrajın altına düşüyor.
+- **Panel/diyagram anlarında geniş kal** (1.02–1.06); grafiğin nefes alacağı
+  yer lazım.
+- Plan içinde zoom'u 0.02 kadar sürükle — sabit kadraj ölü duruyor.
+- Kaynağın kendi açılış/kapanışında zoom **tam 1.00** olmalı, yoksa onların
+  görüntüsünü de kırpmış olursun.
+
+Yazı tarafında tek animasyon yerine üç ayrı davranış kullan: normal kelimeler
+soldan maskeyle açılır (`clip-path: inset()`), vurgu kelimeleri harf harf gelip
+kısa bir parıltı bırakır, italik alıntılar sağdan süzülür. Aynı satırda üç farklı
+hareket olması yazıyı canlı gösteriyor, hepsini birden zıplatmadan.
+
+Font çeşitliliği de aynı işi görüyor: gövde için Inter, panel için Space Grotesk,
+etiket/bölüm için JetBrains Mono, tam ekran vuruşlar için Bebas Neue, duygu
+satırı için Playfair italic. Beş rol, beş karakter.
+
 ## 6e. Kaynağın kendi kapanışına dokunma
 
 Bu videonun son 8 saniyesi zaten markalı bir outro'ydu (uzay çekimi +

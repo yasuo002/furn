@@ -25,4 +25,7 @@ fetch Inter       'Inter:wght@400;600;800;900'
 fetch PlayfairIt  'Playfair+Display:ital,wght@1,400;1,500;1,600'   # italik serif wordmark
 fetch Poppins     'Poppins:wght@500;600;700;800'                   # yuvarlak geometrik sans
 fetch GreatVibes  'Great+Vibes'                                    # altin kaligrafik vurgu
+fetch Bebas       'Bebas+Neue'                                     # sikisik display
+fetch Grotesk     'Space+Grotesk:wght@500;700'                     # etiket / panel
+fetch Mono        'JetBrains+Mono:wght@500;700'                    # bolum etiketi
 echo "tamam."
