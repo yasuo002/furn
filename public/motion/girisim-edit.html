@@ -400,7 +400,20 @@ function capAt(t){
 function build(i){
   capEl.textContent = ""; letters = [];
   if(i < 0) return;
-  CAPS[i].w.forEach((w, wi)=>{
+  const ws = CAPS[i].w;
+  if(ws.length && ws.every(w => w.s === "box")){          // ardışık kutu kelimeleri tek kutu
+    const span = document.createElement("span");
+    span.className = "k box";
+    [...ws.map(w => w.t).join(" ")].forEach((ch, ci)=>{
+      const c = document.createElement("span");
+      c.className = "ch"; c.textContent = ch;
+      c.dataset.d = (ci * 0.018).toFixed(3);
+      span.appendChild(c); letters.push(c);
+    });
+    capEl.appendChild(span);
+    return;
+  }
+  ws.forEach((w, wi)=>{
     const span = document.createElement("span");
     span.className = "k" + (w.s === "plain" ? "" : " " + w.s);
     const step = LETTER[w.s];
