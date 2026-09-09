@@ -52,6 +52,80 @@ SCENES = [
       extra=".s6 .sum{display:none}"),
 ]
 
+
+TEMA = """
+/* ===== açık tema: krem zemin, kesikli ızgara, koyu metin ===== */
+:root{
+  --kagit:#F4F2EC; --kagit2:#EAE7DF; --murekkep:#16181C; --gri:#6E7178;
+  --kehribar:#C8860D; --toprak:#B4552A; --cizgi:rgba(22,24,28,.10);
+}
+.scene{background:radial-gradient(120% 85% at 50% 32%,#FBFAF7 0%,var(--kagit) 52%,var(--kagit2) 100%) !important}
+.scene::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(72% 55% at 50% 45%,transparent 40%,rgba(120,110,95,.18) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cg stroke='%2316181C' stroke-opacity='0.17' stroke-dasharray='9 11'%3E%3Cpath d='M0 .5H180'/%3E%3Cpath d='M.5 0V180'/%3E%3C/g%3E%3C/svg%3E")}
+.ember{background:radial-gradient(50% 60% at 50% 100%,rgba(200,134,13,.16),transparent 70%) !important}
+.grain{background-image:radial-gradient(#16181C 1px,transparent 1px) !important;opacity:.045 !important}
+.vig{display:none}
+
+/* 01 */
+.s1 .old div{color:var(--murekkep)}
+.s1 .old div span{color:var(--gri)}
+.s1 .old i{background:var(--toprak)}
+.s1 .new{top:47%}
+.s1 .new b{background:var(--murekkep);color:#F7F5F0;font-size:1.48em;
+  box-shadow:0 .5em 1.6em rgba(22,24,28,.22)}
+.s1 .new b:nth-child(2){align-self:center}
+.s1 .new b:nth-child(3){align-self:flex-end}
+.s1 .foot{color:var(--murekkep)}
+@keyframes dim{to{opacity:.32;color:#9A9CA1}}
+
+/* 02 */
+.s2 .lone svg circle,.s2 .lone svg path{fill:var(--kehribar)}
+.s2 .ring{border:1px dashed rgba(22,24,28,.25)}
+.s2 .small{color:var(--gri)}
+.s2 .big{color:var(--murekkep)}
+.s2 .big em{color:var(--kehribar)}
+
+/* 03 */
+.s3 .row .n{border-color:var(--murekkep);color:var(--murekkep);box-shadow:none}
+.s3 .row .cond{color:var(--murekkep)}
+.s3 .row .res{color:var(--toprak)}
+.s3 .row .res::before{background:var(--toprak)}
+.s3 .link path{stroke:rgba(22,24,28,.32)}
+.s3 .caption .a{color:var(--murekkep)}
+.s3 .caption .b{color:var(--gri)}
+
+/* 04 */
+.s4 .net .spoke{stroke:rgba(22,24,28,.45)}
+.s4 .net .node{fill:var(--murekkep)}
+.s4 .net .me{fill:var(--kehribar)}
+.s4 .net .melabel{fill:#F7F5F0}
+.s4 .net .mesh{stroke:var(--kehribar)}
+.s4 .ask .q{color:var(--murekkep)}
+.s4 .ask .q b{color:var(--kehribar)}
+.s4 .ask .s{color:var(--gri)}
+
+/* 05 */
+.s5 .lacks span{color:#3C3F45;border-color:rgba(22,24,28,.38);background:rgba(255,255,255,.82);
+  box-shadow:0 .3em 1em rgba(22,24,28,.08)}
+.s5 .web{left:13%;right:13%;top:33%}
+.s5 .brand{bottom:9%}
+.s5 .web line{stroke:var(--kehribar)}
+.s5 .web circle{fill:var(--kehribar)}
+.s5 .brand{color:var(--murekkep)}
+.s5 .brand small{color:var(--gri)}
+
+/* 06 */
+.s6 .beam{display:none}
+.s6 .horizon{background:radial-gradient(50% 60% at 50% 0%,rgba(200,134,13,.22),transparent 70%)}
+.s6 .three span{color:var(--murekkep)}
+.s6 .three span em{color:var(--kehribar)}
+.s6 .sum{color:var(--murekkep)}
+.s6 .sum u{color:var(--kehribar)}
+.s6 .sum u::after{background:var(--kehribar)}
+"""
+
 FACE = """
 @font-face{font-family:'Anton';src:url('FDIR/Anton-Regular.ttf')}
 @font-face{font-family:'Bebas Neue';src:url('FDIR/BebasNeue-Regular.ttf')}
@@ -75,7 +149,8 @@ body{{margin:0;background:transparent}}
 .stage{{position:relative;width:1080px;height:1920px;overflow:hidden;border-radius:0;box-shadow:none;
   font-size:43.6px;aspect-ratio:auto;background:{'transparent' if alpha else 'var(--ink)'}}}
 .scene{{opacity:1;transition:none;display:block}}
-{'.scene{background:none}.scene .grain{display:none}' if alpha else ''}
+{TEMA}
+{'.scene,.scene::before,.scene::after{background:none !important}.scene .grain{display:none}' if alpha else ''}
 .s6 .card{{display:none}}
 {chr(10).join(css)}
 </style>
