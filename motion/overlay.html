@@ -1,0 +1,528 @@
+<meta charset="utf-8">
+<title>overlay</title>
+<style>
+@font-face{font-family:MT;src:url('fonts/Montserrat-900.ttf');font-weight:900}
+@font-face{font-family:MT;src:url('fonts/Montserrat-800.ttf');font-weight:800}
+@font-face{font-family:MT;src:url('fonts/Montserrat-700.ttf');font-weight:700}
+@font-face{font-family:IN;src:url('fonts/Inter-900.ttf');font-weight:900}
+@font-face{font-family:IN;src:url('fonts/Inter-800.ttf');font-weight:800}
+@font-face{font-family:IN;src:url('fonts/Inter-600.ttf');font-weight:600}
+@font-face{font-family:IN;src:url('fonts/Inter-400.ttf');font-weight:400}
+
+:root{
+  --aqua:#2FE3C8; --aqua2:#8FF7E8; --copper:#E58A46; --alert:#FF5B45;
+  --ink:#06121F; --w:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{width:720px;height:1280px;overflow:hidden;position:relative;
+     font-family:IN,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#stage{position:absolute;inset:0}
+
+/* ---------- utility ---------- */
+.blk{position:absolute;left:46px;right:74px;bottom:180px;transform-origin:0 100%}
+.kick{font:800 22px/1 IN;letter-spacing:.16em;text-transform:uppercase;
+      display:inline-flex;align-items:center;gap:10px;padding:9px 16px;border-radius:999px;
+      background:var(--aqua);color:var(--ink);margin-bottom:16px}
+.kick.alert{background:var(--alert);color:#fff}
+.h1{font:900 56px/1.0 MT;letter-spacing:-.018em;text-transform:uppercase;color:var(--w);
+    text-shadow:0 5px 26px rgba(0,0,0,.6),0 1px 2px rgba(0,0,0,.5)}
+.h1 .wi{display:inline-block;will-change:transform,opacity,filter}
+.sub{font:600 25px/1.32 IN;color:rgba(255,255,255,.92);margin-top:16px;max-width:560px;
+     text-shadow:0 3px 16px rgba(0,0,0,.7)}
+.hlwrap{position:relative;display:inline-block;padding:0 12px;margin-left:-12px}
+.hl{position:absolute;left:0;right:0;top:5%;bottom:9%;background:var(--aqua);
+    border-radius:8px;transform:scaleX(0);transform-origin:0 50%}
+.hlwrap .h1{position:relative}
+
+/* ---------- chrome ---------- */
+#scrim{position:absolute;left:0;right:0;bottom:0;height:520px;opacity:0;
+  background:linear-gradient(to top,rgba(3,10,18,.88) 6%,rgba(3,10,18,.55) 42%,rgba(3,10,18,0) 100%)}
+#prog{position:absolute;left:0;top:0;height:5px;width:100%;background:rgba(255,255,255,.16)}
+#progBar{position:absolute;left:0;top:0;height:100%;width:0;
+  background:linear-gradient(90deg,var(--aqua),var(--aqua2))}
+#progDot{position:absolute;top:-2.5px;left:0;width:10px;height:10px;border-radius:50%;
+  background:#fff;box-shadow:0 0 12px 3px rgba(47,227,200,.85);margin-left:-5px}
+#brand{position:absolute;left:46px;top:132px;display:flex;align-items:center;gap:11px;opacity:0}
+#brandMark{width:34px;height:34px;border-radius:10px;background:var(--aqua);
+  display:flex;align-items:center;justify-content:center}
+#brandName{font:800 24px/1 IN;letter-spacing:.2em;color:#fff;text-transform:uppercase;
+  text-shadow:0 2px 14px rgba(0,0,0,.8)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0}
+#vig{position:absolute;inset:0;opacity:0;box-shadow:inset 0 0 200px 66px rgba(255,91,69,.6)}
+#swipe{position:absolute;inset:-10% -60%;opacity:0;
+  background:linear-gradient(102deg,transparent 42%,rgba(143,247,232,.55) 50%,transparent 58%)}
+#cal{position:absolute;inset:0;width:720px;height:1280px;overflow:visible}
+.ico{position:static;display:block}
+
+/* ---------- step ---------- */
+.stepRow{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.stepNo{width:46px;height:46px;border-radius:13px;background:var(--copper);color:#fff;
+  font:900 24px/46px MT;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.45)}
+
+/* ---------- pill chip ---------- */
+.pillRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{font:800 25px/1 IN;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);
+  background:#fff;padding:13px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.pill.g{background:var(--aqua)}
+.arw{font:900 26px/1 IN;color:var(--aqua2);text-shadow:0 2px 10px rgba(0,0,0,.6)}
+
+/* ---------- counter ---------- */
+#cntWrap{display:flex;align-items:flex-end;gap:14px;margin-bottom:18px}
+#cntNum{font:900 76px/.9 MT;color:var(--aqua);letter-spacing:-.03em;
+  text-shadow:0 6px 28px rgba(0,0,0,.6)}
+#cntLbl{font:800 25px/1.16 IN;padding-bottom:6px;color:#fff;text-transform:uppercase;letter-spacing:.08em;
+  text-shadow:0 3px 14px rgba(0,0,0,.75)}
+
+/* ---------- benefits ---------- */
+.bRow{display:flex;align-items:center;gap:15px;margin-top:15px;will-change:transform,opacity}
+.bChk{width:40px;height:40px;border-radius:12px;background:var(--aqua);flex:0 0 40px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.bTxt{font:700 27px/1.22 IN;color:#fff;text-shadow:0 3px 16px rgba(0,0,0,.75)}
+
+/* ---------- endcard ---------- */
+#end{position:absolute;inset:0;opacity:0}
+#endBg{position:absolute;inset:0;background:
+  radial-gradient(120% 72% at 50% 44%,rgba(6,18,31,.42) 0%,rgba(6,18,31,.80) 60%,rgba(4,12,22,.92) 100%)}
+#endIn{position:absolute;left:0;right:0;top:398px;text-align:center;padding:0 50px}
+#endMark{width:76px;height:76px;border-radius:22px;background:var(--aqua);margin:0 auto 26px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 14px 46px rgba(47,227,200,.4)}
+#endName{font:900 68px/1 MT;letter-spacing:.06em;color:#fff;text-transform:uppercase}
+#endTag{font:700 25px/1.35 IN;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--aqua2);margin-top:16px}
+#endRule{width:0;height:2px;background:linear-gradient(90deg,transparent,var(--aqua),transparent);
+  margin:30px auto 30px}
+#cta{position:relative;display:inline-flex;align-items:center;gap:14px;overflow:hidden;
+  background:var(--aqua);color:var(--ink);font:800 31px/1 MT;letter-spacing:.02em;
+  padding:22px 40px;border-radius:999px;box-shadow:0 16px 46px rgba(47,227,200,.38)}
+#ctaShine{position:absolute;top:-60%;bottom:-60%;width:90px;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);
+  transform:translateX(-200px) skewX(-18deg)}
+#endFine{font:600 21px/1.4 IN;color:rgba(255,255,255,.72);margin-top:26px}
+</style>
+
+<div id="stage">
+  <div id="scrim"></div>
+  <div id="prog"><div id="progBar"></div><div id="progDot"></div></div>
+
+  <!-- ===== HOOK ===== -->
+  <div class="blk" id="hook">
+    <div class="kick" id="hookKick"><span>MUTFAK TESTİ</span></div>
+    <div class="h1" id="hookL1" data-text="MUSLUKTAN AKAN"></div>
+    <div class="hlwrap" id="hookHw"><i class="hl" id="hookHl"></i>
+      <div class="h1" id="hookL2" data-text="SU TEMİZ Mİ?"></div></div>
+  </div>
+
+  <!-- ===== STEP 1 ===== -->
+  <div class="blk" id="step1">
+    <div class="stepRow"><div class="stepNo" id="s1no">01</div>
+      <div class="kick" id="s1kick" style="margin:0"><span>KURULUM</span></div></div>
+    <div class="h1" id="s1L1" data-text="MUSLUĞA TAK"></div>
+    <div class="sub" id="s1sub">Alet yok, tesisatçı yok. Geçir, sıkıştır, bitti.</div>
+  </div>
+
+  <!-- ===== USE ===== -->
+  <div class="blk" id="useB">
+    <div class="pillRow"><div class="pill g" id="useP">SÜZÜLMÜŞ SUYLA YIKA</div></div>
+  </div>
+
+  <!-- ===== PROOF ===== -->
+  <div class="blk" id="proof">
+    <div class="kick alert" id="pKick"><span>GÜNLER SONRA</span></div>
+    <div class="h1" id="pL1" data-text="FİLTREDE KALANLAR"></div>
+    <div class="sub" id="pSub">Gözle görülür kum, tortu ve pas kalıntısı.</div>
+  </div>
+
+  <!-- ===== REUSE ===== -->
+  <div class="blk" id="reuse">
+    <div id="cntWrap"><div id="cntNum">0</div><div id="cntLbl">GÜNE KADAR<br>TEK FİLTRE</div></div>
+    <div class="pillRow">
+      <div class="pill" id="r1">YIKA</div><div class="arw" id="ra1">→</div>
+      <div class="pill" id="r2">SIK</div><div class="arw" id="ra2">→</div>
+      <div class="pill g" id="r3">TEKRAR TAK</div>
+    </div>
+  </div>
+
+  <!-- ===== BENEFITS ===== -->
+  <div class="blk" id="ben">
+    <div class="bRow"><div class="bChk">
+      <svg viewBox="0 0 24 24" width="24" height="24" class="ico">
+      <path d="M4 12.5 L9.5 18 L20 6.5" fill="none" stroke="#06121F" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="bTxt">Kum, tortu ve pas kalıntısını tutar</div></div>
+    <div class="bRow"><div class="bChk">
+      <svg viewBox="0 0 24 24" width="24" height="24" class="ico">
+      <path d="M4 12.5 L9.5 18 L20 6.5" fill="none" stroke="#06121F" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="bTxt">Sebze, meyve ve pirinç yıkamaya uygun</div></div>
+    <div class="bRow"><div class="bChk">
+      <svg viewBox="0 0 24 24" width="24" height="24" class="ico">
+      <path d="M4 12.5 L9.5 18 L20 6.5" fill="none" stroke="#06121F" stroke-width="3.2"
+            stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="bTxt">Her standart musluk ucuna takılır</div></div>
+  </div>
+
+  <!-- ===== SONUÇ ÇİPİ ===== -->
+  <div class="blk" id="clearB">
+    <div class="pillRow"><div class="pill g" id="clearP">BERRAK, TORTUSUZ SU</div></div>
+  </div>
+
+  <!-- ===== SVG CALLOUTS ===== -->
+  <svg id="cal" viewBox="0 0 720 1280">
+    <g id="ringG" opacity="0">
+      <circle id="ringPulse" cx="350" cy="388" r="90" fill="none"
+              stroke="#2FE3C8" stroke-width="3"/>
+      <circle id="ring" cx="350" cy="388" r="90" fill="none" stroke="#2FE3C8"
+              stroke-width="5" stroke-linecap="round"
+              transform="rotate(-90 350 388)"/>
+    </g>
+    <g id="arrowG" opacity="0">
+      <circle id="arrowRing" fill="none" stroke="#FF5B45" stroke-width="4"/>
+      <path id="arrowS" fill="none" stroke="#06121F" stroke-opacity=".45"
+            stroke-width="13" stroke-linecap="round"/>
+      <path id="arrowP" fill="none" stroke="#FF5B45" stroke-width="7"
+            stroke-linecap="round"/>
+      <path id="arrowH" fill="#FF5B45" stroke="#06121F" stroke-opacity=".35"
+            stroke-width="2"/>
+    </g>
+  </svg>
+
+  <!-- ===== CHROME ===== -->
+  <div id="brand">
+    <div id="brandMark">
+      <svg viewBox="0 0 24 24" width="19" height="19" class="ico">
+        <path d="M12 2.6c4 4.9 6.6 8.2 6.6 11.4A6.6 6.6 0 0 1 5.4 14C5.4 10.8 8 7.5 12 2.6Z"
+              fill="#06121F"/></svg>
+    </div>
+    <div id="brandName">FURN</div>
+  </div>
+  <div id="vig"></div>
+  <div id="swipe"></div>
+  <div id="flash"></div>
+
+  <!-- ===== END CARD ===== -->
+  <div id="end">
+    <div id="endBg"></div>
+    <div id="endIn">
+      <div id="endMark">
+        <svg viewBox="0 0 24 24" width="40" height="40" class="ico">
+          <path d="M12 2.6c4 4.9 6.6 8.2 6.6 11.4A6.6 6.6 0 0 1 5.4 14C5.4 10.8 8 7.5 12 2.6Z"
+                fill="#06121F"/></svg>
+      </div>
+      <div id="endName">FURN</div>
+      <div id="endTag">TEMİZ SU, HER MUSLUKTA</div>
+      <div id="endRule"></div>
+      <div id="ctaWrap"><div id="cta"><i id="ctaShine"></i><span>ŞİMDİ DENE</span><span>→</span></div></div>
+      <div id="endFine">Ücretsiz kargo · 30 gün içinde iade</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Deterministik motion-graphics motoru.
+   Tek giriş noktası: window.setT(saniye)  →  o anın karesini kurar.
+   CSS animasyonu YOK; her şey t'den hesaplanır (kare kare render için).
+   ============================================================ */
+const D = 27.91;                       // kaynak videonun süresi (sn)
+
+/* --- easing --- */
+const cl=(x,a=0,b=1)=>x<a?a:(x>b?b:x);
+const outExpo=x=>x>=1?1:1-Math.pow(2,-10*x);
+const outCubic=x=>1-Math.pow(1-x,3);
+const inOutCubic=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const outBack=(x,s=1.9)=>1+(s+1)*Math.pow(x-1,3)+s*Math.pow(x-1,2);
+const spring=x=>x>=1?1:1-Math.pow(2,-9.5*x)*Math.cos(x*Math.PI*3.1);
+const lerp=(a,b,x)=>a+(b-a)*x;
+
+/* --- zaman aralığı zarfı --- */
+function env(t,a,b,tin=.45,tout=.32){
+  return {on:t>=a&&t<b, i:cl((t-a)/tin), o:cl((b-t)/tout), l:t-a};
+}
+const px=v=>v.toFixed(2)+'px';
+function show(el,on){ el.style.display = on?'':'none'; }
+
+/* --- kelimeleri span'lara böl --- */
+function splitWords(el){
+  el.innerHTML = el.dataset.text.split(' ')
+    .map(w=>'<span class="wi">'+w+'</span>').join(' ');
+  return [...el.querySelectorAll('.wi')];
+}
+const HOOK1=splitWords(hookL1), HOOK2=splitWords(hookL2),
+      S1=splitWords(s1L1),      PL1=splitWords(pL1);
+
+/* --- kelime kelime yükselerek giriş --- */
+function wordsIn(list,p,stag=.11,dy=46){
+  list.forEach((w,i)=>{
+    const q=cl((p-i*stag)/(1-stag*(list.length-1)*.55));
+    const e=spring(q);
+    w.style.opacity=cl(q*1.9);
+    w.style.transform='translate3d(0,'+px((1-e)*dy)+',0) scale('+lerp(.94,1,e).toFixed(4)+')';
+    w.style.filter='blur('+((1-cl(q*2))*7).toFixed(2)+'px)';
+  });
+}
+/* --- blok çıkışı: hafifçe yukarı kayarak sönme --- */
+function blockOut(el,o){
+  const e=outCubic(o);
+  el.style.opacity=e.toFixed(4);
+  el.style.transform='translate3d(0,'+px((1-e)*-26)+',0)';
+}
+
+/* --- SVG yay oku: (tx,ty) hedefini alttan gösterir --- */
+function arrow(tx,ty,grow){
+  const tipY=ty+46, sx=tx-78, sy=ty+250, cx=tx-166, cy=ty+152;
+  const d='M'+sx.toFixed(1)+' '+sy.toFixed(1)+' Q'+cx.toFixed(1)+' '+cy.toFixed(1)+
+          ' '+tx.toFixed(1)+' '+tipY.toFixed(1);
+  arrowP.setAttribute('d',d); arrowS.setAttribute('d',d);
+  const L=arrowP.getTotalLength();               // yolun gerçek uzunluğu
+  [arrowP,arrowS].forEach(el=>{
+    el.setAttribute('stroke-dasharray',L);
+    el.setAttribute('stroke-dashoffset',(L*(1-grow)).toFixed(2));
+  });
+  const a=cl((grow-.74)/.26), h=11*a;
+  arrowH.setAttribute('d','M'+tx+' '+(tipY-4)+' l'+(-h*1.45)+' '+(h*2.15)+
+                         ' l'+(h*1.45)+' '+(-h*.8)+' l'+(h*1.45)+' '+(h*.8)+' Z');
+  arrowH.setAttribute('opacity',a);
+  arrowRing.setAttribute('cx',tx); arrowRing.setAttribute('cy',ty);
+  arrowRing.setAttribute('r',lerp(78,58,outExpo(a)).toFixed(1));
+  arrowRing.setAttribute('opacity',(a*.85).toFixed(3));
+}
+
+/* ============================================================
+   ZAMAN ÇİZELGESİ
+   ============================================================ */
+const T = {
+  hook:[0.30, 4.30],
+  step:[4.55, 8.35],   ring:[6.60, 8.30],
+  use :[8.60,10.30],
+  proof:[10.55,14.45], arw:[11.95,14.35],
+  reuse:[14.70,18.75],
+  ben  :[19.00,23.30],
+  clear:[23.50,24.85],
+  end  :[24.90, D],
+};
+const FLASH=[10.55,24.90], SWIPE=[4.55,14.70,19.00];
+
+window.setT = function(t){
+  /* ---------- ilerleme çubuğu ---------- */
+  const pr=cl(t/D);
+  progBar.style.width=(pr*100).toFixed(3)+'%';
+  progDot.style.left=(pr*100).toFixed(3)+'%';
+  progDot.style.opacity=(pr>0.004&&pr<0.997)?1:0;
+
+  /* ---------- marka rozeti ---------- */
+  {
+    const e=env(t,0.15,T.end[0],.5,.35);
+    show(brand,e.on);
+    if(e.on){
+      const i=outBack(e.i), o=outCubic(e.o);
+      brand.style.opacity=(cl(e.i*1.6)*o).toFixed(4);
+      brand.style.transform='translate3d('+px((1-i)*-40)+',0,0)';
+      brandMark.style.transform='rotate('+((1-i)*-90).toFixed(2)+'deg)';
+    }
+  }
+
+  /* ---------- alt karartma ---------- */
+  {
+    let s=0;
+    for(const k of ['hook','step','use','proof','reuse','ben','clear']){
+      const e=env(t,T[k][0],T[k][1],.5,.4);
+      if(e.on) s=Math.max(s,Math.min(cl(e.i*1.4),outCubic(e.o)));
+    }
+    scrim.style.opacity=(s*.95).toFixed(4);
+  }
+
+  /* ---------- HOOK ---------- */
+  {
+    const e=env(t,T.hook[0],T.hook[1],.95,.42);
+    show(hook,e.on);
+    if(e.on){
+      blockOut(hook,e.o);
+      const k=spring(cl(e.l/.5));
+      hookKick.style.opacity=cl(e.l/.22).toFixed(3);
+      hookKick.style.transform='translate3d('+px((1-k)*-34)+',0,0)';
+      wordsIn(HOOK1,cl((e.l-.16)/.85));
+      wordsIn(HOOK2,cl((e.l-.46)/.85));
+      const hp=inOutCubic(cl((e.l-.78)/.42));
+      hookHl.style.transform='scaleX('+hp.toFixed(4)+')';
+      const dark=hp>.55;
+      hookL2.style.color=dark?'#06121F':'#fff';
+      hookL2.style.textShadow=dark?'none':'0 5px 26px rgba(0,0,0,.6)';
+    }
+  }
+
+  /* ---------- STEP 01 ---------- */
+  {
+    const e=env(t,T.step[0],T.step[1],.9,.4);
+    show(step1,e.on);
+    if(e.on){
+      blockOut(step1,e.o);
+      const n=spring(cl(e.l/.55));
+      s1no.style.transform='scale('+lerp(.2,1,n).toFixed(4)+') rotate('+((1-n)*-40).toFixed(2)+'deg)';
+      s1no.style.opacity=cl(e.l/.2).toFixed(3);
+      const kk=spring(cl((e.l-.14)/.55));
+      s1kick.style.opacity=cl((e.l-.14)/.2).toFixed(3);
+      s1kick.style.transform='translate3d('+px((1-kk)*-28)+',0,0)';
+      wordsIn(S1,cl((e.l-.26)/.85));
+      const sp=outExpo(cl((e.l-.62)/.6));
+      s1sub.style.opacity=sp.toFixed(3);
+      s1sub.style.transform='translate3d(0,'+px((1-sp)*18)+',0)';
+    }
+  }
+
+  /* ---------- filtre halkası ---------- */
+  {
+    const e=env(t,T.ring[0],T.ring[1],.6,.32);
+    show(ringG,e.on);
+    if(e.on){
+      const d=outExpo(cl(e.l/.7)), C=2*Math.PI*90;
+      ring.setAttribute('stroke-dasharray',C);
+      ring.setAttribute('stroke-dashoffset',C*(1-d));
+      ringG.setAttribute('opacity',(cl(e.l/.25)*outCubic(e.o)).toFixed(3));
+      const ph=(e.l%1.15)/1.15;
+      ringPulse.setAttribute('r',(90+ph*40).toFixed(2));
+      ringPulse.setAttribute('opacity',((1-ph)*.5*cl((e.l-.5)/.4)).toFixed(3));
+    }
+  }
+
+  /* ---------- KULLANIM çipi ---------- */
+  {
+    const e=env(t,T.use[0],T.use[1],.5,.3);
+    show(useB,e.on);
+    if(e.on){
+      blockOut(useB,e.o);
+      const s=spring(cl(e.l/.55));
+      useP.style.transform='translate3d('+px((1-s)*-52)+',0,0) rotate('+((1-s)*-3).toFixed(2)+'deg)';
+      useP.style.opacity=cl(e.l/.2).toFixed(3);
+    }
+  }
+
+  /* ---------- SONUÇ çipi ---------- */
+  {
+    const e=env(t,T.clear[0],T.clear[1],.5,.3);
+    show(clearB,e.on);
+    if(e.on){
+      blockOut(clearB,e.o);
+      const s2=spring(cl(e.l/.55));
+      clearP.style.transform='translate3d('+px((1-s2)*-52)+',0,0) rotate('+((1-s2)*-3).toFixed(2)+'deg)';
+      clearP.style.opacity=cl(e.l/.2).toFixed(3);
+    }
+  }
+
+  /* ---------- KANIT ---------- */
+  {
+    const e=env(t,T.proof[0],T.proof[1],.9,.42);
+    show(proof,e.on);
+    if(e.on){
+      blockOut(proof,e.o);
+      const k=spring(cl(e.l/.5));
+      pKick.style.opacity=cl(e.l/.2).toFixed(3);
+      pKick.style.transform='translate3d('+px((1-k)*-34)+',0,0)';
+      /* başlıkta ufak darbe (impact) */
+      const imp=Math.exp(-Math.pow((e.l-.42)/.16,2))*.055;
+      pL1.style.transform='scale('+(1+imp).toFixed(4)+')';
+      pL1.style.transformOrigin='0 50%';
+      wordsIn(PL1,cl((e.l-.18)/.85),.13);
+      const sp=outExpo(cl((e.l-.7)/.6));
+      pSub.style.opacity=sp.toFixed(3);
+      pSub.style.transform='translate3d(0,'+px((1-sp)*18)+',0)';
+    }
+    /* kırmızı vinyet darbesi */
+    const vl=t-T.proof[0];
+    vig.style.opacity=(vl>=0&&vl<1.6?Math.exp(-Math.pow((vl-.22)/.34,2))*.85:0).toFixed(4);
+  }
+
+  /* ---------- kanıt oku (uç nokta kayıyor) ---------- */
+  {
+    const e=env(t,T.arw[0],T.arw[1],.55,.3);
+    show(arrowG,e.on);
+    if(e.on){
+      const k=cl(e.l/(T.arw[1]-T.arw[0]));
+      const bob=Math.sin(e.l*4.2)*5;
+      arrow(lerp(352,362,k), lerp(636,548,k)+bob, outExpo(cl(e.l/.65)));
+      arrowG.setAttribute('opacity',(cl(e.l/.2)*outCubic(e.o)).toFixed(3));
+    }
+  }
+
+  /* ---------- YENİDEN KULLAN ---------- */
+  {
+    const e=env(t,T.reuse[0],T.reuse[1],.9,.4);
+    show(reuse,e.on);
+    if(e.on){
+      blockOut(reuse,e.o);
+      const c=outExpo(cl(e.l/1.25));
+      cntNum.textContent=Math.round(c*30);
+      const pop=spring(cl(e.l/.5));
+      cntWrap.style.opacity=cl(e.l/.18).toFixed(3);
+      cntNum.style.transform='scale('+lerp(.55,1,pop).toFixed(4)+')';
+      cntNum.style.transformOrigin='0 100%';
+      cntLbl.style.opacity=cl((e.l-.25)/.35).toFixed(3);
+      [[r1,.55],[ra1,.72],[r2,.85],[ra2,1.02],[r3,1.15]].forEach(([el,d])=>{
+        const s=spring(cl((e.l-d)/.55));
+        el.style.opacity=cl((e.l-d)/.2).toFixed(3);
+        el.style.transform='translate3d(0,'+px((1-s)*26)+',0) scale('+lerp(.8,1,s).toFixed(4)+')';
+      });
+    }
+  }
+
+  /* ---------- FAYDALAR ---------- */
+  {
+    const e=env(t,T.ben[0],T.ben[1],.9,.4);
+    show(ben,e.on);
+    if(e.on){
+      blockOut(ben,e.o);
+      [...ben.querySelectorAll('.bRow')].forEach((row,i)=>{
+        const s=spring(cl((e.l-i*.28)/.62));
+        row.style.opacity=cl((e.l-i*.28)/.24).toFixed(3);
+        row.style.transform='translate3d('+px((1-s)*-46)+',0,0)';
+        row.querySelector('.bChk').style.transform=
+          'scale('+lerp(.3,1,spring(cl((e.l-i*.28-.1)/.5))).toFixed(4)+')';
+      });
+    }
+  }
+
+  /* ---------- KAPANIŞ KARTI ---------- */
+  {
+    const e=env(t,T.end[0],T.end[1]+1,.7,10);
+    show(end,e.on);
+    if(e.on){
+      end.style.opacity='1';
+      endBg.style.opacity=outCubic(cl(e.l/.55)).toFixed(4);
+      const m=spring(cl((e.l-.12)/.7));
+      endMark.style.opacity=cl((e.l-.12)/.25).toFixed(3);
+      endMark.style.transform='scale('+lerp(.35,1,m).toFixed(4)+') rotate('+((1-m)*-120).toFixed(2)+'deg)';
+      const n=spring(cl((e.l-.3)/.7));
+      endName.style.opacity=cl((e.l-.3)/.25).toFixed(3);
+      endName.style.transform='translate3d(0,'+px((1-n)*30)+',0)';
+      endName.style.letterSpacing=lerp(.22,.06,outExpo(cl((e.l-.3)/.9))).toFixed(3)+'em';
+      const g=outExpo(cl((e.l-.5)/.7));
+      endTag.style.opacity=g.toFixed(3);
+      endTag.style.transform='translate3d(0,'+px((1-g)*18)+',0)';
+      endRule.style.width=px(outExpo(cl((e.l-.6)/.8))*320);
+      const c=spring(cl((e.l-.78)/.75));
+      ctaWrap.style.opacity=cl((e.l-.78)/.25).toFixed(3);
+      const beat=1+Math.max(0,Math.sin((e.l-1.5)*3.4))*.022*cl((e.l-1.5)/.5);
+      cta.style.transform='scale('+(lerp(.72,1,c)*beat).toFixed(4)+')';
+      const sh=((e.l-1.35)%1.9)/1.9;
+      ctaShine.style.transform='translateX('+px(e.l>1.35?lerp(-140,430,sh):-140)+') skewX(-18deg)';
+      const f=outExpo(cl((e.l-1.05)/.7));
+      endFine.style.opacity=(f*.85).toFixed(3);
+      endFine.style.transform='translate3d(0,'+px((1-f)*14)+',0)';
+    }
+  }
+
+  /* ---------- geçiş efektleri ---------- */
+  {
+    let f=0;
+    FLASH.forEach(a=>{ const l=t-a; if(l>=0&&l<.3) f=Math.max(f,(1-l/.3)*.30); });
+    flash.style.opacity=f.toFixed(4);
+    let so=0,sx=-1;
+    SWIPE.forEach(a=>{ const l=t-a; if(l>=0&&l<.55){ so=1; sx=l/.55; } });
+    swipe.style.opacity=so?(Math.sin(sx*Math.PI)*.9).toFixed(3):'0';
+    swipe.style.transform=so?'translateX('+px(lerp(-820,820,inOutCubic(sx)))+')':'';
+  }
+};
+
+window.setT(0);
+document.documentElement.dataset.ready='1';
+</script>
