@@ -1,7 +1,7 @@
 <title>Girişim Senaryosu — Kurgu Katmanı</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,800;1,900&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800;1,900&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,700&display=swap">
 <style>
 
 :root{
@@ -248,20 +248,26 @@ body{margin:0;background:transparent}
   border-radius:0;box-shadow:none;font-size:43.6px;aspect-ratio:auto}
 .scene{transition:none}
 .scene .grain{display:none}
-.s6 .card{display:none}                      /* kendi kapanış kartları var */
+.s6 .card{display:none}
 
-.cap{position:absolute;left:7%;right:7%;top:68%;text-align:center;z-index:20;
-  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.22em}
-.cap .k{display:inline-block;font-family:"Archivo",sans-serif;font-weight:800;font-size:76px;
-  letter-spacing:-.025em;color:#fff;line-height:1.16;
-  text-shadow:0 6px 22px rgba(0,0,0,.75),0 2px 6px rgba(0,0,0,.6)}
-.cap .k.gold{color:#F2B44B;font-weight:900;font-size:86px;
-  text-shadow:0 6px 26px rgba(0,0,0,.8),0 0 26px rgba(242,180,75,.35)}
-.cap .k.neg{color:#FF8A3D;font-weight:900;font-style:italic}
+.cap{position:absolute;left:6%;right:6%;top:66%;z-index:20;
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:.06em .24em}
+.cap .k{display:inline-block;white-space:pre;font-family:"Archivo",sans-serif;font-weight:800;
+  font-size:78px;letter-spacing:-.025em;color:#fff;line-height:1.14;
+  text-shadow:0 6px 24px rgba(0,0,0,.8),0 2px 6px rgba(0,0,0,.65)}
+.cap .ch{display:inline-block;will-change:transform}
+.cap .k.gold{font-family:"Archivo",sans-serif;font-weight:900;font-size:92px;color:#F2B44B;
+  text-shadow:0 6px 26px rgba(0,0,0,.85),0 0 30px rgba(242,180,75,.4)}
+.cap .k.neg{font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;font-size:104px;
+  letter-spacing:.02em;color:#FF8A3D;line-height:1}
 .cap .k.italic{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;
-  font-size:70px;color:#F2F1ED;letter-spacing:0}
-.cap .k.box{background:#F2B44B;color:#0A0C10;font-weight:800;font-size:74px;
-  padding:.12em .32em;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+  font-size:74px;letter-spacing:0;color:#F4F2ED}
+.cap .k.box{font-family:"Archivo",sans-serif;font-weight:800;font-size:74px;color:#0A0C10;
+  background:#F2B44B;padding:.1em .26em;border-radius:12px;text-shadow:none;
+  box-shadow:0 12px 34px rgba(0,0,0,.6)}
+.cap .k.punch{font-family:"Anton",Impact,sans-serif;font-weight:400;font-size:132px;
+  letter-spacing:-.01em;line-height:.94;color:#fff;
+  text-shadow:0 10px 40px rgba(0,0,0,.9),0 0 40px rgba(242,180,75,.35)}
 
 </style>
 
@@ -370,68 +376,76 @@ body{margin:0;background:transparent}
 
 <script>
 
-const CAPS = [{"t": 0.1, "d": 1.37, "w": [{"s": "plain", "t": "Girişimcilikte"}, {"s": "plain", "t": "çoğu"}, {"s": "plain", "t": "insan"}]}, {"t": 1.47, "d": 1.06, "w": [{"s": "plain", "t": "odağı"}, {"s": "neg", "t": "yanlış"}, {"s": "plain", "t": "yerde."}]}, {"t": 2.53, "d": 0.95, "w": [{"s": "plain", "t": "Herkes"}, {"s": "plain", "t": "daha"}, {"s": "plain", "t": "fazla"}]}, {"t": 3.48, "d": 1.06, "w": [{"s": "gold", "t": "satışın,"}, {"s": "plain", "t": "daha"}, {"s": "plain", "t": "fazla"}]}, {"t": 4.53, "d": 0.9, "w": [{"s": "gold", "t": "reklamın"}, {"s": "plain", "t": "ve"}, {"s": "plain", "t": "daha"}]}, {"t": 5.43, "d": 1.37, "w": [{"s": "plain", "t": "fazla"}, {"s": "gold", "t": "sermayenin"}, {"s": "plain", "t": "peşinde."}]}, {"t": 7.08, "d": 0.85, "w": [{"s": "plain", "t": "Ama"}, {"s": "plain", "t": "hiç"}, {"s": "plain", "t": "kimse"}]}, {"t": 7.93, "d": 1.09, "w": [{"s": "plain", "t": "şunu"}, {"s": "plain", "t": "konuşmuyor."}]}, {"t": 9.02, "d": 1.76, "w": [{"s": "box", "t": "Bir şirketi büyüten sadece"}]}, {"t": 10.77, "d": 1.03, "w": [{"s": "box", "t": "para değildir."}]}, {"t": 11.8, "d": 1.27, "w": [{"s": "gold", "t": "Sistemdir,"}, {"s": "gold", "t": "ekiptir,"}]}, {"t": 13.07, "d": 0.91, "w": [{"s": "gold", "t": "network'tür."}]}, {"t": 14.1, "d": 0.98, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "girişimcilik"}, {"s": "plain", "t": "tek"}]}, {"t": 15.08, "d": 0.9, "w": [{"s": "plain", "t": "başına"}, {"s": "plain", "t": "yapılacak"}, {"s": "plain", "t": "bir"}]}, {"t": 15.98, "d": 0.47, "w": [{"s": "plain", "t": "iş"}, {"s": "plain", "t": "değil."}]}, {"t": 16.45, "d": 0.9, "w": [{"s": "plain", "t": "İlk"}, {"s": "plain", "t": "girişimimde"}, {"s": "plain", "t": "bunu"}]}, {"t": 17.35, "d": 0.77, "w": [{"s": "plain", "t": "çok"}, {"s": "plain", "t": "sert"}, {"s": "plain", "t": "yaşadım."}]}, {"t": 18.12, "d": 1.03, "w": [{"s": "plain", "t": "Durmadan"}, {"s": "plain", "t": "çalışıyordum."}]}, {"t": 19.14, "d": 1.24, "w": [{"s": "italic", "t": "Ve bir noktadan sonra şunu"}]}, {"t": 20.38, "d": 0.6, "w": [{"s": "italic", "t": "fark ettim."}]}, {"t": 21.1, "d": 1.39, "w": [{"s": "plain", "t": "Sorun"}, {"s": "plain", "t": "yetersiz"}, {"s": "plain", "t": "çalışmak"}]}, {"t": 22.49, "d": 0.69, "w": [{"s": "neg", "t": "değilmiş."}]}, {"t": 23.18, "d": 1.45, "w": [{"s": "box", "t": "Sorun yalnız çalışmak."}]}, {"t": 24.63, "d": 1.1, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "doğru"}, {"s": "gold", "t": "sistem"}]}, {"t": 25.73, "d": 1.27, "w": [{"s": "plain", "t": "yoksa"}, {"s": "plain", "t": "işler"}, {"s": "plain", "t": "büyüdükçe"}]}, {"t": 27.0, "d": 0.98, "w": [{"s": "plain", "t": "karmaşıklaşır."}]}, {"t": 28.0, "d": 1.13, "w": [{"s": "plain", "t": "Doğru"}, {"s": "gold", "t": "ekip"}, {"s": "plain", "t": "yoksa"}]}, {"t": 29.13, "d": 0.87, "w": [{"s": "plain", "t": "en"}, {"s": "plain", "t": "iyi"}, {"s": "plain", "t": "fikir"}]}, {"t": 30.0, "d": 1.13, "w": [{"s": "plain", "t": "bile"}, {"s": "neg", "t": "ilerlemez."}]}, {"t": 31.13, "d": 1.2, "w": [{"s": "plain", "t": "Doğru"}, {"s": "gold", "t": "çevre"}, {"s": "plain", "t": "yoksa"}]}, {"t": 32.33, "d": 1.26, "w": [{"s": "plain", "t": "aynı"}, {"s": "plain", "t": "hatayı"}, {"s": "plain", "t": "tekrar"}]}, {"t": 33.59, "d": 1.33, "w": [{"s": "plain", "t": "tekrar"}, {"s": "plain", "t": "yaparsınız."}]}, {"t": 35.04, "d": 0.71, "w": [{"s": "plain", "t": "Artık"}, {"s": "plain", "t": "bir"}, {"s": "plain", "t": "işe"}]}, {"t": 35.75, "d": 1.17, "w": [{"s": "plain", "t": "başlarken"}, {"s": "plain", "t": "ilk"}, {"s": "plain", "t": "baktığım"}]}, {"t": 36.91, "d": 0.46, "w": [{"s": "plain", "t": "şey"}, {"s": "plain", "t": "şu:"}]}, {"t": 37.37, "d": 1.47, "w": [{"s": "box", "t": "Bu yapı bensiz çalışabilir"}]}, {"t": 38.84, "d": 0.3, "w": [{"s": "box", "t": "mi?"}]}, {"t": 39.14, "d": 1.32, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "gerçek"}, {"s": "plain", "t": "girişimcilik"}]}, {"t": 40.46, "d": 0.76, "w": [{"s": "plain", "t": "her"}, {"s": "plain", "t": "işi"}, {"s": "plain", "t": "kendin"}]}, {"t": 41.22, "d": 0.76, "w": [{"s": "plain", "t": "yapmak"}, {"s": "neg", "t": "değil."}]}, {"t": 42.02, "d": 1.03, "w": [{"s": "plain", "t": "Doğru"}, {"s": "gold", "t": "sistemi,"}]}, {"t": 43.05, "d": 1.22, "w": [{"s": "plain", "t": "doğru"}, {"s": "gold", "t": "insanları"}, {"s": "plain", "t": "ve"}]}, {"t": 44.28, "d": 1.42, "w": [{"s": "plain", "t": "doğru"}, {"s": "gold", "t": "ağı"}, {"s": "plain", "t": "kurabilmek."}]}, {"t": 45.69, "d": 1.03, "w": [{"s": "plain", "t": "Zaten"}, {"s": "plain", "t": "bu"}, {"s": "plain", "t": "yüzden"}]}, {"t": 46.72, "d": 1.61, "w": [{"s": "box", "t": "Anadolu Girişim Ağı'nı"}]}, {"t": 48.34, "d": 0.64, "w": [{"s": "plain", "t": "kurdum."}]}, {"t": 49.0, "d": 0.73, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "Anadolu'da"}, {"s": "plain", "t": "çok"}]}, {"t": 49.73, "d": 0.62, "w": [{"s": "plain", "t": "iyi"}, {"s": "plain", "t": "fikirler"}, {"s": "plain", "t": "var."}]}, {"t": 50.35, "d": 0.59, "w": [{"s": "plain", "t": "Ama"}, {"s": "plain", "t": "çoğu"}, {"s": "plain", "t": "insanın"}]}, {"t": 50.94, "d": 0.48, "w": [{"s": "plain", "t": "çevresi"}, {"s": "neg", "t": "yok,"}]}, {"t": 51.42, "d": 0.76, "w": [{"s": "plain", "t": "yol"}, {"s": "plain", "t": "gösterecek"}, {"s": "plain", "t": "insanı"}]}, {"t": 52.18, "d": 1.0, "w": [{"s": "neg", "t": "yok,"}, {"s": "plain", "t": "tecrübe"}, {"s": "plain", "t": "paylaşabileceği"}]}, {"t": 53.19, "d": 0.35, "w": [{"s": "plain", "t": "ağı"}, {"s": "neg", "t": "yok."}]}, {"t": 53.53, "d": 1.31, "w": [{"s": "italic", "t": "İnsanlar çoğu zaman fikirden değil,"}]}, {"t": 54.85, "d": 0.93, "w": [{"s": "italic", "t": "yalnızlıktan kaybediyor."}]}, {"t": 56.24, "d": 0.65, "w": [{"s": "plain", "t": "Ben"}, {"s": "plain", "t": "artık"}, {"s": "plain", "t": "şuna"}]}, {"t": 56.89, "d": 1.17, "w": [{"s": "plain", "t": "inanıyorum."}, {"s": "plain", "t": "Doğru"}, {"s": "gold", "t": "network,"}]}, {"t": 58.07, "d": 0.7, "w": [{"s": "plain", "t": "doğru"}, {"s": "gold", "t": "sistem"}, {"s": "plain", "t": "ve"}]}, {"t": 58.76, "d": 0.57, "w": [{"s": "plain", "t": "doğru"}, {"s": "gold", "t": "ekip,"}]}, {"t": 59.33, "d": 1.22, "w": [{"s": "box", "t": "bir girişimcinin en büyük"}]}, {"t": 60.54, "d": 0.7, "w": [{"s": "box", "t": "sermayesidir."}]}];
-const PLACE = [[0, 7.2, 1.0, 5000], [1, 19.8, 1.0, 4200], [2, 24.2, 0.62, 5200], [3, 34.0, 1.0, 5600], [4, 48.6, 1.0, 6000], [5, 56.3, 1.5, 5400]];
+const CAPS  = [{"t": 0.07, "w": [{"s": "plain", "t": "Girişimcilikte"}, {"s": "plain", "t": "çoğu"}, {"s": "plain", "t": "insan"}], "e": 1.6}, {"t": 1.6, "w": [{"s": "plain", "t": "odağı"}], "e": 1.9}, {"t": 1.9, "w": [{"s": "neg", "t": "yanlış"}], "e": 2.38}, {"t": 2.38, "w": [{"s": "plain", "t": "yerde."}, {"s": "plain", "t": "Herkes"}, {"s": "plain", "t": "daha"}], "e": 3.23}, {"t": 3.37, "w": [{"s": "gold", "t": "satışın,"}], "e": 3.92}, {"t": 3.92, "w": [{"s": "plain", "t": "daha"}, {"s": "plain", "t": "fazla"}], "e": 4.36}, {"t": 4.36, "w": [{"s": "gold", "t": "reklamın"}], "e": 4.74}, {"t": 4.74, "w": [{"s": "plain", "t": "ve"}, {"s": "plain", "t": "daha"}, {"s": "plain", "t": "fazla"}], "e": 5.49}, {"t": 5.49, "w": [{"s": "gold", "t": "sermayenin"}], "e": 5.88}, {"t": 5.88, "w": [{"s": "plain", "t": "peşinde."}, {"s": "plain", "t": "Ama"}, {"s": "plain", "t": "hiç"}], "e": 6.52}, {"t": 6.52, "w": [{"s": "plain", "t": "kimse"}, {"s": "plain", "t": "şunu"}, {"s": "plain", "t": "konuşmuyor."}], "e": 7.91}, {"t": 7.91, "w": [{"s": "box", "t": "Bir"}, {"s": "box", "t": "şirketi"}, {"s": "box", "t": "büyüten"}, {"s": "box", "t": "sadece"}], "e": 9.81}, {"t": 9.81, "w": [{"s": "box", "t": "para"}, {"s": "box", "t": "değildir."}], "e": 10.65}, {"t": 10.65, "w": [{"s": "gold", "t": "Sistemdir,"}, {"s": "gold", "t": "ekiptir,"}], "e": 11.61}, {"t": 11.61, "w": [{"s": "gold", "t": "network'tür."}], "e": 12.1}, {"t": 12.1, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "girişimcilik"}, {"s": "plain", "t": "tek"}], "e": 12.99}, {"t": 12.99, "w": [{"s": "plain", "t": "başına"}, {"s": "plain", "t": "yapılacak"}, {"s": "plain", "t": "bir"}], "e": 14.28}, {"t": 14.49, "w": [{"s": "plain", "t": "İlk"}, {"s": "plain", "t": "girişimimde"}, {"s": "plain", "t": "bunu"}], "e": 15.52}, {"t": 15.52, "w": [{"s": "plain", "t": "çok"}, {"s": "plain", "t": "sert"}, {"s": "plain", "t": "yaşadım."}], "e": 16.41}, {"t": 16.41, "w": [{"s": "plain", "t": "Durmadan"}, {"s": "plain", "t": "çalışıyordum."}], "e": 17.63}, {"t": 17.63, "w": [{"s": "italic", "t": "Ve"}, {"s": "italic", "t": "bir"}, {"s": "italic", "t": "noktadan"}, {"s": "italic", "t": "sonra"}, {"s": "italic", "t": "şunu"}], "e": 18.73}, {"t": 18.73, "w": [{"s": "italic", "t": "fark"}, {"s": "italic", "t": "ettim."}], "e": 19.08}, {"t": 19.08, "w": [{"s": "plain", "t": "Sorun"}, {"s": "plain", "t": "yetersiz"}, {"s": "plain", "t": "çalışmak"}], "e": 20.37}, {"t": 20.37, "w": [{"s": "neg", "t": "değilmiş."}], "e": 21.06}, {"t": 21.06, "w": [{"s": "punch", "t": "Sorun"}, {"s": "punch", "t": "yalnız"}, {"s": "punch", "t": "çalışmak."}], "e": 22.87}, {"t": 22.87, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "doğru"}], "e": 23.49}, {"t": 23.49, "w": [{"s": "gold", "t": "sistem"}], "e": 23.85}, {"t": 23.85, "w": [{"s": "plain", "t": "yoksa"}, {"s": "plain", "t": "işler"}, {"s": "plain", "t": "büyüdükçe"}], "e": 24.93}, {"t": 24.93, "w": [{"s": "plain", "t": "karmaşıklaşır."}, {"s": "plain", "t": "Doğru"}], "e": 25.88}, {"t": 25.88, "w": [{"s": "gold", "t": "ekip"}], "e": 26.38}, {"t": 26.38, "w": [{"s": "plain", "t": "yoksa"}, {"s": "plain", "t": "en"}, {"s": "plain", "t": "iyi"}], "e": 27.03}, {"t": 27.03, "w": [{"s": "plain", "t": "fikir"}, {"s": "plain", "t": "bile"}], "e": 27.55}, {"t": 27.55, "w": [{"s": "neg", "t": "ilerlemez."}], "e": 27.9}, {"t": 27.9, "w": [{"s": "plain", "t": "Doğru"}], "e": 28.18}, {"t": 28.28, "w": [{"s": "plain", "t": "yoksa"}, {"s": "plain", "t": "aynı"}, {"s": "plain", "t": "hatayı"}], "e": 29.68}, {"t": 29.68, "w": [{"s": "plain", "t": "tekrar"}, {"s": "plain", "t": "tekrar"}, {"s": "plain", "t": "yaparsınız."}], "e": 30.98}, {"t": 30.98, "w": [{"s": "plain", "t": "Ve"}, {"s": "plain", "t": "bir"}, {"s": "plain", "t": "gün"}], "e": 31.5}, {"t": 31.5, "w": [{"s": "plain", "t": "girişimciliğe"}, {"s": "plain", "t": "olan"}, {"s": "plain", "t": "bakış"}], "e": 32.51}, {"t": 32.51, "w": [{"s": "plain", "t": "açım"}, {"s": "plain", "t": "tamamen"}, {"s": "plain", "t": "değişti."}], "e": 33.6}, {"t": 33.6, "w": [{"s": "plain", "t": "Artık"}, {"s": "plain", "t": "bir"}, {"s": "plain", "t": "işe"}], "e": 34.44}, {"t": 34.44, "w": [{"s": "plain", "t": "başlarken"}, {"s": "plain", "t": "ilk"}, {"s": "plain", "t": "baktığım"}], "e": 35.54}, {"t": 35.54, "w": [{"s": "plain", "t": "şey"}, {"s": "plain", "t": "şu:"}], "e": 35.86}, {"t": 35.86, "w": [{"s": "box", "t": "Bu"}, {"s": "box", "t": "yapı"}, {"s": "box", "t": "bensiz"}, {"s": "box", "t": "çalışabilir"}], "e": 37.6}, {"t": 37.8, "w": [{"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "gerçek"}, {"s": "plain", "t": "girişimcilik"}], "e": 39.63}, {"t": 39.63, "w": [{"s": "plain", "t": "her"}, {"s": "plain", "t": "işi"}, {"s": "plain", "t": "kendin"}], "e": 41.31}, {"t": 41.31, "w": [{"s": "plain", "t": "yapmak"}], "e": 41.59}, {"t": 41.59, "w": [{"s": "neg", "t": "değil."}], "e": 42.02}, {"t": 42.23, "w": [{"s": "gold", "t": "sistemi,"}], "e": 42.65}, {"t": 42.65, "w": [{"s": "plain", "t": "doğru"}], "e": 42.9}, {"t": 42.9, "w": [{"s": "gold", "t": "insanları"}], "e": 43.28}, {"t": 43.28, "w": [{"s": "plain", "t": "ve"}, {"s": "plain", "t": "doğru"}], "e": 43.51}, {"t": 43.51, "w": [{"s": "gold", "t": "ağı"}], "e": 43.82}, {"t": 43.82, "w": [{"s": "plain", "t": "kurabilmek."}, {"s": "plain", "t": "Zaten"}, {"s": "plain", "t": "bu"}], "e": 44.59}, {"t": 44.59, "w": [{"s": "plain", "t": "yüzden"}, {"s": "plain", "t": "de"}], "e": 44.88}, {"t": 44.88, "w": [{"s": "box", "t": "Anadolu"}, {"s": "box", "t": "Girişim"}, {"s": "box", "t": "Ağı'nı"}], "e": 46.07}, {"t": 46.07, "w": [{"s": "plain", "t": "kurdum."}, {"s": "plain", "t": "Çünkü"}, {"s": "plain", "t": "Türkiye'de,"}], "e": 46.96}, {"t": 46.96, "w": [{"s": "plain", "t": "özellikle"}, {"s": "plain", "t": "Anadolu'da"}, {"s": "plain", "t": "çok"}], "e": 48.12}, {"t": 48.12, "w": [{"s": "plain", "t": "iyi"}, {"s": "plain", "t": "fikirler"}, {"s": "plain", "t": "var."}], "e": 48.83}, {"t": 48.83, "w": [{"s": "plain", "t": "Ama"}, {"s": "plain", "t": "çoğu"}, {"s": "plain", "t": "insanın"}], "e": 49.57}, {"t": 49.57, "w": [{"s": "plain", "t": "çevresi"}], "e": 50.13}, {"t": 50.13, "w": [{"s": "plain", "t": "yol"}, {"s": "plain", "t": "gösterecek"}, {"s": "plain", "t": "insanı"}], "e": 51.31}, {"t": 51.4, "w": [{"s": "plain", "t": "tecrübe"}, {"s": "plain", "t": "paylaşabileceği"}, {"s": "plain", "t": "ağı"}], "e": 52.84}, {"t": 52.84, "w": [{"s": "italic", "t": "İnsanlar"}, {"s": "italic", "t": "çoğu"}, {"s": "italic", "t": "zaman"}, {"s": "italic", "t": "fikirden"}, {"s": "italic", "t": "değil,"}], "e": 54.59}, {"t": 54.59, "w": [{"s": "italic", "t": "yalnızlıktan"}, {"s": "italic", "t": "kaybediyor."}], "e": 56.26}, {"t": 56.26, "w": [{"s": "plain", "t": "Ben"}, {"s": "plain", "t": "artık"}, {"s": "plain", "t": "şuna"}], "e": 56.77}, {"t": 56.77, "w": [{"s": "plain", "t": "inanıyorum."}, {"s": "plain", "t": "Doğru"}], "e": 57.63}, {"t": 57.63, "w": [{"s": "gold", "t": "network,"}], "e": 58.41}, {"t": 58.41, "w": [{"s": "plain", "t": "doğru"}], "e": 58.9}, {"t": 59.1, "w": [{"s": "plain", "t": "ve"}, {"s": "plain", "t": "doğru"}], "e": 59.42}, {"t": 59.42, "w": [{"s": "gold", "t": "ekip,"}], "e": 59.92}, {"t": 59.92, "w": [{"s": "box", "t": "bir"}, {"s": "box", "t": "girişimcinin"}, {"s": "box", "t": "en"}, {"s": "box", "t": "büyük"}], "e": 60.81}, {"t": 60.81, "w": [{"s": "box", "t": "sermayesidir."}], "e": 62.11}];
+const PLACE = [[0, 9.6, 1.09, 5000], [2, 24.6, 0.75, 5200], [3, 33.8, 1.0, 5600], [4, 50.0, 1.11, 6000], [5, 57.2, 1.55, 5400]];
 const OUTRO = 59.9;
+const LETTER = {punch:0.030, gold:0.024, box:0.020, neg:0.026};   // harf gecikmeleri
 
 const stage = document.getElementById("stage");
 const scenes = [...stage.querySelectorAll(".scene")];
 const capEl = document.getElementById("cap");
-let capIndex = -1;
+let capIndex = -1, letters = [];
 
-function capAt(t){
-  for(let i = 0; i < CAPS.length; i++){
-    const c = CAPS[i];
-    if(t >= c.t && t < c.t + c.d) return i;
-  }
-  return -1;
-}
 function sceneAt(t){
   for(let i = 0; i < PLACE.length; i++){
     const [idx, start, speed, dur] = PLACE[i];
-    const len = dur/1000/speed;
-    if(t >= start && t < Math.min(start + len, OUTRO)) return i;
+    if(t >= start && t < Math.min(start + dur/1000/speed, OUTRO)) return i;
   }
   return -1;
 }
-function drawCap(i){
-  capEl.textContent = "";
+function capAt(t){
+  for(let i = 0; i < CAPS.length; i++) if(t >= CAPS[i].t && t < CAPS[i].e) return i;
+  return -1;
+}
+function build(i){
+  capEl.textContent = ""; letters = [];
   if(i < 0) return;
-  CAPS[i].w.forEach(w=>{
-    const s = document.createElement("span");
-    s.className = "k" + (w.s === "plain" ? "" : " " + w.s);
-    s.textContent = w.t;
-    capEl.appendChild(s);
+  CAPS[i].w.forEach((w, wi)=>{
+    const span = document.createElement("span");
+    span.className = "k" + (w.s === "plain" ? "" : " " + w.s);
+    const step = LETTER[w.s];
+    if(step){                                   // harf harf gelen biçimler
+      [...w.t].forEach((ch, ci)=>{
+        const c = document.createElement("span");
+        c.className = "ch"; c.textContent = ch;
+        c.dataset.d = (wi * 0.06 + ci * step).toFixed(3);
+        span.appendChild(c); letters.push(c);
+      });
+    } else {
+      span.textContent = w.t;
+      span.dataset.d = (wi * 0.05).toFixed(3);
+      letters.push(span);
+    }
+    capEl.appendChild(span);
   });
 }
+const ease = p => 1 - Math.pow(1 - p, 3);
+
 window.__edit = {
   time(sec){
-    /* --- grafik sahneleri --- */
     const si = sceneAt(sec);
-    scenes.forEach((s,k)=>{ s.style.opacity = "0"; s.style.display = "none"; });
+    scenes.forEach(s=>{ s.style.display = "none"; s.style.opacity = "0"; });
     if(si >= 0){
       const [idx, start, speed, dur] = PLACE[si];
-      const local = (sec - start) * speed * 1000;
       const sc = scenes[idx];
       sc.style.display = "block";
       const endAt = Math.min(start + dur/1000/speed, OUTRO);
-      const fade = Math.min(1, (sec - start)/0.28, (endAt - sec)/0.3);
-      sc.style.opacity = String(Math.max(0, fade));
+      sc.style.opacity = String(Math.max(0, Math.min(1, (sec-start)/0.3, (endAt-sec)/0.32)));
       sc.getAnimations({subtree:true}).forEach(a=>{
-        try{ a.pause(); a.currentTime = local; }catch(e){}
+        try{ a.pause(); a.currentTime = (sec - start) * speed * 1000; }catch(e){}
       });
     }
-    /* --- altyazı: grafik varken ve kapanışta gizli --- */
     const ci = (si >= 0 || sec >= OUTRO) ? -1 : capAt(sec);
-    if(ci !== capIndex){ drawCap(ci); capIndex = ci; }
-    if(ci >= 0){
-      const p = Math.min(1, (sec - CAPS[ci].t)/0.16);
-      const e = 1 - Math.pow(1 - p, 3);
-      capEl.style.opacity = String(e);
-      capEl.style.transform = `translateY(${(1-e)*26}px) scale(${0.94 + e*0.06})`;
-    } else {
-      capEl.style.opacity = "0";
-    }
+    if(ci !== capIndex){ build(ci); capIndex = ci; }
+    if(ci < 0){ capEl.style.opacity = "0"; return; }
+    const c = CAPS[ci], local = sec - c.t, out = Math.min(1, (c.e - sec)/0.12);
+    capEl.style.opacity = String(Math.max(0, out));
+    letters.forEach(el=>{
+      const p = Math.max(0, Math.min(1, (local - (+el.dataset.d)) / 0.20));
+      const e = ease(p);
+      el.style.opacity = String(e);
+      el.style.transform = `translateY(${(1-e)*34}px) scale(${0.86 + e*0.14})`;
+    });
   }
 };
 window.__edit.time(0);
