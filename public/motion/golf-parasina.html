@@ -1,0 +1,465 @@
+<title>Golf Parasına Sahnesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,500;1,700&display=swap">
+
+<style>
+:root{
+  --asphalt:#0F1216;
+  --asphalt-2:#191E24;
+  --paper:#F0EEE8;
+  --paper-2:#E2DFD6;
+  --ink:#12140F;
+  --steel:#8A9099;
+  --plate:#1B54D6;      /* Türk plakasının mavisi */
+  --plate-soft:#4E80EF;
+  --sodium:#F2A33C;     /* sokak lambası / far */
+  --shell:#0A0B0D;
+  --shell-2:#14171B;
+  --shell-line:#242A31;
+  --shell-text:#EFF1F3;
+  --shell-dim:#79828C;
+  --display:"Anton","Arial Narrow",sans-serif;
+  --body:"Barlow","Helvetica Neue",Arial,sans-serif;
+  --serif:"Playfair Display",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:radial-gradient(1100px 640px at 50% -8%,#171C22 0%,transparent 62%),var(--shell);
+  color:var(--shell-text);font-family:var(--body);min-height:100vh;
+}
+.app{max-width:1080px;margin:0 auto;padding:22px 20px 40px;display:flex;flex-direction:column;gap:18px}
+
+.hud{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.hud h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em}
+.hud h1 em{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--plate-soft)}
+.hud .meta{font-family:var(--mono);font-size:11px;color:var(--shell-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  color:var(--shell-dim);background:transparent;border:1px solid var(--shell-line);border-radius:999px;
+  padding:6px 11px;cursor:pointer;display:flex;align-items:center;gap:7px;
+  transition:color .2s,border-color .2s,background .2s;
+}
+.chip b{color:#4C555E;font-weight:500;transition:color .2s}
+.chip:hover{border-color:#39424B;color:var(--shell-text)}
+.chip[aria-current="true"]{background:var(--plate);border-color:var(--plate);color:#fff}
+.chip[aria-current="true"] b{color:#B7CBFA}
+.chip:focus-visible,button:focus-visible,.track:focus-visible{outline:2px solid var(--plate-soft);outline-offset:3px}
+
+.stage-wrap{display:flex;justify-content:center}
+.stage{
+  position:relative;overflow:hidden;aspect-ratio:9/16;height:min(72vh,720px);width:auto;max-width:100%;
+  border-radius:22px;background:var(--asphalt);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.85),0 0 0 1px var(--shell-line);
+  font-size:clamp(9px,calc(min(72vh,720px)/44),17px);user-select:none;
+}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.scene.active{opacity:1}
+.scene.reset *{animation:none !important}
+.scene:not(.active) *,.stage.paused *{animation-play-state:paused !important}
+
+/* far süpürmesi — her sahnenin açılış hareketi */
+.sweep{position:absolute;inset:0;z-index:9;pointer-events:none;overflow:hidden}
+.sweep::after{
+  content:"";position:absolute;top:-20%;bottom:-20%;width:26%;
+  background:linear-gradient(100deg,transparent,rgba(242,163,60,.35),rgba(255,255,255,.75),transparent);
+  transform:translateX(-160%) skewX(-14deg);
+  animation:sweep .7s cubic-bezier(.7,0,.2,1) both;
+}
+@keyframes sweep{
+  0%{transform:translateX(-160%) skewX(-14deg);opacity:1}
+  80%{opacity:1}
+  100%{transform:translateX(460%) skewX(-14deg);opacity:0}
+}
+
+@keyframes rise{from{opacity:0;transform:translateY(8%)}to{opacity:1;transform:none}}
+@keyframes wordUp{from{transform:translateY(110%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes rollIn{from{opacity:0;transform:translateX(-14%)}to{opacity:1;transform:none}}
+@keyframes wheel{to{transform:rotate(360deg)}}
+@keyframes lampGlow{0%,100%{opacity:.45}50%{opacity:.9}}
+
+.mask{display:block;overflow:hidden}
+.eyebrow{
+  font-family:var(--mono);font-size:.82em;letter-spacing:.24em;color:var(--steel);
+}
+.disp{font-family:var(--display);font-weight:400;letter-spacing:.005em;line-height:.92}
+
+/* ---------- SAHNE 1 : İKİNCİ EL ---------- */
+.sc1{background:radial-gradient(120% 80% at 50% 26%,#222932 0%,var(--asphalt) 62%,#07090B 100%)}
+.sc1 .eyebrow{position:absolute;left:8%;top:7.5%;animation:fadeIn .6s ease .2s both}
+.road{
+  position:absolute;left:0;right:0;top:41%;height:.12em;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  animation:barGrow .9s cubic-bezier(.6,0,.2,1) .25s both;
+}
+.car{position:absolute;left:7%;right:7%;top:22%;animation:rollIn .95s cubic-bezier(.2,.85,.2,1) .35s both}
+.car svg{width:100%;display:block}
+.car .lamp{animation:lampGlow 2.4s ease-in-out 1.2s infinite}
+.specs{position:absolute;left:7%;right:7%;top:45%;display:flex;flex-wrap:wrap;gap:.45em}
+.specs span{
+  font-family:var(--mono);font-size:.78em;letter-spacing:.1em;
+  border:1px solid rgba(255,255,255,.22);border-radius:.25em;padding:.4em .6em;color:#C6CCD3;
+  animation:popIn .4s cubic-bezier(.3,1.4,.4,1) both;
+}
+.specs span:nth-child(1){animation-delay:1.05s}
+.specs span:nth-child(2){animation-delay:1.18s}
+.specs span:nth-child(3){animation-delay:1.31s}
+.specs span:nth-child(4){animation-delay:1.44s}
+.hook{position:absolute;left:7%;right:7%;top:53%}
+.hook .l{display:block;font-size:2.85em;color:#fff}
+.hook .l i{display:block;font-style:normal;animation:wordUp .68s cubic-bezier(.2,.9,.2,1) both}
+.hook .l:nth-of-type(1) i{animation-delay:1.7s}
+.hook .l:nth-of-type(2) i{animation-delay:1.86s}
+.hook .l:nth-of-type(3) i{animation-delay:2.02s}
+.hook .l em{font-style:normal;color:var(--sodium)}
+.pricetag{
+  position:absolute;left:7%;right:7%;bottom:9%;border-top:1px solid rgba(255,255,255,.16);
+  padding-top:1em;display:flex;align-items:flex-end;justify-content:space-between;gap:1em;
+  animation:fadeIn .6s ease 2.5s both;
+}
+.pricetag .k{font-family:var(--mono);font-size:.72em;letter-spacing:.16em;color:var(--steel);display:block;margin-bottom:.45em}
+.pricetag .v{font-family:var(--display);font-size:2.5em;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
+.pricetag .note{font-family:var(--mono);font-size:.68em;color:var(--steel);text-align:right;line-height:1.6}
+
+/* ---------- SAHNE 2 : AYNI BÜTÇE ---------- */
+.sc2{background:linear-gradient(180deg,#12161B 0%,#0A0D10 100%)}
+.sc2 .eyebrow{position:absolute;left:8%;top:7.5%;animation:fadeIn .6s ease .2s both}
+.cards{position:absolute;left:7%;right:7%;top:17%;display:flex;flex-direction:column;gap:1.1em}
+.pcard{
+  border:1px solid rgba(255,255,255,.14);border-radius:.6em;padding:1.15em 1.15em 1.25em;
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+}
+.pcard.a{animation:rise .7s cubic-bezier(.2,.85,.2,1) .3s both}
+.pcard.b{animation:rise .7s cubic-bezier(.2,.85,.2,1) 1.5s both;border-color:var(--plate-soft)}
+.pcard .tag{font-family:var(--mono);font-size:.72em;letter-spacing:.18em;color:var(--steel)}
+.pcard.b .tag{color:var(--plate-soft)}
+.pcard .name{font-family:var(--display);font-size:1.85em;color:#fff;margin:.35em 0 .1em;line-height:1}
+.pcard .sub{font-size:.86em;color:#A8B0B8}
+.pcard .amt{
+  font-family:var(--display);font-size:2.35em;color:#fff;margin-top:.5em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.pcard.b .amt{color:var(--plate-soft)}
+.equals{
+  position:relative;align-self:center;margin:-1.45em 0;
+  width:2.6em;height:2.6em;flex:none;border-radius:50%;background:var(--plate);
+  display:flex;align-items:center;justify-content:center;z-index:3;
+  font-family:var(--display);font-size:1.3em;color:#fff;
+  box-shadow:0 0 0 .35em var(--asphalt),0 0 2.2em rgba(27,84,214,.7);
+  animation:popIn .55s cubic-bezier(.3,1.5,.4,1) 1.25s both;
+}
+.sc2 .punch{position:absolute;left:7%;right:7%;bottom:12%}
+.sc2 .punch .l1{display:block;font-family:var(--display);font-size:2.9em;color:#fff;line-height:.95;animation:wordUp .7s cubic-bezier(.2,.9,.2,1) 2.5s both}
+.sc2 .punch .l2{display:block;font-family:var(--serif);font-style:italic;font-size:2.2em;color:var(--sodium);line-height:1.15;animation:wordUp .7s cubic-bezier(.2,.9,.2,1) 2.7s both}
+.sc2 .foot{position:absolute;left:7%;right:7%;bottom:6%;font-family:var(--mono);font-size:.68em;color:var(--steel);letter-spacing:.1em;animation:fadeIn .6s ease 3.1s both}
+
+/* ---------- SAHNE 3 : ARABA ---------- */
+.sc3{background:radial-gradient(130% 90% at 50% 55%,#2A323C 0%,#12161B 55%,#06080A 100%)}
+.beam{
+  position:absolute;left:-30%;right:-30%;top:38%;height:34%;
+  background:radial-gradient(60% 100% at 50% 50%,rgba(242,163,60,.28),transparent 70%);
+  animation:fadeIn 1s ease .2s both;
+}
+.hero-car{position:absolute;left:5%;right:5%;top:32%;animation:rise .95s cubic-bezier(.2,.85,.2,1) .3s both}
+.hero-car svg{width:100%;display:block;filter:drop-shadow(0 1.6em 2em rgba(0,0,0,.6))}
+.hero-car .w{transform-box:fill-box;transform-origin:center;animation:wheel 2.6s linear 1s infinite}
+.plate{
+  position:absolute;left:50%;top:57%;transform:translateX(-50%);
+  display:flex;align-items:stretch;border-radius:.22em;overflow:hidden;
+  border:.09em solid #0C0E10;background:#fff;animation:popIn .5s cubic-bezier(.3,1.4,.4,1) 1.35s both;
+}
+.plate .tr{background:var(--plate);color:#fff;font-family:var(--mono);font-size:.62em;font-weight:500;
+  padding:.5em .45em;display:flex;align-items:flex-end;letter-spacing:.04em}
+.plate .no{color:#0C0E10;font-family:var(--display);font-size:1.05em;letter-spacing:.08em;padding:.3em .55em .22em;display:flex;align-items:center}
+.sc3 .punch{position:absolute;left:7%;right:7%;bottom:14%;text-align:center}
+.sc3 .punch .l1{display:block;font-family:var(--display);font-size:3.1em;color:#fff;line-height:.95;animation:wordUp .72s cubic-bezier(.2,.9,.2,1) 1.9s both}
+.sc3 .punch .l2{display:block;font-family:var(--serif);font-style:italic;font-weight:700;font-size:2.7em;color:#fff;line-height:1.1;animation:wordUp .72s cubic-bezier(.2,.9,.2,1) 2.12s both}
+.sc3 .rule{height:.1em;width:30%;margin:1.2em auto 0;background:var(--sodium);transform-origin:center;animation:barGrow .7s cubic-bezier(.6,0,.2,1) 2.7s both}
+.sc3 .eyebrow{position:absolute;left:0;right:0;bottom:7.5%;text-align:center;animation:fadeIn .6s ease 3s both}
+
+/* ---------- SAHNE 4 : CÜMLE ---------- */
+.sc4{background:linear-gradient(180deg,#FFFFFF 0%,var(--paper) 58%,var(--paper-2) 100%);color:var(--ink)}
+.sc4 .eyebrow{position:absolute;left:8%;top:9%;color:var(--plate);animation:fadeIn .6s ease .2s both}
+.stmt{position:absolute;left:8%;right:8%;top:22%;font-size:2.15em;font-weight:700;line-height:1.18;letter-spacing:-.02em}
+.stmt .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+.stmt .w i{display:inline-block;font-style:normal;animation:wordUp .6s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(.5s + var(--i)*.07s)}
+.stmt .hl{background:linear-gradient(180deg,transparent 64%,rgba(27,84,214,.28) 64%)}
+.stmt .em{font-family:var(--serif);font-style:italic;font-weight:700}
+.sc4 .cta{
+  position:absolute;left:8%;bottom:19%;display:inline-flex;align-items:center;gap:.6em;
+  background:var(--plate);color:#fff;border-radius:.35em;padding:.85em 1.2em;
+  font-family:var(--mono);font-size:.86em;letter-spacing:.06em;
+  animation:popIn .5s cubic-bezier(.3,1.35,.4,1) 2.3s both;
+}
+.sc4 .fine{position:absolute;left:8%;right:8%;bottom:11%;font-family:var(--mono);font-size:.66em;line-height:1.7;color:#6D7278;animation:fadeIn .6s ease 2.7s both}
+.sc4 .mark{position:absolute;right:8%;bottom:19%;font-family:var(--serif);font-style:italic;font-size:1.5em;color:var(--ink);opacity:.55;animation:fadeIn .7s ease 2.5s both}
+
+.grain{position:absolute;inset:0;z-index:12;pointer-events:none;opacity:.055;
+  background-image:radial-gradient(#fff 1px,transparent 1px);background-size:3px 3px}
+.edge{position:absolute;inset:0;z-index:11;pointer-events:none;border-radius:22px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+
+.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px solid var(--shell-line);padding-top:16px}
+button.ctl{
+  appearance:none;border:1px solid var(--shell-line);background:var(--shell-2);color:var(--shell-text);
+  border-radius:999px;height:38px;padding:0 18px;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.08em;cursor:pointer;transition:background .2s,border-color .2s;
+}
+button.ctl:hover{background:#1B2027;border-color:#333B44}
+button.ctl.primary{background:var(--plate);border-color:var(--plate);color:#fff;font-weight:500}
+button.ctl.primary:hover{background:#2A62E4}
+.track{flex:1;min-width:200px;height:6px;border-radius:999px;background:var(--shell-2);position:relative;
+  overflow:hidden;cursor:pointer;border:1px solid var(--shell-line)}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:var(--plate-soft);width:0}
+.track .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--shell);opacity:.9}
+.time{font-family:var(--mono);font-size:12px;color:var(--shell-dim);font-variant-numeric:tabular-nums}
+.note{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--shell-dim);
+  border-top:1px solid var(--shell-line);padding-top:14px;max-width:70ch}
+.note b{color:var(--shell-text);font-weight:500}
+
+@media (prefers-reduced-motion:reduce){.scene *{animation-duration:1ms !important;animation-delay:0ms !important;animation-iteration-count:1 !important}}
+@media (max-width:640px){.stage{height:min(62vh,560px)}.hud{flex-direction:column;align-items:flex-start}}
+</style>
+
+<div class="app">
+  <header class="hud">
+    <div>
+      <h1>bir Golf parasına — <em>sahne kurgusu</em></h1>
+      <div class="meta">9:16 · 4 sahne · 24 sn · döngüde oynar</div>
+    </div>
+    <nav class="chips" id="chips" aria-label="Sahneler"></nav>
+  </header>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+
+      <!-- SAHNE 1 -->
+      <section class="scene sc1">
+        <div class="sweep"></div>
+        <div class="eyebrow">İKİNCİ EL PİYASASI</div>
+        <div class="car">
+          <svg viewBox="0 0 420 150" aria-hidden="true">
+            <path d="M14 112c0-10 6-16 18-19l30-7 34-30c9-8 20-12 33-12h84c14 0 27 5 37 14l26 25 42 8c14 3 22 10 22 20v8H14z" fill="#2E353D"/>
+            <path d="M118 55l24-21c6-5 13-8 21-8h32v29zm82 0V26h34c9 0 17 3 24 9l24 20z" fill="#0E1216"/>
+            <circle class="lamp" cx="26" cy="96" r="9" fill="#F2A33C"/>
+            <circle cx="392" cy="98" r="6" fill="#C4332B"/>
+            <g fill="#0B0E11"><circle cx="112" cy="118" r="27"/><circle cx="318" cy="118" r="27"/></g>
+            <g fill="#6E7883"><circle cx="112" cy="118" r="13"/><circle cx="318" cy="118" r="13"/></g>
+          </svg>
+        </div>
+        <div class="road"></div>
+        <div class="specs">
+          <span>1.6 TDI</span><span>DSG OTOMATİK</span><span>2019</span><span>118.000 KM</span>
+        </div>
+        <div class="hook">
+          <span class="disp l mask"><i>DİZEL OTOMATİK</i></span>
+          <span class="disp l mask"><i>BİR <em>GOLF</em></i></span>
+          <span class="disp l mask"><i>PARASINA…</i></span>
+        </div>
+        <div class="pricetag">
+          <div>
+            <span class="k">PİYASA FİYATI</span>
+            <span class="v" data-count="1450000" data-delay="2700">₺0</span>
+          </div>
+          <div class="note">örnek rakam<br>ilan ortalaması</div>
+        </div>
+      </section>
+
+      <!-- SAHNE 2 -->
+      <section class="scene sc2">
+        <div class="sweep"></div>
+        <div class="eyebrow">AYNI BÜTÇE · İKİ ARABA</div>
+        <div class="cards">
+          <div class="pcard a">
+            <span class="tag">ÖNCE</span>
+            <div class="name">Golf 1.6 TDI</div>
+            <div class="sub">2019 · otomatik · 118.000 km · ikinci el</div>
+            <div class="amt">₺1.450.000</div>
+          </div>
+          <div class="equals">=</div>
+          <div class="pcard b">
+            <span class="tag">SONRA</span>
+            <div class="name">Bu araba</div>
+            <div class="sub">sıfır kilometre · garantili · hemen teslim</div>
+            <div class="amt" data-count="1450000" data-delay="1900">₺0</div>
+          </div>
+        </div>
+        <div class="punch">
+          <span class="mask"><span class="l1">BÜTÇE AYNI,</span></span>
+          <span class="mask"><span class="l2">araba değil.</span></span>
+        </div>
+        <div class="foot">fiyatlar örnektir · kendi rakamlarınızla değiştirin</div>
+      </section>
+
+      <!-- SAHNE 3 -->
+      <section class="scene sc3">
+        <div class="sweep"></div>
+        <div class="beam"></div>
+        <div class="hero-car">
+          <svg viewBox="0 0 460 150" aria-hidden="true">
+            <path d="M10 116c0-12 8-19 22-22l46-9 46-38c11-9 24-13 39-13h96c17 0 33 6 45 18l32 32 52 10c15 3 24 11 24 22v6H10z" fill="#E8EBEF"/>
+            <path d="M132 47l30-25c7-6 15-9 24-9h38v34zm104 0V13h38c11 0 21 4 29 12l23 22z" fill="#141A21"/>
+            <path d="M10 116h440v6H10z" fill="#AFB7C1"/>
+            <circle class="lamp" cx="24" cy="94" r="10" fill="#FFF3D6"/>
+            <rect x="428" y="88" width="18" height="8" rx="3" fill="#C4332B"/>
+            <g fill="#0B0E11"><circle class="w" cx="128" cy="120" r="28"/><circle class="w" cx="352" cy="120" r="28"/></g>
+            <g fill="#7C8794"><circle cx="128" cy="120" r="13"/><circle cx="352" cy="120" r="13"/></g>
+            <g stroke="#0B0E11" stroke-width="3">
+              <path d="M128 107v26M115 120h26"/><path d="M352 107v26M339 120h26"/>
+            </g>
+          </svg>
+        </div>
+        <div class="plate"><span class="tr">TR</span><span class="no">34 ABC 123</span></div>
+        <div class="punch">
+          <span class="mask"><span class="l1">BU ARABAYI</span></span>
+          <span class="mask"><span class="l2">alabilirsiniz.</span></span>
+          <div class="rule"></div>
+        </div>
+        <div class="eyebrow">SIFIR KM · GARANTİLİ · HEMEN TESLİM</div>
+      </section>
+
+      <!-- SAHNE 4 -->
+      <section class="scene sc4">
+        <div class="sweep"></div>
+        <div class="eyebrow">KAPANIŞ</div>
+        <div class="stmt" id="stmt"></div>
+        <div class="cta">FİYAT LİSTESİ <span>→</span></div>
+        <div class="mark">önce/sonra</div>
+        <div class="fine">Fiyatlar ve donanım örnek olarak yazılmıştır; yayına almadan önce kendi rakamlarınızla değiştirin.</div>
+      </section>
+
+      <div class="grain"></div>
+      <div class="edge"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctl primary" id="play">DURAKLAT</button>
+    <button class="ctl" id="replay">BAŞTAN</button>
+    <div class="track" id="track" role="slider" aria-label="Zaman çizelgesi" tabindex="0" aria-valuemin="0" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="time"><span id="now">0.0</span> / <span id="total">0.0</span> sn</div>
+  </div>
+
+  <p class="note">
+    Cümle <b>CLOSING</b>'de, sahne süreleri <b>SCENES</b>'te, fiyatlar ise <b>data-count</b> değerlerinde duruyor —
+    marka, model ve rakamları değiştirip aynı kurguyu kullanabilirsiniz. Araba siluetlerinin yerine kendi
+    fotoğraflarınızı koymak isterseniz söyleyin, SVG'leri görsel katmanla değiştireyim.
+  </p>
+</div>
+
+<script>
+const SCENES = [
+  { id:"01", ad:"İKİNCİ EL",    dur:7000 },
+  { id:"02", ad:"AYNI BÜTÇE",   dur:6200 },
+  { id:"03", ad:"ARABA",        dur:6000 },
+  { id:"04", ad:"KAPANIŞ",      dur:5200 }
+];
+
+const CLOSING = "dizel otomatik bir Golf parasına |bu arabayı| ~alabilirsiniz.~";
+
+(function buildClosing(){
+  const host = document.getElementById("stmt");
+  CLOSING.split(" ").forEach((w,i)=>{
+    const hl = w.startsWith("|") && w.endsWith("|");
+    const em = w.startsWith("~") && w.endsWith("~");
+    const wrap = document.createElement("span");
+    wrap.className = "w";
+    const inner = document.createElement("i");
+    inner.style.setProperty("--i", i);
+    inner.textContent = (hl || em) ? w.slice(1,-1) : w;
+    if(hl) inner.classList.add("hl");
+    if(em) inner.classList.add("em");
+    wrap.appendChild(inner);
+    host.appendChild(wrap);
+    host.appendChild(document.createTextNode(" "));
+  });
+})();
+
+const stage   = document.getElementById("stage");
+const scenes  = [...stage.querySelectorAll(".scene")];
+const chips   = document.getElementById("chips");
+const fill    = document.getElementById("fill");
+const track   = document.getElementById("track");
+const nowEl   = document.getElementById("now");
+const playBtn = document.getElementById("play");
+
+const starts = SCENES.reduce((a,s,i)=>(a.push(i?a[i-1]+SCENES[i-1].dur:0),a),[]);
+const TOTAL  = SCENES.reduce((a,s)=>a+s.dur,0);
+document.getElementById("total").textContent = (TOTAL/1000).toFixed(1);
+track.setAttribute("aria-valuemax",(TOTAL/1000).toFixed(1));
+
+SCENES.forEach((s,i)=>{
+  const b = document.createElement("button");
+  b.className = "chip"; b.type = "button";
+  b.innerHTML = "<b>"+s.id+"</b>"+s.ad;
+  b.addEventListener("click",()=>seek(starts[i]));
+  chips.appendChild(b);
+  if(i){ const t = document.createElement("div"); t.className = "tick";
+         t.style.left = (starts[i]/TOTAL*100)+"%"; track.appendChild(t); }
+});
+const chipEls = [...chips.children];
+
+let t = 0, current = -1, playing = true, last = performance.now();
+const lira = n => "₺" + Math.round(n).toLocaleString("tr-TR");
+
+function sceneAt(ms){ let i = SCENES.length-1; while(i>0 && ms<starts[i]) i--; return i; }
+
+function activate(i){
+  scenes.forEach((s,k)=>{
+    if(k===i){ s.classList.add("reset"); void s.offsetWidth; s.classList.remove("reset"); s.classList.add("active"); }
+    else s.classList.remove("active");
+  });
+  chipEls.forEach((c,k)=>c.setAttribute("aria-current", k===i ? "true" : "false"));
+  current = i;
+  runCounters(scenes[i], i);
+}
+
+/* sahnedeki [data-count] alanlarını saydır */
+function runCounters(scene, idx){
+  scene.querySelectorAll("[data-count]").forEach(el=>{
+    const target = +el.dataset.count, delay = +el.dataset.delay || 0, dur = 1200, t0 = performance.now();
+    el.textContent = lira(0);
+    (function step(now){
+      if(current !== idx) return;
+      const p = Math.min(1, Math.max(0,(now - t0 - delay)/dur));
+      el.textContent = lira(target * (1 - Math.pow(1-p,3)));
+      if(p < 1) requestAnimationFrame(step);
+    })(t0);
+  });
+}
+
+function seek(ms){ t = Math.max(0, Math.min(TOTAL-1, ms)); activate(sceneAt(t)); render(); }
+function render(){
+  fill.style.width = (t/TOTAL*100)+"%";
+  nowEl.textContent = (t/1000).toFixed(1);
+  track.setAttribute("aria-valuenow",(t/1000).toFixed(1));
+}
+function setPlaying(v){ playing = v; stage.classList.toggle("paused", !v); playBtn.textContent = v ? "DURAKLAT" : "OYNAT"; }
+
+playBtn.addEventListener("click",()=>setPlaying(!playing));
+document.getElementById("replay").addEventListener("click",()=>{ seek(0); setPlaying(true); });
+track.addEventListener("click",e=>{ const r = track.getBoundingClientRect(); seek((e.clientX-r.left)/r.width*TOTAL); });
+track.addEventListener("keydown",e=>{
+  if(e.key === "ArrowRight") seek(t+500); else if(e.key === "ArrowLeft") seek(t-500); else return;
+  e.preventDefault();
+});
+document.addEventListener("keydown",e=>{
+  if(e.code === "Space" && e.target === document.body){ e.preventDefault(); setPlaying(!playing); }
+});
+
+activate(0); render();
+requestAnimationFrame(function loop(now){
+  const dt = now - last; last = now;
+  if(playing){
+    t += dt; if(t >= TOTAL) t -= TOTAL;
+    const i = sceneAt(t); if(i !== current) activate(i);
+    render();
+  }
+  requestAnimationFrame(loop);
+});
+</script>
