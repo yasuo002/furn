@@ -1,0 +1,331 @@
+<meta charset="utf-8">
+<title>overlay-car</title>
+<style>
+@font-face{font-family:MT;src:url('../fonts/Montserrat-900.ttf');font-weight:900}
+@font-face{font-family:MT;src:url('../fonts/Montserrat-800.ttf');font-weight:800}
+@font-face{font-family:IN;src:url('../fonts/Inter-900.ttf');font-weight:900}
+@font-face{font-family:IN;src:url('../fonts/Inter-800.ttf');font-weight:800}
+@font-face{font-family:IN;src:url('../fonts/Inter-600.ttf');font-weight:600}
+@font-face{font-family:PF;src:url('../fonts/PlayfairIt-600.ttf');font-style:italic;font-weight:600}
+
+:root{ --y:#FFC93C; --y2:#FFE08A; --r:#FF3B30; --ink:#080D14; --w:#fff; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,sans-serif;
+     -webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#stage{position:absolute;inset:0}
+.sh{text-shadow:0 4px 20px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.85),
+    2px 2px 0 rgba(8,13,20,.5),-2px 2px 0 rgba(8,13,20,.5),
+    2px -2px 0 rgba(8,13,20,.5),-2px -2px 0 rgba(8,13,20,.5)}
+
+/* --- altyazı plakası: eski gömülü altyazının silindiği bandı kapatır --- */
+#plate{position:absolute;left:0;right:0;top:560px;height:470px;z-index:2;
+  background:linear-gradient(to bottom,rgba(4,8,14,0) 0%,rgba(4,8,14,.34) 16%,
+    rgba(4,8,14,.88) 30%,rgba(4,8,14,.88) 66%,rgba(4,8,14,.30) 86%,rgba(4,8,14,0) 100%)}
+
+/* --- konuşmacı çipi --- */
+#who{position:absolute;left:0;right:0;top:640px;text-align:center;z-index:6}
+#who span{display:inline-block;font:800 21px/1 IN;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink);background:var(--y);padding:8px 16px;border-radius:8px;
+  box-shadow:0 8px 22px rgba(0,0,0,.5)}
+#who.guest span{background:#fff}
+
+/* --- kinetik altyazı --- */
+#cap{position:absolute;left:52px;right:52px;top:690px;text-align:center;z-index:6;
+  font:900 45px/1.2 IN;letter-spacing:-.015em;color:var(--w)}
+#cap .wi{display:inline-block;will-change:transform,opacity;margin:0 .13em}
+#cap .hi{color:var(--y)}
+
+/* --- dev anahtar kelime --- */
+#big{position:absolute;left:0;right:0;top:300px;text-align:center;z-index:7;
+  font:900 86px/.98 MT;letter-spacing:-.03em;color:var(--y);text-transform:uppercase}
+#big div{will-change:transform,opacity}
+
+/* --- BMW impact sahnesi --- */
+#imp{position:absolute;inset:0;z-index:9;background:rgba(6,10,16,.62)}
+#impRays{position:absolute;left:50%;top:470px;width:1200px;height:1200px;margin:-600px 0 0 -600px}
+#impTxt{position:absolute;left:0;right:0;top:392px;text-align:center;
+  font:900 148px/1 MT;letter-spacing:-.04em;color:#fff}
+#impSub{position:absolute;left:0;right:0;top:580px;text-align:center;
+  font:800 27px/1 IN;letter-spacing:.28em;text-transform:uppercase;color:var(--y)}
+
+/* --- "kimse demez ki" kartları --- */
+#nolab{position:absolute;left:356px;top:196px;z-index:6}
+#nolab span{display:inline-block;font:800 20px/1 IN;letter-spacing:.16em;text-transform:uppercase;
+  color:#fff;background:var(--r);padding:9px 15px;border-radius:8px;
+  box-shadow:0 10px 26px rgba(0,0,0,.45)}
+.ncard{position:absolute;left:356px;width:330px;padding:20px 20px 20px 74px;border-radius:18px;
+  background:#fff;box-shadow:0 20px 46px rgba(0,0,0,.42);z-index:6;
+  font:700 26px/1.24 IN;color:#111820;will-change:transform,opacity}
+.ncard i{position:absolute;left:20px;top:20px;width:40px;height:40px;border-radius:50%;
+  background:var(--r);display:flex;align-items:center;justify-content:center}
+.ico{position:static;display:block}
+
+/* --- blurlu istif listesi --- */
+#stack{position:absolute;left:78px;right:78px;top:352px;z-index:7}
+#stack div{font:900 46px/1.42 IN;letter-spacing:-.015em;color:rgba(255,255,255,.42);
+  will-change:transform,opacity}
+#stack div.cur{color:#fff}
+
+/* --- final özet kartı --- */
+#fin{position:absolute;left:40px;top:236px;width:640px;border-radius:32px;z-index:8;
+  background:linear-gradient(160deg,#101E31 0%,#0A1626 58%,#060F1B 100%);
+  box-shadow:0 40px 90px rgba(0,0,0,.55);padding:34px 30px 38px;will-change:transform,opacity}
+#finLab{text-align:center;font:800 21px/1 IN;letter-spacing:.32em;text-transform:uppercase;
+  color:rgba(255,255,255,.45);margin-bottom:26px}
+#finCols{display:flex;gap:22px}
+.fcol{width:279px;border-radius:22px;padding:26px 16px 28px;text-align:center;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);
+  will-change:transform,opacity}
+.fcol .pill{display:inline-block;font:900 34px/1 MT;letter-spacing:-.01em;padding:14px 22px;
+  border-radius:13px;background:#fff;color:var(--ink);margin-bottom:20px}
+.fcol.b .pill{background:var(--y)}
+.fcol p{font:600 26px/1.30 IN;color:rgba(255,255,255,.84)}
+#finFoot{text-align:center;margin-top:30px;font:italic 600 46px/1.16 PF;color:#fff}
+#finFoot b{font:900 46px/1.16 MT;font-style:normal;color:var(--y)}
+
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:20}
+</style>
+
+<div id="stage">
+  <div id="plate"></div>
+
+  <div id="nolab"><span>KİMSE DEMEZ Kİ</span></div>
+  <div class="ncard" id="nc1" style="top:250px"><i><svg viewBox="0 0 24 24" width="20" height="20"
+    class="ico"><path d="M5 5 L19 19 M19 5 L5 19" stroke="#fff" stroke-width="3.4"
+    stroke-linecap="round"/></svg></i>“Bu arabanın airbagleri açık.”</div>
+  <div class="ncard" id="nc2" style="top:412px"><i><svg viewBox="0 0 24 24" width="20" height="20"
+    class="ico"><path d="M5 5 L19 19 M19 5 L5 19" stroke="#fff" stroke-width="3.4"
+    stroke-linecap="round"/></svg></i>“Bu arabanın kilometresi yüksek.”</div>
+
+  <div id="big"><div id="bigL1"></div><div id="bigL2"></div></div>
+
+  <div id="stack"></div>
+
+  <div id="imp">
+    <svg id="impRays" viewBox="-600 -600 1200 1200"></svg>
+    <div id="impTxt">BMW!</div>
+    <div id="impSub">der</div>
+  </div>
+
+  <div id="fin">
+    <div id="finLab">özet</div>
+    <div id="finCols">
+      <div class="fcol a" id="fc1"><div class="pill">BMW 5</div><p>gemi gibi görünürsün</p></div>
+      <div class="fcol b" id="fc2"><div class="pill">GOLF</div><p>başın hiç ağrımaz</p></div>
+    </div>
+    <div id="finFoot"><b>aynı para,</b><br>farklı hikâye.</div>
+  </div>
+
+  <div id="who"><span></span></div>
+  <div id="cap"></div>
+  <div id="flash"></div>
+</div>
+
+<script>
+/* ============================================================
+   Kinetik altyazı + motion graphics motoru — window.setT(saniye)
+   ============================================================ */
+const D = 17.71;
+
+const cl=(x,a=0,b=1)=>x<a?a:(x>b?b:x);
+const outExpo=x=>x>=1?1:1-Math.pow(2,-10*x);
+const outCubic=x=>1-Math.pow(1-x,3);
+const inOutCubic=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const spring=x=>x>=1?1:1-Math.pow(2,-10*x)*Math.cos(x*Math.PI*3.0);
+const lerp=(a,b,x)=>a+(b-a)*x;
+const px=v=>v.toFixed(2)+'px';
+const show=(el,on)=>{ el.style.display=on?'':'none'; };
+
+/* ---------- altyazı verisi (gömülü altyazıdan çıkarıldı) ---------- */
+const AK='ALİ KITAY', AS='ARAÇ SAHİBİ';
+const CAPS=[
+ {a:0.00,b:2.53,who:AK,w:['Dizel','otomatik','bir','*GOLF','*PARASINA','bu','arabayı','alabilirsiniz.']},
+ {a:2.53,b:3.98,who:AK,w:['Yanınıza','bir','gacı','oturttuğunuz','zamanda']},
+ {a:3.98,b:5.57,who:AK,w:['“Ulan','arabaya','bak','*GEMİ','*GİBİ”','der.']},
+ {a:5.57,b:6.34,who:AK,w:['*“BMW!”','der.']},
+ {a:6.34,b:8.01,who:AK,w:['Demez','ki','“Bu','arabanın','*AIRBAGLERİ','açık.”']},
+ {a:8.01,b:9.81,who:AK,w:['demez','ki','“Bu','arabanın','*KİLOMETRESİ','yüksek.”']},
+ {a:9.81,b:11.75,who:AK,w:['Yani,','*KONFORLU','da','bir','araba','yani.']},
+ {a:11.75,b:12.91,who:AS,w:['Ben','çok','seviyorum','abi','arabayı.']},
+ {a:15.06,b:15.80,who:AS,w:['*Golf','alırsın.']},
+ {a:15.80,b:17.71,who:AK,w:['Yani','dizel','otomatik','bir','*GOLF','alır','geçersin.']},
+];
+/* 12.91–15.06 arası istif listesiyle anlatılır (görüntü ffmpeg'de blurlanır) */
+const STACK={a:12.91,b:15.06,lines:['Ama diğer taraftan','başım hiç','ağrımasın','diyorsan da']};
+
+/* dev anahtar kelime anları */
+const BIGS=[
+  {a:0.78,b:2.35,l1:'GOLF',      l2:'PARASINA', rot:-3},
+  {a:4.28,b:5.45,l1:'GEMİ',      l2:'GİBİ',     rot: 2.5},
+  {a:9.90,b:11.55,l1:'KONFORLU', l2:'',         rot:-2},
+];
+const T={ imp:[5.57,6.36], cards:[6.40,9.78], fin:[16.22,D] };
+const FLASH=[2.53,5.57,6.36,12.91,15.06,15.80];
+
+/* ---------- ışın SVG'si (BMW impact) ---------- */
+(function(){
+  let s='';
+  for(let i=0;i<28;i++){
+    const a=i*(360/28), w=i%2?9:20;
+    s+='<path d="M0 0 L'+(-w)+' -640 L'+w+' -640 Z" fill="'+(i%2?'#FFC93C':'#ffffff')+
+       '" opacity="'+(i%2?.55:.30)+'" transform="rotate('+a+')"/>';
+  }
+  impRays.innerHTML=s;
+})();
+
+/* ---------- kelime kelime altyazı ---------- */
+let capKey='';
+function renderCap(seg){
+  const k=seg.a+'|'+seg.b;
+  if(k===capKey) return;
+  capKey=k;
+  cap.innerHTML=seg.w.map(t=>{
+    const hi=t[0]==='*';
+    return '<span class="wi'+(hi?' hi':'')+'">'+(hi?t.slice(1):t)+'</span>';
+  }).join(' ');
+}
+function capIn(seg,l,dur){
+  const ws=[...cap.querySelectorAll('.wi')];
+  /* kelimeler segmentin ilk %58'inde sırayla belirir */
+  const span=Math.max(.34,(dur*.58)), per=span/ws.length;
+  ws.forEach((w,i)=>{
+    const p=cl((l-i*per)/Math.max(.16,per*1.9));
+    const e=spring(p);
+    w.style.opacity=cl(p*2.4).toFixed(3);
+    w.style.transform='translate3d(0,'+px((1-e)*26)+',0) scale('+lerp(.62,1,e).toFixed(4)+')';
+  });
+}
+
+window.setT=function(t){
+  /* ---------- hangi altyazı segmenti ---------- */
+  const seg=CAPS.find(s=>t>=s.a&&t<s.b);
+  const inStack=t>=STACK.a&&t<STACK.b;
+  const inImp=t>=T.imp[0]&&t<T.imp[1];      /* impact sahnesi altyazıyı devralır */
+  show(cap,!!seg&&!inImp); show(who,!!seg&&!inImp);
+  show(plate,(!!seg&&!inImp)||inStack);
+  if(seg){
+    const dur=seg.b-seg.a, l=t-seg.a, o=cl((seg.b-t)/.16);
+    renderCap(seg);
+    capIn(seg,l,dur);
+    cap.style.opacity=(cl(l/.10)*o).toFixed(3);
+    /* konuşmacı çipi */
+    who.className = seg.who===AS?'guest':'';
+    who.firstElementChild.textContent=seg.who;
+    const k=spring(cl(l/.5));
+    who.style.opacity=(cl(l/.14)*o).toFixed(3);
+    who.firstElementChild.style.transform=
+      'translate3d(0,'+px((1-k)*-16)+',0) scale('+lerp(.7,1,k).toFixed(4)+')';
+  }
+  if(inStack){
+    const l=t-STACK.a, dur=STACK.b-STACK.a, o=cl((STACK.b-t)/.22);
+    plate.style.opacity=(cl(l/.2)*o*.55).toFixed(3);
+  } else if(seg){
+    plate.style.opacity='1';
+  }
+
+  /* ---------- istif listesi ---------- */
+  {
+    show(stack,inStack);
+    if(inStack){
+      const l=t-STACK.a, dur=STACK.b-STACK.a;
+      if(stack.dataset.k!=='1'){
+        stack.innerHTML=STACK.lines.map(x=>'<div>'+x+'</div>').join('');
+        stack.dataset.k='1';
+      }
+      const per=(dur*.72)/STACK.lines.length;
+      [...stack.children].forEach((el,i)=>{
+        const p=cl((l-i*per)/Math.max(.2,per*1.5)), e=spring(p);
+        el.style.opacity=cl(p*2.4).toFixed(3);
+        el.style.transform='translate3d('+px((1-e)*-40)+',0,0)';
+        el.className = (i===Math.min(STACK.lines.length-1,Math.floor(l/per)))?'cur':'';
+      });
+      stack.style.opacity=outCubic(cl((STACK.b-t)/.24)).toFixed(3);
+    }
+  }
+
+  /* ---------- dev anahtar kelime ---------- */
+  {
+    const g=BIGS.find(x=>t>=x.a&&t<x.b);
+    show(big,!!g);
+    if(g){
+      const l=t-g.a, o=outCubic(cl((g.b-t)/.28));
+      bigL1.textContent=g.l1; bigL2.textContent=g.l2;
+      [[bigL1,0],[bigL2,.10]].forEach(([el,d])=>{
+        const k=spring(cl((l-d)/.6));
+        el.style.opacity=(cl((l-d)/.16)*o).toFixed(3);
+        el.style.transform='translate3d(0,'+px((1-k)*36)+',0) scale('+lerp(.55,1,k).toFixed(4)+')';
+      });
+      big.style.transform='rotate('+g.rot+'deg) scale('+lerp(1.06,1,outExpo(cl(l/.5)))+')';
+      big.className='sh';
+    }
+  }
+
+  /* ---------- BMW impact ---------- */
+  {
+    const e=t>=T.imp[0]&&t<T.imp[1];
+    show(imp,e);
+    if(e){
+      const l=t-T.imp[0], dur=T.imp[1]-T.imp[0], o=outCubic(cl((T.imp[1]-t)/.16));
+      imp.style.opacity=(cl(l/.07)*o).toFixed(3);
+      const k=spring(cl(l/.42));
+      impTxt.style.transform='scale('+lerp(1.7,1,k).toFixed(4)+')';
+      impTxt.style.opacity=cl(l/.06).toFixed(3);
+      impTxt.className='sh';
+      impRays.style.transform='rotate('+(l*26).toFixed(2)+'deg) scale('+
+        lerp(.25,1.15,outExpo(cl(l/.55))).toFixed(3)+')';
+      impRays.style.opacity=(lerp(.9,.25,cl(l/dur))*o).toFixed(3);
+      const s2=outExpo(cl((l-.22)/.4));
+      impSub.style.opacity=(s2*o).toFixed(3);
+      impSub.style.letterSpacing=lerp(.55,.28,s2).toFixed(3)+'em';
+    }
+  }
+
+  /* ---------- "kimse demez ki" kartları ---------- */
+  {
+    const e=t>=T.cards[0]&&t<T.cards[1];
+    [nolab,nc1,nc2].forEach(el=>show(el,e));
+    if(e){
+      const l=t-T.cards[0], o=outCubic(cl((T.cards[1]-t)/.32));
+      const kl=spring(cl(l/.5));
+      nolab.style.opacity=(cl(l/.16)*o).toFixed(3);
+      nolab.style.transform='translate3d('+px((1-kl)*70)+',0,0)';
+      [[nc1,.12],[nc2,1.68]].forEach(([el,d])=>{
+        const k=spring(cl((l-d)/.62));
+        el.style.opacity=(cl((l-d)/.2)*o).toFixed(3);
+        el.style.transform='translate3d('+px((1-k)*300)+',0,0) rotate('+
+                           ((1-k)*3).toFixed(2)+'deg)';
+      });
+    }
+  }
+
+  /* ---------- final özet kartı ---------- */
+  {
+    const e=t>=T.fin[0];
+    show(fin,e);
+    if(e){
+      const l=t-T.fin[0], k=outExpo(cl(l/.8));
+      fin.style.opacity=cl(l/.18).toFixed(3);
+      fin.style.transform='translate3d(0,'+px((1-k)*70)+',0) scale('+lerp(.90,1,k).toFixed(4)+')';
+      [[fc1,.20],[fc2,.34]].forEach(([el,d])=>{
+        const s=spring(cl((l-d)/.66));
+        el.style.opacity=cl((l-d)/.22).toFixed(3);
+        el.style.transform='translate3d(0,'+px((1-s)*40)+',0) scale('+lerp(.86,1,s).toFixed(4)+')';
+      });
+      const f=outExpo(cl((l-.62)/.6));
+      finFoot.style.opacity=f.toFixed(3);
+      finFoot.style.transform='translate3d(0,'+px((1-f)*22)+',0)';
+    }
+  }
+
+  /* ---------- geçiş flaşı ---------- */
+  {
+    let f=0;
+    FLASH.forEach(a=>{ const l=t-a; if(l>=0&&l<.22) f=Math.max(f,(1-l/.22)*.30); });
+    flash.style.opacity=f.toFixed(4);
+  }
+};
+
+window.setT(0);
+document.documentElement.dataset.ready='1';
+</script>

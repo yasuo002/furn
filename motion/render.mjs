@@ -1,19 +1,21 @@
-/* Overlay'i kare kare saydam PNG olarak render eder.
+/* Bir overlay HTML'ini kare kare saydam PNG olarak render eder.
    Kullanim:
-     node render.mjs <cikis_klasoru> [--fps 30] [--dur 27.91] [--times 1,5.2,12]
+     node render.mjs <cikis_klasoru> --html <overlay.html> [--fps 30] [--dur 27.9]
+                     [--times 1,5.2,12]     # sadece bu anlari render et (onizleme)
 */
 import { chromium } from 'playwright';
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 
 const argv = process.argv.slice(2);
-const outDir = path.resolve(argv[0] || 'frames');
 const arg = (k, d) => { const i = argv.indexOf('--' + k); return i > -1 ? argv[i + 1] : d; };
+const here = path.dirname(new URL(import.meta.url).pathname);
 
+const outDir = path.resolve(argv[0] || 'frames');
+const htmlPath = path.resolve(arg('html', path.join(here, 'overlay.html')));
 const fps  = Number(arg('fps', 30));
-const dur  = Number(arg('dur', 27.91));
+const dur  = Number(arg('dur', 30));
 const only = arg('times', null);
-const html = 'file://' + path.resolve(path.dirname(new URL(import.meta.url).pathname), 'overlay.html');
 
 const times = only
   ? only.split(',').map(Number)
@@ -36,7 +38,8 @@ const page = await browser.newPage({
   viewport: { width: 720, height: 1280 },
   deviceScaleFactor: 1,
 });
-await page.goto(html, { waitUntil: 'load' });
+page.on('pageerror', (e) => { console.error('overlay hatasi:', e.message); process.exitCode = 1; });
+await page.goto('file://' + htmlPath, { waitUntil: 'load' });
 await page.evaluate(() => document.fonts.ready);
 await page.waitForFunction(() => document.documentElement.dataset.ready === '1');
 
@@ -47,8 +50,7 @@ for (let i = 0; i < times.length; i++) {
   const name = only ? `t_${t.toFixed(2)}.png` : String(i).padStart(5, '0') + '.png';
   await page.screenshot({ path: path.join(outDir, name), omitBackground: true });
   if (!only && i % 100 === 0) {
-    const el = (Date.now() - t0) / 1000;
-    process.stdout.write(`  ${i}/${times.length}  ${el.toFixed(0)}s\n`);
+    process.stdout.write(`  ${i}/${times.length}  ${((Date.now() - t0) / 1000).toFixed(0)}s\n`);
   }
 }
 await browser.close();

@@ -1,8 +1,9 @@
-node_modules/
+node_modules
 .env
 *.log
 motion/fonts/
-motion/frames/
-motion/preview/
-motion/out/
-motion/img/
+motion/*/frames/
+motion/*/preview/
+motion/*/out/
+motion/*/img/
+motion/*/sfx.wav
