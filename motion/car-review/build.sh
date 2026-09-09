@@ -38,9 +38,9 @@ echo "3/3  birlestiriliyor"
 ffmpeg -hide_banner -loglevel error -stats \
   -i "$IN" -framerate "$FPS" -i "frames/%05d.png" -i sfx.wav \
   -filter_complex "\
-[0:v]delogo=x=27:y=334:w=307:h=82,split[a][b];\
-[b]crop=311:86:25:332,gblur=sigma=7[bl];\
-[a][bl]overlay=25:332,\
+[0:v]delogo=x=24:y=340:w=312:h=23,delogo=x=24:y=366:w=312:h=42,split[a][b];\
+[b]crop=330:102:15:322,gblur=sigma=8,eq=brightness=-0.05:saturation=0.90[bl];\
+[a][bl]overlay=15:322,\
 scale=w='trunc(720*($Z)/2)*2':h='trunc(1280*($Z)/2)*2':eval=frame:flags=lanczos,\
 crop=720:1280:'(in_w-720)/2':'(in_h-1280)/2',setsar=1,\
 unsharp=5:5:0.55,\

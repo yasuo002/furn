@@ -19,25 +19,36 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
     2px 2px 0 rgba(8,13,20,.5),-2px 2px 0 rgba(8,13,20,.5),
     2px -2px 0 rgba(8,13,20,.5),-2px -2px 0 rgba(8,13,20,.5)}
 
-/* --- altyazı plakası: eski gömülü altyazının silindiği bandı kapatır --- */
-#plate{position:absolute;left:0;right:0;top:560px;height:470px;z-index:2;
-  background:linear-gradient(to bottom,rgba(4,8,14,0) 0%,rgba(4,8,14,.34) 16%,
-    rgba(4,8,14,.88) 30%,rgba(4,8,14,.88) 66%,rgba(4,8,14,.30) 86%,rgba(4,8,14,0) 100%)}
+/* --- altyazı paneli --------------------------------------------------------
+   Kaynakta yanmış altyazı var ve 360p'de temiz silinemiyor; delogo sonrası
+   kalan leke bu panelin altında kalıyor. Eskiden ekranın 470 px'ini kaplayan
+   bulanık siyah gradyan yerine, altyazıyı taşıyan 194 px'lik tanımlı bir
+   panel — karartılan alan %62 azaldı ve kaza değil tasarım gibi duruyor.   */
+#plate{position:absolute;left:32px;right:32px;top:648px;height:194px;z-index:2;
+  border-radius:20px;background:rgba(9,16,26,.62);
+  box-shadow:0 18px 46px rgba(0,0,0,.34)}
+#plate::before{content:'';position:absolute;left:26px;right:26px;top:0;height:3px;
+  border-radius:3px;background:linear-gradient(90deg,transparent,var(--y),transparent)}
 
 /* --- konuşmacı çipi --- */
-#who{position:absolute;left:0;right:0;top:640px;text-align:center;z-index:6}
+#who{position:absolute;left:0;right:0;top:602px;text-align:center;z-index:6}
 #who span{display:inline-block;font:800 21px/1 IN;letter-spacing:.2em;text-transform:uppercase;
   color:var(--ink);background:var(--y);padding:8px 16px;border-radius:8px;
   box-shadow:0 8px 22px rgba(0,0,0,.5)}
 #who.guest span{background:#fff}
 
 /* --- kinetik altyazı --- */
-#cap{position:absolute;left:46px;right:46px;top:678px;text-align:center;z-index:6;
-  font:900 54px/1.18 IN;letter-spacing:-.018em;color:var(--w)}
-#cap .wi{display:inline-block;will-change:transform,opacity;margin:0 .11em}
-#cap .hi{color:var(--y)}
-/* alıntılar italik serif — kalın sans + italik ikilisi (bkz. STYLE.md §2) */
-#cap .q{font:italic 500 60px/1.18 PF;letter-spacing:0}
+#cap{position:absolute;left:46px;right:46px;top:648px;height:194px;z-index:6;
+  display:flex;align-items:center;justify-content:center}
+#capTxt{width:100%;text-align:center;
+  font:900 48px/1.14 IN;letter-spacing:-.018em;color:var(--w)}
+#capTxt .wi{display:inline-block;margin:0 .10em;will-change:transform,opacity}
+/* boyut hiyerarşisi — hepsi aynı puntoda olunca satır düz kalıyor */
+#capTxt .hi{font-size:64px;color:var(--y)}                 /* vurgu: büyük + renkli */
+#capTxt .sm{font-size:36px;font-weight:800;opacity:.60}    /* bağlaç: küçük + soluk */
+#capTxt .q{font:italic 500 54px/1.14 PF;letter-spacing:0}  /* alıntı: italik serif */
+#capTxt .hi.q{font:italic 600 68px/1.14 PF;color:var(--y)}
+#capTxt .ch{display:inline-block;will-change:transform,opacity}
 
 /* --- 1) DENKLEM: videonun tezi — aynı bütçe, iki araba --- */
 #eqn{position:absolute;left:0;right:0;top:248px;z-index:7}
@@ -94,7 +105,7 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
 #stack div.cur{color:#fff}
 
 /* --- final özet kartı --- */
-#fin{position:absolute;left:40px;top:236px;width:640px;border-radius:32px;z-index:8;
+#fin{position:absolute;left:40px;top:196px;width:640px;border-radius:32px;z-index:8;
   background:linear-gradient(160deg,#101E31 0%,#0A1626 58%,#060F1B 100%);
   box-shadow:0 40px 90px rgba(0,0,0,.55);padding:34px 30px 38px;will-change:transform,opacity}
 #finLab{text-align:center;font:800 21px/1 IN;letter-spacing:.32em;text-transform:uppercase;
@@ -155,7 +166,7 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
   </div>
 
   <div id="who"><span></span></div>
-  <div id="cap"></div>
+  <div id="cap"><div id="capTxt"></div></div>
   <div id="flash"></div>
 </div>
 
@@ -180,25 +191,25 @@ const CAPS=[
  /* Konuşma, 0.6–1.0 sn'lik öbeklere bölündü: ekranda hep 2–4 kelime durur.
     İşaretler:  *kelime = vurgu rengi   ~kelime = italik serif (alıntı)      */
  {a: 0.00,b: 0.86,who:AK,w:['Dizel','otomatik']},
- {a: 0.86,b: 1.70,who:AK,w:['bir','*GOLF','*PARASINA']},
- {a: 1.70,b: 2.53,who:AK,w:['bu','arabayı','alabilirsiniz.']},
- {a: 2.53,b: 3.26,who:AK,w:['Yanınıza','bir','gacı']},
+ {a: 0.86,b: 1.70,who:AK,w:['-bir','*GOLF','*PARASINA']},
+ {a: 1.70,b: 2.53,who:AK,w:['-bu','arabayı','alabilirsiniz.']},
+ {a: 2.53,b: 3.26,who:AK,w:['Yanınıza','-bir','gacı']},
  {a: 3.26,b: 3.98,who:AK,w:['oturttuğunuz','zamanda']},
  {a: 3.98,b: 4.78,who:AK,w:['~“Ulan','~arabaya','~bak']},
- {a: 4.78,b: 5.57,who:AK,w:['*~GEMİ','*~GİBİ”','der.']},
+ {a: 4.78,b: 5.57,who:AK,w:['*~GEMİ','*~GİBİ”','-der.']},
  /* 5.57–6.34 impact sahnesi altyazıyı devralır */
- {a: 6.34,b: 7.18,who:AK,w:['Demez','ki','~“Bu','~arabanın']},
+ {a: 6.34,b: 7.18,who:AK,w:['Demez','-ki','~“Bu','~arabanın']},
  {a: 7.18,b: 8.01,who:AK,w:['*~AIRBAGLERİ','~açık.”']},
- {a: 8.01,b: 8.91,who:AK,w:['demez','ki','~“Bu','~arabanın']},
+ {a: 8.01,b: 8.91,who:AK,w:['demez','-ki','~“Bu','~arabanın']},
  {a: 8.91,b: 9.81,who:AK,w:['*~KİLOMETRESİ','~yüksek.”']},
  {a: 9.81,b:10.78,who:AK,w:['Yani,','*KONFORLU']},
- {a:10.78,b:11.75,who:AK,w:['da','bir','araba','yani.']},
- {a:11.75,b:12.33,who:AS,w:['Ben','çok','seviyorum']},
- {a:12.33,b:12.91,who:AS,w:['abi','arabayı.']},
+ {a:10.78,b:11.75,who:AK,w:['-da','-bir','araba','yani.']},
+ {a:11.75,b:12.33,who:AS,w:['Ben','-çok','seviyorum']},
+ {a:12.33,b:12.91,who:AS,w:['-abi','arabayı.']},
  /* 12.91–15.06 istif listesi */
  {a:15.06,b:15.80,who:AS,w:['*Golf','alırsın.']},
  {a:15.80,b:16.76,who:AK,w:['Yani','dizel','otomatik']},
- {a:16.76,b:17.71,who:AK,w:['bir','*GOLF','alır','geçersin.']},
+ {a:16.76,b:17.71,who:AK,w:['-bir','*GOLF','alır','geçersin.']},
 ];
 /* 12.91–15.06 arası istif listesiyle anlatılır (görüntü ffmpeg'de blurlanır) */
 const STACK={a:12.91,b:15.06,lines:['Ama diğer taraftan','başım hiç','ağrımasın','diyorsan da']};
@@ -220,14 +231,19 @@ function renderCap(seg){
   const k=seg.a+'|'+seg.b;
   if(k===capKey) return;
   capKey=k;
-  cap.innerHTML=seg.w.map(t=>{
-    let hi=false, q=false;
-    while(t[0]==='*'||t[0]==='~'){ if(t[0]==='*')hi=true; else q=true; t=t.slice(1); }
-    return '<span class="wi'+(hi?' hi':'')+(q?' q':'')+'">'+t+'</span>';
+  capTxt.innerHTML=seg.w.map(t=>{
+    let hi=false,q=false,sm=false;
+    while('*~-'.indexOf(t[0])>-1){
+      if(t[0]==='*')hi=true; else if(t[0]==='~')q=true; else sm=true;
+      t=t.slice(1);
+    }
+    /* vurgu kelimeleri harf harf açılsın diye tek tek sarılır */
+    const inner = hi ? [...t].map(c=>'<span class="ch">'+c+'</span>').join('') : t;
+    return '<span class="wi'+(hi?' hi':'')+(q?' q':'')+(sm?' sm':'')+'">'+inner+'</span>';
   }).join(' ');
 }
 function capIn(seg,l,dur){
-  const ws=[...cap.querySelectorAll('.wi')];
+  const ws=[...capTxt.querySelectorAll('.wi')];
   /* Kelimeler öbeğin ilk yarısında sırayla belirir. Beliren kelime kısa bir an
      vurgu rengine çalıp beyaza oturur — STYLE.md §6'daki karaoke tekniği:
      her kelime tek başına görünür bir olay yaratır.                        */
@@ -237,6 +253,16 @@ function capIn(seg,l,dur){
     const e=spring(p);
     w.style.opacity=cl(p*2.4).toFixed(3);
     w.style.transform='translate3d(0,'+px((1-e)*26)+',0) scale('+lerp(.62,1,e).toFixed(4)+')';
+    const chs=w.querySelectorAll('.ch');
+    if(chs.length){                                  /* vurgu: harfler kademeli */
+      chs.forEach((c,j)=>{
+        const cp=cl((p-j*.055/Math.max(1,chs.length*.09))*1.0), ce=spring(cp);
+        c.style.opacity=cl(cp*2.2).toFixed(3);
+        c.style.transform='translate3d(0,'+px((1-ce)*20)+',0) rotate('+
+                          ((1-ce)*-7).toFixed(2)+'deg)';
+      });
+      w.style.transform='translate3d(0,'+px((1-e)*14)+',0)';
+    }
     if(!w.classList.contains('hi')){
       const flash=Math.exp(-Math.pow((p-.42)/.30,2));        // p≈.42'de tepe
       w.style.color='rgb('+Math.round(lerp(255,255,flash))+','
@@ -255,7 +281,7 @@ window.setT=function(t){
   const inStack=t>=STACK.a&&t<STACK.b;
   const inImp=t>=T.imp[0]&&t<T.imp[1];      /* impact sahnesi altyazıyı devralır */
   show(cap,!!seg&&!inImp); show(who,!!seg&&!inImp);
-  show(plate,(!!seg&&!inImp)||inStack);
+  show(plate, !!seg && !inImp);
   if(seg){
     const dur=seg.b-seg.a, l=t-seg.a, o=cl((seg.b-t)/.16);
     renderCap(seg);

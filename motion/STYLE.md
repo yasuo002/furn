@@ -149,6 +149,42 @@ SFX ortalaması konuşmanın **8 dB altında** kalmalı — duyulsun ama bastır
 
 ---
 
+## 6b. Yanmış altyazıyı silmek — gerçekçi beklenti
+
+360p, düşük bitrate bir kaynakta beyaz altyazı **temiz silinemiyor**. Denenenler
+ve sonuçları:
+
+| Yöntem | Sonuç |
+|---|---|
+| Tek kalın `delogo` (82 px) + blur | Geniş, belirgin yatay leke |
+| İki ince `delogo` (23 + 42 px) | Belirgin biçimde daha iyi, ama leke duruyor — **en iyisi bu** |
+| Altı çok ince `delogo` (12 px) | Daha kötü: metin dikey çizgilere dönüşüyor |
+| Sadece güçlü blur | Parlak metin gri sise dönüşüyor, daha göze batıyor |
+
+Yani lekeyi bir şeyin örtmesi gerekiyor. Bunu yaparken **ekranın büyük bir
+bölümünü karartmak yerine, lekeyi tam kadar örten tanımlı bir panel** kullan:
+kenarları belli, köşeleri yuvarlak, üstünde ince bir aksan çizgisi olan bir
+alt bant. Bulanıklaştırılan bölgeyi de hafifçe karart (`eq=brightness=-0.05`),
+yoksa çevresinden açık kalıp gri bir levha gibi durur. Altyazı panelin içinde
+**dikey ortalanmalı**, yoksa uzun satırlarda dışarı taşar.
+
+Bu kurguda karartılan alan 720×470'ten 656×194'e indi — %62 azalma.
+
+## 6c. Yazı düz durmasın
+
+Tek punto, tek ağırlık, tek renkle dizilmiş bir satır düz görünür. Bir altyazı
+öbeğinde en az üç kademe olmalı:
+
+| Rol | Boyut | Görünüm |
+|---|---|---|
+| Vurgu | 64 px (1.33×) | Aksan rengi, harfler tek tek açılır |
+| Normal | 48 px | Beyaz, ağır sans |
+| Bağlaç (`bir`, `ki`, `da`, `çok`) | 36 px (0.75×) | %60 opak — ritim yaratır, okumayı yavaşlatmaz |
+| Alıntı | 54 px | İtalik serif |
+
+Vurgu kelimelerinde kelime değil **harf** animasyonu kullan: harfler sırayla
+hafif dönerek yükselir. Kelime blok halinde zıplayınca hareket ucuz duruyor.
+
 ## 7. Yeni kurgu için sıra
 
 1. `ffmpeg` ile kontakt sayfası çıkar, planları ve konuşmayı zaman damgalarıyla yaz
