@@ -1,0 +1,456 @@
+<title>Girişim Senaryosu Sahneleri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ink:#05070C;
+  --ink-2:#0C111A;
+  --ember:#FF8A3D;
+  --gold:#F2B44B;
+  --gold-2:#FFD489;
+  --paper:#F2F1ED;
+  --dim:#878D97;
+  --dead:#4A505A;
+  --shell:#08090C;
+  --shell-2:#12151A;
+  --shell-line:#212630;
+  --shell-text:#EDEFF2;
+  --shell-dim:#79808B;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:var(--sans);color:var(--shell-text);
+  background:radial-gradient(1000px 560px at 50% -12%,#161A21 0%,transparent 62%),var(--shell)}
+.app{max-width:1080px;margin:0 auto;padding:22px 20px 40px;display:flex;flex-direction:column;gap:18px}
+.hud{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.hud h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.015em}
+.hud h1 em{font-style:normal;color:var(--gold)}
+.hud .meta{font-family:var(--mono);font-size:11px;color:var(--shell-dim);letter-spacing:.08em;margin-top:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--shell-dim);background:transparent;
+  border:1px solid var(--shell-line);border-radius:999px;padding:6px 11px;cursor:pointer;display:flex;gap:7px;
+  transition:color .2s,border-color .2s,background .2s}
+.chip b{color:#4A505A;font-weight:500;transition:color .2s}
+.chip:hover{border-color:#39404B;color:var(--shell-text)}
+.chip[aria-current="true"]{background:var(--gold);border-color:var(--gold);color:#1B1203}
+.chip[aria-current="true"] b{color:#8A6208}
+.chip:focus-visible,button:focus-visible,.track:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+.stage-wrap{display:flex;justify-content:center}
+.stage{position:relative;overflow:hidden;aspect-ratio:9/16;height:min(72vh,720px);width:auto;max-width:100%;
+  border-radius:20px;background:var(--ink);box-shadow:0 40px 80px -30px rgba(0,0,0,.85),0 0 0 1px var(--shell-line);
+  font-size:clamp(9px,calc(min(72vh,720px)/44),17px);user-select:none}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.scene.active{opacity:1}
+.scene.reset *{animation:none !important}
+.scene:not(.active) *,.stage.paused *{animation-play-state:paused !important}
+.tc{position:absolute;left:6%;top:5%;z-index:8;font-family:var(--mono);font-size:.72em;letter-spacing:.14em;
+  color:var(--dim);animation:fade .5s ease .1s both}
+.grain{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.06;
+  background-image:radial-gradient(#fff 1px,transparent 1px);background-size:3px 3px}
+.ember{position:absolute;left:-25%;right:-25%;bottom:-30%;height:70%;pointer-events:none;
+  background:radial-gradient(50% 60% at 50% 100%,rgba(255,138,61,.3),transparent 70%);
+  animation:breathe 6s ease-in-out infinite}
+
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes breathe{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes settle{0%{opacity:0;filter:blur(6px);transform:translateY(.3em)}
+  50%{opacity:.35;filter:blur(0)}100%{opacity:1;transform:none}}
+@keyframes wordUp{from{transform:translateY(110%)}to{transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.7)}65%{opacity:1;transform:scale(1.07)}100%{opacity:1;transform:scale(1)}}
+@keyframes popC{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
+  65%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes strike{from{width:0}to{width:104%}}
+@keyframes dim{to{opacity:.3;color:var(--dead)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes vanish{to{opacity:0;transform:scale(.7)}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ---------- 01 · PARA DEĞİL ---------- */
+.s1{background:radial-gradient(120% 80% at 50% 30%,#141A24 0%,#080B11 60%,#04060A 100%)}
+.old{position:absolute;left:9%;right:9%;top:20%;display:flex;flex-direction:column;gap:.75em}
+.old div{position:relative;font-size:1.55em;font-weight:700;color:var(--paper);
+  animation:settle .55s cubic-bezier(.2,.85,.2,1) both, dim .5s linear both}
+.old div:nth-child(1){animation-delay:.25s,1.75s}
+.old div:nth-child(2){animation-delay:.5s,1.95s}
+.old div:nth-child(3){animation-delay:.75s,2.15s}
+.old div span{color:var(--dim);font-weight:500}
+.old i{position:absolute;left:-2%;top:52%;height:.09em;background:var(--ember);width:0;
+  animation:strike .4s cubic-bezier(.6,0,.2,1) both}
+.old div:nth-child(1) i{animation-delay:1.7s}
+.old div:nth-child(2) i{animation-delay:1.9s}
+.old div:nth-child(3) i{animation-delay:2.1s}
+.new{position:absolute;left:9%;right:9%;top:52%;display:flex;flex-direction:column;gap:.6em}
+.new b{align-self:flex-start;font-size:1.85em;font-weight:800;letter-spacing:-.03em;color:#06090E;
+  background:var(--gold);padding:.18em .5em;border-radius:.18em;
+  box-shadow:0 0 2em rgba(242,180,75,.35);animation:pop .5s cubic-bezier(.3,1.4,.4,1) both}
+.new b:nth-child(1){animation-delay:2.6s}
+.new b:nth-child(2){animation-delay:2.85s;align-self:center}
+.new b:nth-child(3){animation-delay:3.1s;align-self:flex-end}
+.s1 .foot{position:absolute;left:9%;right:9%;bottom:12%;font-size:1.15em;font-weight:600;color:var(--paper);
+  text-align:center;animation:settle .6s ease 3.6s both}
+
+/* ---------- 02 · YALNIZ ---------- */
+.s2{background:radial-gradient(100% 70% at 50% 62%,#151A22 0%,#070A0F 62%,#04060A 100%)}
+.s2 .lone{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);width:26%;
+  animation:popC .8s cubic-bezier(.3,1.3,.4,1) .3s both}
+.s2 .lone svg{width:100%;display:block}
+.s2 .ring{position:absolute;left:50%;top:32%;width:52%;aspect-ratio:1;transform:translate(-50%,-50%);
+  border:1px solid rgba(255,138,61,.35);border-radius:50%;animation:popC 1s ease .55s both}
+.s2 .txt{position:absolute;left:8%;right:8%;top:56%}
+.s2 .small{display:block;font-size:1.2em;font-weight:600;color:var(--dim);margin-bottom:.35em;
+  animation:settle .6s ease .9s both}
+.s2 .big{display:block;font-size:2.9em;font-weight:800;letter-spacing:-.04em;color:var(--paper);line-height:1.02}
+.s2 .big em{font-style:normal;color:var(--gold);display:inline-block;
+  animation:pop .6s cubic-bezier(.3,1.4,.4,1) 1.9s both}
+.s2 .mask{display:block;overflow:hidden}
+.s2 .big .w{display:inline-block;animation:wordUp .6s cubic-bezier(.2,.9,.2,1) 2.3s both}
+
+/* ---------- 03 · ÜÇ KOŞUL ---------- */
+.s3{background:radial-gradient(110% 80% at 50% 40%,#12171F 0%,#080B10 62%,#04060A 100%)}
+.rows{position:absolute;left:8%;right:8%;top:24%;display:flex;flex-direction:column;gap:1.5em}
+.row{display:flex;align-items:flex-start;gap:.85em;animation:settle .6s cubic-bezier(.2,.85,.2,1) both}
+.row:nth-child(1){animation-delay:.4s}
+.row:nth-child(2){animation-delay:1.5s}
+.row:nth-child(3){animation-delay:2.6s}
+.row .n{flex:none;width:2.1em;height:2.1em;border-radius:.45em;border:1.5px solid var(--gold);
+  color:var(--gold);font-weight:800;font-size:.95em;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 1.2em rgba(242,180,75,.25)}
+.row .txt{flex:1}
+.row .cond{display:block;font-size:1.28em;font-weight:700;color:var(--paper);letter-spacing:-.02em}
+.row .res{display:block;font-size:1.1em;font-weight:600;color:var(--ember);margin-top:.22em;position:relative;padding-left:1.1em}
+.row .res::before{content:"";position:absolute;left:0;top:.55em;width:.7em;height:.09em;background:var(--ember);
+  transform-origin:left;animation:grow .35s ease both}
+.row:nth-child(1) .res::before{animation-delay:1.0s}
+.row:nth-child(2) .res::before{animation-delay:2.1s}
+.row:nth-child(3) .res::before{animation-delay:3.2s}
+.s3 .link{position:absolute;left:8%;top:26%;width:2.1em;height:30%;pointer-events:none}
+.s3 .link path{fill:none;stroke:rgba(242,180,75,.45);stroke-width:1.4;stroke-dasharray:3 5;
+  stroke-dashoffset:200;vector-effect:non-scaling-stroke;animation:draw 1.4s linear 1.1s both}
+
+/* ---------- 04 · BENSİZ ÇALIŞIR MI ---------- */
+.s4{background:radial-gradient(100% 75% at 50% 44%,#141922 0%,#080B11 60%,#04060A 100%)}
+.net{position:absolute;left:8%;right:8%;top:16%;aspect-ratio:1}
+.net svg{width:100%;display:block;overflow:visible}
+.net .spoke{stroke:rgba(255,255,255,.5);stroke-width:1.6;fill:none;
+  stroke-dasharray:150;stroke-dashoffset:150;animation:draw .5s linear both}
+.net .spoke:nth-of-type(1){animation-delay:.5s}
+.net .spoke:nth-of-type(2){animation-delay:.65s}
+.net .spoke:nth-of-type(3){animation-delay:.8s}
+.net .spoke:nth-of-type(4){animation-delay:.95s}
+.net .spokes{animation:vanish .6s ease 2.5s both}
+.net .mesh{stroke:var(--gold);stroke-width:1.8;fill:none;stroke-dasharray:220;stroke-dashoffset:220;
+  animation:draw .55s linear both}
+.net .mesh:nth-of-type(1){animation-delay:3.0s}
+.net .mesh:nth-of-type(2){animation-delay:3.15s}
+.net .mesh:nth-of-type(3){animation-delay:3.3s}
+.net .mesh:nth-of-type(4){animation-delay:3.45s}
+.net .node{fill:#fff;animation:pop .4s cubic-bezier(.3,1.4,.4,1) both}
+.net .node:nth-of-type(1){animation-delay:.25s}
+.net .node:nth-of-type(2){animation-delay:.35s}
+.net .node:nth-of-type(3){animation-delay:.45s}
+.net .node:nth-of-type(4){animation-delay:.55s}
+.net .me{fill:var(--ember);animation:pop .45s cubic-bezier(.3,1.4,.4,1) .15s both,vanish .6s ease 2.5s both}
+.net .melabel{fill:#fff;font-family:"Archivo",sans-serif;font-size:15px;font-weight:700;
+  animation:fade .4s ease .5s both,vanish .5s ease 2.5s both}
+.s4 .ask{position:absolute;left:8%;right:8%;bottom:16%;text-align:center}
+.s4 .ask .q{display:block;font-size:2.15em;font-weight:800;letter-spacing:-.035em;color:var(--paper);line-height:1.1;
+  animation:settle .7s ease 3.7s both}
+.s4 .ask .q b{color:var(--gold)}
+.s4 .ask .s{display:block;font-family:var(--mono);font-size:.78em;letter-spacing:.16em;color:var(--dim);margin-top:.9em;
+  animation:fade .6s ease 4.2s both}
+
+/* ---------- 05 · AĞ ---------- */
+.s5{background:radial-gradient(110% 80% at 50% 55%,#151A21 0%,#080B10 58%,#04060A 100%)}
+.lacks{position:absolute;left:9%;right:9%;top:16%;display:flex;flex-direction:column;gap:.6em;z-index:2}
+.lacks span{align-self:flex-start;font-family:var(--mono);font-size:.92em;letter-spacing:.06em;color:var(--dim);
+  border:1px solid rgba(255,255,255,.16);border-radius:.35em;padding:.42em .7em;
+  animation:settle .5s ease both,dim .6s linear both}
+.lacks span:nth-child(1){animation-delay:.3s,3.2s}
+.lacks span:nth-child(2){animation-delay:.6s;align-self:center;animation-delay:.6s,3.35s}
+.lacks span:nth-child(3){animation-delay:.9s;align-self:flex-end;animation-delay:.9s,3.5s}
+.web{position:absolute;left:6%;right:6%;top:38%;aspect-ratio:1}
+.web svg{width:100%;display:block;overflow:visible}
+.web line{stroke:rgba(242,180,75,.55);stroke-width:1.5;stroke-dasharray:200;stroke-dashoffset:200;
+  animation:draw .5s linear both}
+.web circle{fill:var(--gold);animation:pop .4s cubic-bezier(.3,1.4,.4,1) both}
+.s5 .brand{position:absolute;left:8%;right:8%;bottom:13%;text-align:center;
+  font-family:var(--mono);font-size:1.02em;letter-spacing:.32em;color:var(--paper);
+  animation:settle .8s ease 4.4s both}
+.s5 .brand small{display:block;font-family:var(--sans);font-size:.72em;letter-spacing:.02em;color:var(--dim);
+  margin-top:.7em;animation:fade .6s ease 4.9s both}
+
+/* ---------- 06 · KAPANIŞ ---------- */
+.s6{background:radial-gradient(120% 85% at 50% 78%,#1B1206 0%,#0A0A0C 55%,#04060A 100%)}
+.beam{position:absolute;left:50%;top:0;bottom:34%;width:.35em;transform:translateX(-50%);
+  background:linear-gradient(180deg,transparent,rgba(255,214,137,.9),rgba(255,138,61,.9));
+  filter:blur(1px);animation:beamIn 1s cubic-bezier(.4,0,.2,1) both}
+@keyframes beamIn{from{opacity:0;transform:translateX(-50%) scaleY(0);transform-origin:top}
+  to{opacity:1;transform:translateX(-50%) scaleY(1)}}
+.horizon{position:absolute;left:-20%;right:-20%;bottom:26%;height:36%;border-radius:50%;
+  background:radial-gradient(50% 60% at 50% 0%,rgba(255,180,90,.55),transparent 70%);
+  animation:fade 1.2s ease .5s both}
+.three{position:absolute;left:9%;right:9%;top:20%;display:flex;flex-direction:column;gap:.45em}
+.three span{font-size:1.75em;font-weight:800;letter-spacing:-.03em;color:var(--paper);
+  animation:settle .6s cubic-bezier(.2,.85,.2,1) both}
+.three span:nth-child(1){animation-delay:.6s}
+.three span:nth-child(2){animation-delay:.95s}
+.three span:nth-child(3){animation-delay:1.3s}
+.three span em{font-style:normal;color:var(--gold)}
+.s6 .sum{position:absolute;left:9%;right:9%;top:47%;font-size:1.45em;font-weight:700;color:var(--paper);
+  line-height:1.25;animation:settle .7s ease 2.1s both}
+.s6 .sum u{text-decoration:none;color:var(--gold);position:relative}
+.s6 .sum u::after{content:"";position:absolute;left:0;right:0;bottom:-.16em;height:.07em;background:var(--gold);
+  transform:scaleX(0);transform-origin:left;animation:grow .7s cubic-bezier(.6,0,.2,1) 2.9s both}
+.s6 .card{position:absolute;left:0;right:0;bottom:15%;text-align:center;font-family:var(--mono);
+  font-size:1.05em;letter-spacing:.34em;color:#fff;animation:settle .9s ease 3.9s both}
+
+/* ---------- kontroller ---------- */
+.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px solid var(--shell-line);padding-top:16px}
+button.ctl{appearance:none;border:1px solid var(--shell-line);background:var(--shell-2);color:var(--shell-text);
+  border-radius:999px;height:38px;padding:0 18px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;cursor:pointer}
+button.ctl:hover{background:#1A1E25}
+button.ctl.primary{background:var(--gold);border-color:var(--gold);color:#1B1203;font-weight:500}
+.track{flex:1;min-width:200px;height:6px;border-radius:999px;background:var(--shell-2);position:relative;
+  overflow:hidden;cursor:pointer;border:1px solid var(--shell-line)}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold);width:0}
+.track .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--shell);opacity:.9}
+.time{font-family:var(--mono);font-size:12px;color:var(--shell-dim);font-variant-numeric:tabular-nums}
+.script{border-top:1px solid var(--shell-line);padding-top:14px;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.script div{font-size:12px;line-height:1.65;color:var(--shell-dim)}
+.script b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
+.note{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--shell-dim);border-top:1px solid var(--shell-line);
+  padding-top:14px;max-width:74ch}
+.note b{color:var(--shell-text);font-weight:500}
+@media (prefers-reduced-motion:reduce){.scene *{animation-duration:1ms !important;animation-delay:0ms !important;animation-iteration-count:1 !important}}
+@media (max-width:640px){.stage{height:min(62vh,560px)}.hud{flex-direction:column;align-items:flex-start}}
+</style>
+
+<div class="app">
+  <header class="hud">
+    <div>
+      <h1>Girişim Senaryosu — <em>sahne grafikleri</em></h1>
+      <div class="meta">9:16 · 6 sahne · videonun kendi zaman kodlarına göre</div>
+    </div>
+    <nav class="chips" id="chips" aria-label="Sahneler"></nav>
+  </header>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+
+      <!-- 01 -->
+      <section class="scene s1">
+        <span class="tc">00:04 — 00:09</span>
+        <div class="old">
+          <div><span>daha fazla</span> SATIŞ<i></i></div>
+          <div><span>daha fazla</span> REKLAM<i></i></div>
+          <div><span>daha fazla</span> SERMAYE<i></i></div>
+        </div>
+        <div class="new"><b>SİSTEM</b><b>EKİP</b><b>NETWORK</b></div>
+        <div class="foot">Bir şirketi büyüten sadece para değildir.</div>
+        <div class="ember"></div><div class="grain"></div>
+      </section>
+
+      <!-- 02 -->
+      <section class="scene s2">
+        <span class="tc">00:20 — 00:25</span>
+        <div class="ring"></div>
+        <div class="lone">
+          <svg viewBox="0 0 100 130" aria-hidden="true">
+            <circle cx="50" cy="30" r="21" fill="#FF8A3D"/>
+            <path d="M8 130v-16c0-25 19-42 42-42s42 17 42 42v16z" fill="#FF8A3D"/>
+          </svg>
+        </div>
+        <div class="txt">
+          <span class="small">Sorun yetersiz çalışmak değilmiş.</span>
+          <span class="big">Sorun <em>yalnız</em><span class="mask"><span class="w">çalışmak.</span></span></span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 03 -->
+      <section class="scene s3">
+        <span class="tc">00:28 — 00:35</span>
+        <svg class="link" viewBox="0 0 30 300" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M15 30 C 3 70, 27 96, 15 138"/>
+          <path d="M15 162 C 3 202, 27 228, 15 270"/>
+        </svg>
+        <div class="rows">
+          <div class="row"><span class="n">1</span><span class="txt">
+            <span class="cond">Doğru sistem yoksa</span><span class="res">işler büyüdükçe karmaşıklaşır</span></span></div>
+          <div class="row"><span class="n">2</span><span class="txt">
+            <span class="cond">Doğru ekip yoksa</span><span class="res">en iyi fikir bile ilerlemez</span></span></div>
+          <div class="row"><span class="n">3</span><span class="txt">
+            <span class="cond">Doğru çevre yoksa</span><span class="res">aynı hatayı tekrar tekrar yaparsınız</span></span></div>
+        </div>
+        <div class="ember"></div><div class="grain"></div>
+      </section>
+
+      <!-- 04 -->
+      <section class="scene s4">
+        <span class="tc">00:38 — 00:44</span>
+        <div class="net">
+          <svg viewBox="0 0 300 300" aria-hidden="true">
+            <g class="spokes">
+              <path class="spoke" d="M150 150 L60 60"/>
+              <path class="spoke" d="M150 150 L240 60"/>
+              <path class="spoke" d="M150 150 L60 240"/>
+              <path class="spoke" d="M150 150 L240 240"/>
+            </g>
+            <path class="mesh" d="M60 60 L240 60"/>
+            <path class="mesh" d="M240 60 L240 240"/>
+            <path class="mesh" d="M240 240 L60 240"/>
+            <path class="mesh" d="M60 240 L60 60"/>
+            <circle class="node" cx="60" cy="60" r="11"/>
+            <circle class="node" cx="240" cy="60" r="11"/>
+            <circle class="node" cx="60" cy="240" r="11"/>
+            <circle class="node" cx="240" cy="240" r="11"/>
+            <circle class="me" cx="150" cy="150" r="17"/>
+            <text class="melabel" x="150" y="188" text-anchor="middle">SEN</text>
+          </svg>
+        </div>
+        <div class="ask">
+          <span class="q">Bu yapı <b>bensiz</b> çalışabilir mi?</span>
+          <span class="s">GERÇEK GİRİŞİMCİLİK HER İŞİ KENDİN YAPMAK DEĞİL</span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 05 -->
+      <section class="scene s5">
+        <span class="tc">00:46 — 00:54</span>
+        <div class="lacks"><span>çevresi yok</span><span>yol gösteren yok</span><span>tecrübe ağı yok</span></div>
+        <div class="web">
+          <svg viewBox="0 0 300 300" aria-hidden="true">
+            <line x1="48" y1="96" x2="150" y2="42" style="animation-delay:3.6s"/>
+            <line x1="150" y1="42" x2="252" y2="104" style="animation-delay:3.75s"/>
+            <line x1="252" y1="104" x2="214" y2="220" style="animation-delay:3.9s"/>
+            <line x1="214" y1="220" x2="96" y2="238" style="animation-delay:4.05s"/>
+            <line x1="96" y1="238" x2="48" y2="96" style="animation-delay:4.2s"/>
+            <line x1="48" y1="96" x2="160" y2="150" style="animation-delay:4.35s"/>
+            <line x1="160" y1="150" x2="252" y2="104" style="animation-delay:4.45s"/>
+            <line x1="160" y1="150" x2="214" y2="220" style="animation-delay:4.55s"/>
+            <line x1="160" y1="150" x2="96" y2="238" style="animation-delay:4.65s"/>
+            <line x1="160" y1="150" x2="150" y2="42" style="animation-delay:4.75s"/>
+            <circle cx="48" cy="96" r="9" style="animation-delay:3.5s"/>
+            <circle cx="150" cy="42" r="9" style="animation-delay:3.65s"/>
+            <circle cx="252" cy="104" r="9" style="animation-delay:3.8s"/>
+            <circle cx="214" cy="220" r="9" style="animation-delay:3.95s"/>
+            <circle cx="96" cy="238" r="9" style="animation-delay:4.1s"/>
+            <circle cx="160" cy="150" r="13" style="animation-delay:4.3s"/>
+          </svg>
+        </div>
+        <div class="brand">ANADOLU GİRİŞİM AĞI
+          <small>İnsanlar çoğu zaman fikirden değil, yalnızlıktan kaybediyor.</small>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 06 -->
+      <section class="scene s6">
+        <span class="tc">01:02 — 01:10</span>
+        <div class="beam"></div>
+        <div class="horizon"></div>
+        <div class="three">
+          <span>doğru <em>network</em></span>
+          <span>doğru <em>sistem</em></span>
+          <span>doğru <em>ekip</em></span>
+        </div>
+        <div class="sum">bir girişimcinin <u>en büyük sermayesidir</u>.</div>
+        <div class="card">GİRİŞİM SENARYOSU</div>
+        <div class="grain"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctl primary" id="play">DURAKLAT</button>
+    <button class="ctl" id="replay">BAŞTAN</button>
+    <div class="track" id="track" role="slider" aria-label="Zaman çizelgesi" tabindex="0" aria-valuemin="0" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="time"><span id="now">0.0</span> / <span id="total">0.0</span> sn</div>
+  </div>
+
+  <div class="script">
+    <div><b>00:04 · PARA DEĞİL</b>"Herkes daha fazla satışın, reklamın, sermayenin peşinde. Ama bir şirketi büyüten sadece para değildir: sistemdir, ekiptir, network'tür."</div>
+    <div><b>00:20 · YALNIZ</b>"Sorun yetersiz çalışmak değilmiş. Sorun yalnız çalışmak."</div>
+    <div><b>00:28 · ÜÇ KOŞUL</b>"Doğru sistem yoksa işler karmaşıklaşır, doğru ekip yoksa en iyi fikir ilerlemez, doğru çevre yoksa aynı hatayı tekrarlarsınız."</div>
+    <div><b>00:38 · BENSİZ</b>"Bir işe başlarken ilk baktığım şey: bu yapı bensiz çalışabilir mi?"</div>
+    <div><b>00:46 · AĞ</b>"Anadolu'da çok iyi fikir var ama çevre yok, yol gösteren yok, ağ yok."</div>
+    <div><b>01:02 · SERMAYE</b>"Doğru network, doğru sistem, doğru ekip bir girişimcinin en büyük sermayesidir."</div>
+  </div>
+
+  <p class="note">
+    Zaman kodları videonun kendi akışına göre; her sahne o anda görüntünün üstüne (ya da tam ekran kesme olarak) düşecek şekilde tasarlandı.
+    Metin <b>konuşmadan otomatik çıkarıldı</b>, kelimeler kulakla değil modelle yazıldı — yayına almadan önce cümleleri bir kez okuyun.
+  </p>
+</div>
+
+<script>
+const SCENES = [
+  { id:"01", ad:"PARA DEĞİL", dur:5000 },
+  { id:"02", ad:"YALNIZ",     dur:4200 },
+  { id:"03", ad:"ÜÇ KOŞUL",   dur:5200 },
+  { id:"04", ad:"BENSİZ",     dur:5600 },
+  { id:"05", ad:"AĞ",         dur:6000 },
+  { id:"06", ad:"SERMAYE",    dur:5400 }
+];
+const el = id => document.getElementById(id);
+const stage = el("stage"), scenes = [...stage.querySelectorAll(".scene")], chips = el("chips");
+const starts = SCENES.reduce((a,s,i)=>(a.push(i ? a[i-1] + SCENES[i-1].dur : 0), a), []);
+const TOTAL = SCENES.reduce((a,s)=>a + s.dur, 0);
+el("total").textContent = (TOTAL/1000).toFixed(1);
+el("track").setAttribute("aria-valuemax",(TOTAL/1000).toFixed(1));
+SCENES.forEach((s,i)=>{
+  const b = document.createElement("button");
+  b.className = "chip"; b.type = "button"; b.innerHTML = "<b>"+s.id+"</b>"+s.ad;
+  b.addEventListener("click",()=>seek(starts[i]));
+  chips.appendChild(b);
+  if(i){ const t = document.createElement("div"); t.className = "tick";
+         t.style.left = (starts[i]/TOTAL*100)+"%"; el("track").appendChild(t); }
+});
+const chipEls = [...chips.children];
+let t = 0, current = -1, playing = true, last = performance.now();
+const sceneAt = ms => { let i = SCENES.length-1; while(i > 0 && ms < starts[i]) i--; return i; };
+function activate(i){
+  scenes.forEach((s,k)=>{
+    if(k === i){ s.classList.add("reset"); void s.offsetWidth; s.classList.remove("reset"); s.classList.add("active"); }
+    else s.classList.remove("active");
+  });
+  chipEls.forEach((c,k)=>c.setAttribute("aria-current", k === i ? "true" : "false"));
+  current = i;
+}
+function seek(ms){ t = Math.max(0, Math.min(TOTAL-1, ms)); activate(sceneAt(t)); render(); }
+function render(){
+  el("fill").style.width = (t/TOTAL*100)+"%";
+  el("now").textContent = (t/1000).toFixed(1);
+  el("track").setAttribute("aria-valuenow",(t/1000).toFixed(1));
+}
+function setPlaying(v){ playing = v; stage.classList.toggle("paused", !v); el("play").textContent = v ? "DURAKLAT" : "OYNAT"; }
+el("play").addEventListener("click",()=>setPlaying(!playing));
+el("replay").addEventListener("click",()=>{ seek(0); setPlaying(true); });
+el("track").addEventListener("click",e=>{ const r = e.currentTarget.getBoundingClientRect(); seek((e.clientX-r.left)/r.width*TOTAL); });
+el("track").addEventListener("keydown",e=>{
+  if(e.key === "ArrowRight") seek(t+500); else if(e.key === "ArrowLeft") seek(t-500); else return; e.preventDefault();
+});
+document.addEventListener("keydown",e=>{
+  if(e.code === "Space" && e.target === document.body){ e.preventDefault(); setPlaying(!playing); }
+});
+activate(0); render();
+requestAnimationFrame(function loop(now){
+  const dt = now - last; last = now;
+  if(playing){
+    t += dt; if(t >= TOTAL) t -= TOTAL;
+    const i = sceneAt(t); if(i !== current) activate(i);
+    render();
+  }
+  requestAnimationFrame(loop);
+});
+</script>
