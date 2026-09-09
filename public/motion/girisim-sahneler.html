@@ -227,6 +227,17 @@ button.ctl.primary{background:var(--gold);border-color:var(--gold);color:#1B1203
 .note{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--shell-dim);border-top:1px solid var(--shell-line);
   padding-top:14px;max-width:74ch}
 .note b{color:var(--shell-text);font-weight:500}
+/* ---------- render modu (Premiere için kare kare dışa aktarım) ---------- */
+body.render{background:transparent;padding:0}
+body.render .app{padding:0;gap:0;max-width:none}
+body.render .hud,body.render .controls,body.render .script,body.render .note,body.render .tc{display:none}
+body.render .stage-wrap{justify-content:flex-start}
+body.render .stage{height:1920px;width:1080px;max-width:none;border-radius:0;box-shadow:none;
+  font-size:43.6px;aspect-ratio:auto}
+body.render.alpha .stage{background:transparent}
+body.render.alpha .scene{background:none}
+body.render.alpha .grain{display:none}
+
 @media (prefers-reduced-motion:reduce){.scene *{animation-duration:1ms !important;animation-delay:0ms !important;animation-iteration-count:1 !important}}
 @media (max-width:640px){.stage{height:min(62vh,560px)}.hud{flex-direction:column;align-items:flex-start}}
 </style>
@@ -443,10 +454,29 @@ el("track").addEventListener("keydown",e=>{
 document.addEventListener("keydown",e=>{
   if(e.code === "Space" && e.target === document.body){ e.preventDefault(); setPlaying(!playing); }
 });
+/* render modu: ?render=1[&alpha=1][&scene=N] */
+const params = new URLSearchParams(location.search);
+const RENDER = params.has("render");
+if(RENDER){
+  document.body.classList.add("render");
+  if(params.has("alpha")) document.body.classList.add("alpha");
+}
+window.__render = {
+  scene(i){ setPlaying(false); activate(i); },
+  /* o sahnedeki tüm animasyonları verilen ana sabitle */
+  time(ms){
+    scenes[current].getAnimations({subtree:true}).forEach(a=>{
+      try{ a.pause(); a.currentTime = ms; }catch(e){}
+    });
+  },
+  count(){ return SCENES.length; },
+  durations(){ return SCENES.map(s=>s.dur); }
+};
+
 activate(0); render();
 requestAnimationFrame(function loop(now){
   const dt = now - last; last = now;
-  if(playing){
+  if(playing && !RENDER){
     t += dt; if(t >= TOTAL) t -= TOTAL;
     const i = sceneAt(t); if(i !== current) activate(i);
     render();
