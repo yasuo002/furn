@@ -40,3 +40,50 @@ gözlemler. Yeni bir cümle geldiğinde sahneler bu kurallara göre kurulur.
 
 Geçiş öğeleri: köşelerden geçen beyaz bıçak/kağıt uçak şekilleri, ince ızgara,
 grenli doku. Her sahne bir "süpürme" ile açılır.
+
+---
+
+# Üçüncü referans: "$5 Edit vs $999 Edit" (22 sn, 9:16, 30 fps)
+
+Öncekilerden farklı bir tür: **kesme yok**. Tek çekim, aynı ham görüntü iki kurguyla
+yan yana oynatılıyor. İddia görüntüde değil, kurguda.
+
+## Sahne düzeni (kabuk)
+- Zemin: açık gri stüdyo fonu, üzerinden geçen **yumuşak ışık şeritleri** (yavaş, sürekli).
+- Solda küçük kart: **"$5 Edit"** — ham çekim; sabit geniş plan, altyazı yok, grafik yok, renk düzeltmesi yok.
+- Sağda büyük kart: **"$999 Edit"** — aynı an, aynı ses; kurgulanmış hâli.
+- İki kart da yuvarlak köşeli, gölgeli; etiketler kartların üstünde kalın siyah grotesk.
+- Altta sabit CTA: **Comment "Raw"** (ağır siyah) + *To get the raw video* (ince ikinci satır).
+- Boyut farkı argümanın kendisi: ucuz kurgu küçük ve sönük, pahalı kurgu büyük ve canlı.
+
+## Pahalı kurguda ne var (ham çekimde olmayan)
+1. **Kahraman kelime altyazısı** — beyaz kalın grotesk iki satır, aralarına **altın rengi
+   el yazısı/script** ile anahtar kelime (≈2× punto, hafif eğik, yumuşak parlama).
+   Kelime satırın *üstüne biniyor*, ayrı satıra çıkmıyor.
+2. **Plan büyütme (punch-in)** — kesme yerine kadraj değişimi: geniş plandan yüz planına.
+   Küçük kart hep aynı planda kalır, fark böyle görünür hale gelir.
+3. **Bölüm rozetleri** — yuvarlak kare çerçeveli numara ("1", "2 Sales"); ekranın ortasında
+   parlayarak açılır, sonra köşeye küçülerek yerleşir ve konu boyunca orada kalır.
+4. **Noktalı yol** — rozetler arasında el çizimi hissi veren kesikli çizgi, ucunda küçük ok.
+   Adımların sırasını görsel olarak bağlar.
+5. **Kavram grafikleri** — konuyu resmeden basit semboller:
+   - **Terazi**: siyah silüet, kefelerde yeşil parlayan etiketler ("Distribution", "Marketing"),
+     kefeler dengesizliği gösterecek şekilde eğik.
+   - **Piramit**: üç kademe, alttan üste doğru açılır; koyu tepe → parlak taban,
+     beyaz kalın numaralar, yanlarında etiketler ve noktalı bağlantılar.
+6. **Renk dünyası birliği** — grafik sahnelerin zemini, çekimdeki yeşil fonun aynı tonu
+   (koyu yeşil radyal vinyet + gren). Grafik "üstüne yapıştırılmış" değil, sahnenin içinde duruyor.
+
+## Ritim (ölçüm)
+- Tam ekran grafik ↔ yüz geçişleri: 3.4 / 7.4 / 9.6 / 10.2 / 19.8 sn.
+- Grafik bölümleri ~3–4,5 sn, yüz bölümleri ~2–3 sn — önceki iki videoyla aynı tempo.
+- Yani "her 3 saniyede yeni görsel sebep" kuralı burada da geçerli; sadece kesmeyle değil,
+  **grafik değiştirerek** uygulanıyor.
+
+## Çıkarılan kurallar
+- Bir fikri anlatmak için gerçek görüntü şart değil: **silüet + etiket** yeter (terazi, piramit).
+- Numaralandırma ancak gerçekten sıra varsa kullanılıyor; rozet konu boyunca ekranda kalarak
+  izleyiciye "neredeyiz" bilgisini veriyor.
+- Vurgu tek kelimede ve tek biçimde: renk + yazı karakteri aynı anda değişiyor, punto ile birlikte.
+- Karşılaştırma videosunda **ham taraf hiç dokunulmadan** bırakılıyor; kurgunun katkısı ancak
+  yan yana görülünce anlaşılıyor.
