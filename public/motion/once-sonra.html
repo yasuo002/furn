@@ -1,0 +1,650 @@
+<title>Önce/Sonra Sahne Kurgusu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,600&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,600;1,500;1,700&display=swap">
+
+<style>
+:root{
+  --paper:#F4F4F0;
+  --paper-2:#E9E9E2;
+  --ink:#12140F;
+  --ink-soft:#5A5F52;
+  --mist:#DCDDD4;
+  --neon:#7CEE00;
+  --neon-deep:#4E9E00;
+  --night:#050A16;
+  --night-2:#0D1B3A;
+  --gold:#E8E44A;
+  --shell:#0C0D0B;
+  --shell-2:#16180F;
+  --shell-line:#282B22;
+  --shell-text:#F0F1EA;
+  --shell-dim:#8B9080;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 700px at 50% -10%, #1B1E15 0%, transparent 60%),
+    var(--shell);
+  color:var(--shell-text);
+  font-family:var(--sans);
+  min-height:100vh;
+}
+.app{
+  max-width:1080px;margin:0 auto;padding:22px 20px 40px;
+  display:flex;flex-direction:column;gap:18px;
+}
+
+/* ---------- HUD ---------- */
+.hud{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.hud h1{
+  font-size:19px;font-weight:700;letter-spacing:-.01em;margin:0;
+}
+.hud h1 em{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--neon)}
+.hud .meta{
+  font-family:var(--mono);font-size:11px;color:var(--shell-dim);
+  letter-spacing:.08em;text-transform:uppercase;margin-top:5px;
+}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--shell-dim);background:transparent;border:1px solid var(--shell-line);
+  border-radius:999px;padding:6px 11px;cursor:pointer;
+  display:flex;align-items:center;gap:7px;
+  transition:color .2s,border-color .2s,background .2s;
+}
+.chip b{color:#55594B;font-weight:500;transition:color .2s}
+.chip:hover{border-color:#3E4235;color:var(--shell-text)}
+.chip[aria-current="true"]{background:var(--neon);border-color:var(--neon);color:#0A1400}
+.chip[aria-current="true"] b{color:#3B6B00}
+.chip:focus-visible,button:focus-visible{outline:2px solid var(--neon);outline-offset:3px}
+
+/* ---------- STAGE ---------- */
+.stage-wrap{display:flex;justify-content:center}
+.stage{
+  position:relative;overflow:hidden;
+  aspect-ratio:9/16;height:min(72vh,720px);width:auto;max-width:100%;
+  border-radius:22px;background:var(--paper);
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.8),0 0 0 1px var(--shell-line);
+  /* type scale locked to the frame so every scene scales as one */
+  font-size:clamp(9px,calc(min(72vh,720px)/44),17px);
+  color:var(--ink);
+  user-select:none;
+}
+.scene{
+  position:absolute;inset:0;opacity:0;pointer-events:none;
+  transition:opacity .34s ease;
+}
+.scene.active{opacity:1}
+.scene.reset *{animation:none !important}
+.scene:not(.active) *,.stage.paused *{animation-play-state:paused !important}
+
+/* neon wipe that opens every scene */
+.sweep{position:absolute;inset:0;z-index:9;pointer-events:none;overflow:hidden}
+.sweep::after{
+  content:"";position:absolute;top:0;bottom:0;width:34%;
+  background:linear-gradient(90deg,transparent,rgba(124,238,0,.55),rgba(255,255,255,.9),transparent);
+  transform:translateX(-140%);
+  animation:sweep .62s cubic-bezier(.7,0,.2,1) both;
+}
+@keyframes sweep{to{transform:translateX(420%)}}
+
+/* ---------- shared keyframes ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(9%) scale(.965)}to{opacity:1;transform:none}}
+@keyframes wordUp{from{transform:translateY(112%);opacity:0}to{transform:none;opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.35) rotate(-24deg)}62%{opacity:1;transform:scale(1.14) rotate(5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes blurUp{from{opacity:0;filter:blur(16px);transform:translateY(14%) scale(1.05)}to{opacity:1;filter:blur(0);transform:none}}
+@keyframes wipeR{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes drift{0%{transform:translateY(0)}50%{transform:translateY(-1.1%)}100%{transform:translateY(0)}}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes gemGlow{0%,100%{filter:drop-shadow(0 0 .8em rgba(124,238,0,.45))}50%{filter:drop-shadow(0 0 1.9em rgba(124,238,0,.85))}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ---------- SCENE 1 ---------- */
+.sc1{background:radial-gradient(120% 80% at 50% 0%,#FFFFFF 0%,var(--paper) 55%,var(--paper-2) 100%)}
+.s1-hero{position:absolute;left:8%;right:8%;top:7%;display:flex;flex-direction:column;align-items:center}
+.s1-avatar{position:relative;width:56%;animation:rise .9s cubic-bezier(.2,.8,.2,1) both,drift 5s ease-in-out 1s infinite}
+.s1-avatar svg{width:100%;display:block}
+.s1-badge{
+  position:absolute;left:-4%;bottom:16%;width:22%;
+  animation:pop .58s cubic-bezier(.3,1.5,.4,1) 1.15s both;
+}
+.s1-card{
+  width:100%;margin-top:-9%;background:rgba(255,255,255,.94);
+  border-radius:1.1em;padding:1.05em 1.1em 1.3em;
+  box-shadow:0 1.4em 2.6em -1.2em rgba(18,20,15,.28);
+  animation:rise .85s cubic-bezier(.2,.8,.2,1) .38s both;
+}
+.dots{display:flex;align-items:center;gap:.42em;margin-bottom:1.15em}
+.dots i{width:.52em;height:.52em;border-radius:50%;background:var(--mist);display:block}
+.dots i:first-child{background:var(--ink)}
+.dots .url{
+  flex:1;text-align:center;font-family:var(--mono);font-size:.82em;
+  color:var(--ink-soft);letter-spacing:.01em;
+  animation:fadeIn .5s ease .95s both;
+}
+.card-body{display:flex;align-items:center;gap:1.1em}
+.gem{width:32%;flex:none;animation:pop .7s cubic-bezier(.3,1.4,.4,1) .78s both,gemGlow 2.6s ease-in-out 1.5s infinite}
+.gem svg{width:100%;display:block}
+.skel{flex:1;display:flex;flex-direction:column;gap:.55em}
+.skel span{height:.82em;border-radius:.42em;background:var(--mist);transform-origin:left;animation:barGrow .55s cubic-bezier(.2,.9,.2,1) both}
+.skel span:nth-child(1){animation-delay:.95s}
+.skel span:nth-child(2){width:72%;animation-delay:1.08s}
+.skel span:nth-child(3){width:52%;animation-delay:1.2s}
+.caption{
+  position:absolute;left:8%;right:8%;bottom:26%;display:flex;justify-content:center;
+}
+.caption span{
+  background:rgba(20,22,16,.82);color:var(--gold);
+  font-size:1.15em;font-weight:600;letter-spacing:-.01em;
+  padding:.34em .5em;border-radius:.18em;
+  animation:fadeIn .22s linear both;
+}
+.caption span+span{margin-left:.3em}
+.caption span:nth-child(1){animation-delay:1.7s}
+.caption span:nth-child(2){animation-delay:1.9s}
+.caption span:nth-child(3){animation-delay:2.1s}
+.caption span:nth-child(4){animation-delay:2.3s}
+.mark{
+  position:absolute;left:0;right:0;bottom:14%;text-align:center;
+  font-family:var(--serif);font-size:2.5em;line-height:1;color:var(--ink);
+}
+.mark .a{font-weight:600}
+.mark .b{font-style:italic;font-weight:700}
+.mark .slash{font-weight:400;opacity:.55;margin:0 .04em}
+.mark.anim{animation:wipeR .7s cubic-bezier(.65,0,.2,1) 2.6s both}
+.tagline{
+  position:absolute;left:0;right:0;bottom:9.5%;text-align:center;
+  font-family:var(--mono);font-size:.82em;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-soft);animation:fadeIn .6s ease 3.25s both;
+}
+
+/* ---------- SCENE 2 ---------- */
+.sc2{background:linear-gradient(180deg,#FBFAF6 0%,#EFEEE6 100%)}
+.shop{
+  position:absolute;left:6.5%;right:6.5%;top:6%;bottom:18%;
+  background:#FCFBF6;border-radius:1.1em;overflow:hidden;
+  box-shadow:0 1.6em 3em -1.4em rgba(18,20,15,.3);
+  animation:rise .8s cubic-bezier(.2,.8,.2,1) both;
+}
+.shop-top{
+  position:relative;z-index:2;background:#FCFBF6;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.95em 1.1em;border-bottom:1px solid #EAE7DC;
+}
+.shop-top svg{display:block}
+.shop-icons{display:flex;align-items:center;gap:.85em}
+.shop-scroll{padding:1.05em 1.1em;animation:shopScroll 4.6s cubic-bezier(.4,0,.2,1) .5s both}
+@keyframes shopScroll{0%,22%{transform:translateY(0)}100%{transform:translateY(-8%)}}
+.lbl{font-size:.92em;color:var(--ink-soft);margin-bottom:.6em}
+.lbl b{color:var(--ink);font-weight:600}
+.swatches{display:flex;gap:.55em;margin-bottom:1.15em}
+.swatches i{
+  width:2.35em;height:2.35em;border-radius:.22em;border:1px solid #DDD9CC;display:block;
+}
+.swatches i.sel{animation:swatchSel .5s cubic-bezier(.3,1.3,.4,1) 1.15s both}
+@keyframes swatchSel{from{box-shadow:0 0 0 0 rgba(18,20,15,0)}to{box-shadow:0 0 0 .16em #12140F}}
+.sizes{display:flex;gap:.55em;margin-bottom:.9em}
+.sizes i{
+  width:2.6em;height:2.1em;border:1px solid #DDD9CC;border-radius:.2em;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82em;font-style:normal;color:var(--ink-soft);
+}
+.sizes i.sel{color:var(--ink);animation:sizeSel .45s cubic-bezier(.3,1.3,.4,1) 1.5s both}
+@keyframes sizeSel{from{box-shadow:0 0 0 0 rgba(18,20,15,0)}to{box-shadow:0 0 0 .13em #12140F}}
+.links{display:flex;flex-direction:column;gap:.42em;margin-bottom:1.1em}
+.links span{font-size:.86em;color:var(--ink);text-decoration:underline;text-underline-offset:.22em}
+.combo{border:1px solid #EAE7DC;border-radius:.5em;padding:.85em}
+.combo p{margin:0 0 .75em;font-size:.86em;font-weight:600;color:var(--ink)}
+.combo-row{display:flex;gap:.6em}
+.mini{flex:1;display:flex;gap:.55em;align-items:center}
+.mini .ph{width:3.1em;height:3.9em;border-radius:.2em;background:linear-gradient(160deg,#E6E3D8,#D3CFC1);flex:none}
+.mini .t{font-size:.72em;line-height:1.35;color:var(--ink)}
+.mini .t s{color:#B4382F;opacity:.75}
+.panel{
+  position:absolute;left:9%;right:9%;top:36%;
+  background:rgba(250,249,245,.72);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-radius:.7em;padding:2.1em 1.2em 2.3em;text-align:center;
+  box-shadow:0 1.4em 3em -1.4em rgba(18,20,15,.4);
+  animation:blurUp .95s cubic-bezier(.2,.85,.2,1) 2.3s both;
+}
+.panel .dots-sm{display:flex;gap:.4em;justify-content:flex-start;margin-bottom:1.6em}
+.panel .dots-sm i{width:.48em;height:.48em;border-radius:50%;background:var(--mist)}
+.panel .dots-sm i:first-child{background:var(--ink)}
+.mask{overflow:hidden;display:block}
+.panel .l1{
+  display:block;font-size:2.35em;font-weight:800;letter-spacing:-.035em;line-height:1;color:#3A3D33;
+  animation:wordUp .72s cubic-bezier(.2,.9,.2,1) 2.75s both;
+}
+.panel .l2{
+  display:block;font-family:var(--serif);font-style:italic;font-weight:500;
+  font-size:2.05em;line-height:1.15;color:#3A3D33;
+  animation:wordUp .72s cubic-bezier(.2,.9,.2,1) 2.95s both;
+}
+.panel .q{
+  position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);
+  font-family:var(--serif);font-size:7.5em;line-height:1;
+  color:rgba(58,61,51,.09);animation:qPop .9s cubic-bezier(.3,1.3,.4,1) 3.2s both;
+}
+@keyframes qPop{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.panel .dot-b{width:.5em;height:.5em;border-radius:50%;background:var(--mist);margin:1.7em auto 0;animation:fadeIn .5s ease 3.5s both}
+.sc2 .mark{bottom:8%;font-size:2.2em;animation:wipeR .7s cubic-bezier(.65,0,.2,1) 3.9s both}
+
+/* ---------- SCENE 3 ---------- */
+.sc3{background:radial-gradient(120% 90% at 50% 30%,#12224A 0%,var(--night-2) 38%,var(--night) 100%);color:#fff}
+.bill{
+  position:absolute;left:12%;right:12%;top:12%;
+  animation:rise 1s cubic-bezier(.2,.8,.2,1) .15s both,billTilt 6s ease-in-out .9s infinite;
+}
+@keyframes billTilt{0%,100%{transform:rotate(-7deg) translateY(0)}50%{transform:rotate(-4.5deg) translateY(-2%)}}
+.bill svg{width:100%;display:block;filter:drop-shadow(0 1.2em 2em rgba(0,0,0,.55))}
+.rows{position:absolute;left:13%;right:13%;top:38%;display:flex;flex-direction:column;gap:1.5em}
+.row{display:flex;align-items:center;gap:1.1em;font-size:1.5em;font-weight:600;letter-spacing:-.02em}
+.row .ring{
+  width:1.65em;height:1.65em;border-radius:50%;flex:none;
+  border:.12em solid rgba(255,255,255,.85);
+}
+.row.before{animation:fadeIn .7s ease .55s both;color:rgba(255,255,255,.9)}
+.row.after{animation:fadeIn .7s ease 1.15s both}
+.row.after .ring{
+  border-color:var(--neon);
+  animation:ringGlow .7s ease 1.6s both;
+}
+@keyframes ringGlow{from{box-shadow:0 0 0 0 rgba(124,238,0,0)}to{box-shadow:0 0 1.4em .1em rgba(124,238,0,.55)}}
+.row .amt{font-variant-numeric:tabular-nums}
+.row.after .amt{color:#fff}
+.row .cap{
+  font-family:var(--mono);font-size:.5em;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);display:block;margin-bottom:.2em;font-weight:400;
+}
+.money-copy{position:absolute;left:9%;right:9%;bottom:16%;text-align:center}
+.money-copy .l1{
+  display:block;font-size:2.5em;font-weight:800;letter-spacing:-.035em;line-height:1;
+  animation:wordUp .8s cubic-bezier(.2,.9,.2,1) 2.5s both;
+}
+.money-copy .l1 b{color:#fff;font-weight:800}
+.money-copy .l1 span{color:rgba(255,255,255,.72);font-weight:400}
+.money-copy .l2{
+  display:block;font-family:var(--serif);font-style:italic;font-weight:500;font-size:2.6em;line-height:1.15;
+  color:#fff;animation:wordUp .8s cubic-bezier(.2,.9,.2,1) 2.75s both;
+}
+.money-copy .rule{
+  height:.1em;background:var(--neon);width:34%;margin:1.3em auto 0;transform-origin:center;
+  animation:barGrow .7s cubic-bezier(.65,0,.2,1) 3.35s both;
+}
+.sc3 .tagline{color:rgba(255,255,255,.5);animation-delay:3.7s}
+
+/* ---------- SCENE 4 ---------- */
+.sc4{background:radial-gradient(110% 70% at 50% 20%,#FFFFFF,var(--paper) 70%,var(--paper-2))}
+.close{position:absolute;left:9%;right:9%;top:24%;text-align:left}
+.close .eyebrow{
+  font-family:var(--mono);font-size:.8em;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--neon-deep);margin-bottom:1.5em;animation:fadeIn .6s ease .25s both;
+}
+.close .stmt{font-size:2.05em;font-weight:700;letter-spacing:-.03em;line-height:1.16;color:var(--ink)}
+.close .stmt .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+.close .stmt .w i{
+  display:inline-block;font-style:normal;
+  animation:wordUp .62s cubic-bezier(.2,.9,.2,1) both;
+  animation-delay:calc(.55s + var(--i)*.07s);
+}
+.close .stmt em{font-family:var(--serif);font-style:italic;font-weight:700}
+.close .hl{background:linear-gradient(180deg,transparent 62%,rgba(124,238,0,.55) 62%)}
+.close .cta{
+  margin-top:2.4em;display:inline-flex;align-items:center;gap:.7em;
+  font-family:var(--mono);font-size:.86em;letter-spacing:.06em;color:var(--ink);
+  border-bottom:.09em solid var(--ink);padding-bottom:.35em;
+  animation:fadeIn .7s ease 2.4s both;
+}
+.close .cta u{text-decoration:none;color:var(--ink-soft)}
+.sc4 .mark{bottom:11%;font-size:2.6em;animation:wipeR .75s cubic-bezier(.65,0,.2,1) 2s both}
+
+.grain{
+  position:absolute;inset:0;pointer-events:none;z-index:12;opacity:.05;mix-blend-mode:multiply;
+  background-image:radial-gradient(#000 1px,transparent 1px);background-size:3px 3px;
+}
+.safe{position:absolute;inset:0;z-index:11;pointer-events:none;border-radius:22px;
+  box-shadow:inset 0 0 0 1px rgba(18,20,15,.06)}
+
+/* ---------- CONTROLS ---------- */
+.controls{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  border-top:1px solid var(--shell-line);padding-top:16px;
+}
+button.ctl{
+  appearance:none;border:1px solid var(--shell-line);background:var(--shell-2);
+  color:var(--shell-text);border-radius:999px;height:38px;padding:0 18px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  transition:background .2s,border-color .2s;
+}
+button.ctl:hover{background:#1E2117;border-color:#3A3E30}
+button.ctl.primary{background:var(--neon);border-color:var(--neon);color:#0A1400;font-weight:500}
+button.ctl.primary:hover{background:#8DF61B}
+.track{
+  flex:1;min-width:200px;height:6px;border-radius:999px;background:var(--shell-2);
+  position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--shell-line);
+}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:var(--neon);width:0}
+.track .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--shell);opacity:.9}
+.time{font-family:var(--mono);font-size:12px;color:var(--shell-dim);font-variant-numeric:tabular-nums}
+.note{
+  font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--shell-dim);
+  border-top:1px solid var(--shell-line);padding-top:14px;max-width:70ch;
+}
+.note b{color:var(--shell-text);font-weight:500}
+
+@media (prefers-reduced-motion:reduce){
+  .scene *{animation-duration:1ms !important;animation-delay:0ms !important;animation-iteration-count:1 !important}
+}
+@media (max-width:640px){
+  .stage{height:min(62vh,560px)}
+  .hud{align-items:flex-start;flex-direction:column}
+}
+</style>
+
+<div class="app">
+  <header class="hud">
+    <div>
+      <h1>önce<em>/sonra</em> — sahne kurgusu</h1>
+      <div class="meta">9:16 · 4 sahne · 26 sn · döngüde oynar</div>
+    </div>
+    <nav class="chips" id="chips" aria-label="Sahneler"></nav>
+  </header>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+
+      <!-- SAHNE 1 -->
+      <section class="scene sc1">
+        <div class="sweep"></div>
+        <div class="s1-hero">
+          <div class="s1-avatar">
+            <svg viewBox="0 0 200 140" aria-hidden="true">
+              <circle cx="100" cy="38" r="34" fill="#7CEE00"/>
+              <path d="M18 140c0-42 36-64 82-64s82 22 82 64z" fill="#7CEE00"/>
+            </svg>
+            <div class="s1-badge">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M32 2l6.6 6.2 9-1.4 3.1 8.6 8.6 3.1-1.4 9L64 34l-6.1 6.5 1.4 9-8.6 3.1-3.1 8.6-9-1.4L32 66l-6.6-6.2-9 1.4-3.1-8.6-8.6-3.1 1.4-9L0 34l6.1-6.5-1.4-9 8.6-3.1 3.1-8.6 9 1.4z" fill="#0F1109"/>
+                <path d="M24 40L40 24M28 24h12v12" stroke="#fff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <div class="s1-card">
+            <div class="dots"><i></i><i></i><i></i><span class="url">courself.com.tr</span></div>
+            <div class="card-body">
+              <div class="gem">
+                <svg viewBox="0 0 100 128" aria-hidden="true">
+                  <path d="M50 2L96 26v76L50 126 4 102V26z" fill="#5FC400"/>
+                  <path d="M50 2L96 26 50 50 4 26z" fill="#A5FF3A"/>
+                  <path d="M50 50v76L4 102V26z" fill="#7CEE00"/>
+                  <path d="M50 50l46-24v76L50 126z" fill="#4E9E00"/>
+                </svg>
+              </div>
+              <div class="skel"><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">
+          <span>önceki</span><span>öğrencimize</span><span>bu</span><span>ürünü</span>
+        </div>
+        <div class="mark anim"><span class="a">önce</span><span class="slash">/</span><span class="b">sonra</span></div>
+        <div class="tagline">aynı ürün · yeni sunum</div>
+      </section>
+
+      <!-- SAHNE 2 -->
+      <section class="scene sc2">
+        <div class="sweep"></div>
+        <div class="shop">
+          <div class="shop-top">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20c4-1 5-5 3-8s-1-6 3-7 6 2 5 5-3 4-6 3" stroke="#5A4632" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+            <div class="shop-icons">
+              <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#3A3D33" stroke-width="1.7" fill="none"/><path d="M16.5 16.5L21 21" stroke="#3A3D33" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.4 12H5.4z" stroke="#3A3D33" stroke-width="1.7" fill="none"/><path d="M9 8V6a3 3 0 016 0v2" stroke="#3A3D33" stroke-width="1.7" fill="none"/></svg>
+              <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="#3A3D33" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="shop-scroll">
+            <div class="lbl">Renk: <b>Lacivert</b></div>
+            <div class="swatches">
+              <i style="background:#FBFAF6"></i>
+              <i style="background:#5B342A"></i>
+              <i class="sel" style="background:#1B2447"></i>
+              <i style="background:#33381F"></i>
+            </div>
+            <div class="lbl">Beden: <b>S</b></div>
+            <div class="sizes"><i class="sel">S</i><i>M</i><i>L</i><i>XL</i></div>
+            <div class="links"><span>Modelin Beden Bilgileri</span><span>Beden Tablosu</span></div>
+            <div class="combo">
+              <p>Kombinini tamamlamak için sana özel önerilerin:</p>
+              <div class="combo-row">
+                <div class="mini"><div class="ph"></div><div class="t">Semender Nakışlı T-Shirt<br><s>1.500,00 ₺</s></div></div>
+                <div class="mini"><div class="ph"></div><div class="t">Ferro Triko Kazak<br><s>1.090,00 ₺</s></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="dots-sm"><i></i><i></i><i></i></div>
+          <span class="q">?</span>
+          <span class="mask"><span class="l1">soru işareti</span></span>
+          <span class="mask"><span class="l2">bırakma.</span></span>
+          <div class="dot-b"></div>
+        </div>
+        <div class="mark"><span class="a">önce</span><span class="slash">/</span><span class="b">sonra</span></div>
+      </section>
+
+      <!-- SAHNE 3 -->
+      <section class="scene sc3">
+        <div class="sweep"></div>
+        <div class="bill">
+          <svg viewBox="0 0 320 150" aria-hidden="true">
+            <defs>
+              <linearGradient id="pap" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#EDF3E4"/><stop offset=".5" stop-color="#CFDCC0"/><stop offset="1" stop-color="#9FB58C"/>
+              </linearGradient>
+            </defs>
+            <path d="M6 34L314 10l-4 106L10 140z" fill="url(#pap)"/>
+            <path d="M6 34L314 10l-4 106L10 140z" fill="none" stroke="#8FA57C" stroke-width="1.5"/>
+            <path d="M160 22v116" stroke="#B9C9A8" stroke-width="6" opacity=".55"/>
+            <ellipse cx="160" cy="78" rx="30" ry="40" fill="#8FA57C" opacity=".35"/>
+            <ellipse cx="160" cy="70" rx="15" ry="18" fill="#6F8663" opacity=".45"/>
+            <circle cx="62" cy="76" r="24" fill="none" stroke="#8FA57C" stroke-width="1.6" opacity=".7"/>
+            <circle cx="62" cy="76" r="15" fill="none" stroke="#8FA57C" stroke-width="1.6" opacity=".7"/>
+            <circle cx="258" cy="66" r="24" fill="none" stroke="#8FA57C" stroke-width="1.6" opacity=".7"/>
+            <text x="34" y="42" font-family="Georgia,serif" font-size="19" fill="#4F6444">100</text>
+            <text x="266" y="128" font-family="Georgia,serif" font-size="19" fill="#4F6444">100</text>
+          </svg>
+        </div>
+        <div class="rows">
+          <div class="row before">
+            <span class="ring"></span>
+            <span><span class="cap">önce</span><span class="amt">$0,00</span></span>
+          </div>
+          <div class="row after">
+            <span class="ring"></span>
+            <span><span class="cap">sonra</span><span class="amt" id="counter">$0,00</span></span>
+          </div>
+        </div>
+        <div class="money-copy">
+          <span class="mask"><span class="l1"><b>para</b> <span>kazanmayı</span></span></span>
+          <span class="mask"><span class="l2">öğrendin.</span></span>
+          <div class="rule"></div>
+        </div>
+        <div class="tagline">sunum değişti · fiyat değişti</div>
+      </section>
+
+      <!-- SAHNE 4 -->
+      <section class="scene sc4">
+        <div class="sweep"></div>
+        <div class="close">
+          <div class="eyebrow">kapanış</div>
+          <div class="stmt" id="stmt"></div>
+          <div class="cta">courself.com.tr <u>→</u></div>
+        </div>
+        <div class="mark"><span class="a">önce</span><span class="slash">/</span><span class="b">sonra</span></div>
+      </section>
+
+      <div class="grain"></div>
+      <div class="safe"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctl primary" id="play">Duraklat</button>
+    <button class="ctl" id="replay">Baştan</button>
+    <div class="track" id="track" role="slider" aria-label="Zaman çizelgesi" tabindex="0" aria-valuemin="0" aria-valuemax="26" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="time"><span id="now">0.0</span> / <span id="total">0.0</span> sn</div>
+  </div>
+
+  <p class="note">
+    Metinler <b>SCENES</b> dizisinde ve HTML sahnelerinde düz metin olarak duruyor — kendi cümlelerinizle değiştirip
+    süreleri (<b>dur</b>) oynatarak yeniden zamanlayabilirsiniz. Kaydetmek için ekran kaydı alın ya da bana söyleyin,
+    aynı kurguyu kare kare MP4'e alayım.
+  </p>
+</div>
+
+<script>
+const SCENES = [
+  { id:"01", ad:"tarayıcı / rozet", dur:7000 },
+  { id:"02", ad:"soru işareti",     dur:7000 },
+  { id:"03", ad:"para sahnesi",     dur:6800 },
+  { id:"04", ad:"kapanış",          dur:5500 }
+];
+
+const CLOSING = "içeriklerinizin daha fazla bilgiye değil, daha iyi |sunuma| ihtiyacı var.";
+
+// kapanış cümlesini kelime kelime kur (| ile sarılan kelime vurgulanır)
+(function buildClosing(){
+  const host = document.getElementById("stmt");
+  CLOSING.split(" ").forEach((w,i)=>{
+    const hl = w.startsWith("|") && w.endsWith("|");
+    const wrap = document.createElement("span");
+    wrap.className = "w";
+    const inner = document.createElement("i");
+    inner.style.setProperty("--i", i);
+    inner.textContent = hl ? w.slice(1,-1) : w;
+    if(hl) inner.classList.add("hl");
+    wrap.appendChild(inner);
+    host.appendChild(wrap);
+    host.appendChild(document.createTextNode(" "));
+  });
+})();
+
+const stage   = document.getElementById("stage");
+const scenes  = [...stage.querySelectorAll(".scene")];
+const chips   = document.getElementById("chips");
+const fill    = document.getElementById("fill");
+const track   = document.getElementById("track");
+const nowEl   = document.getElementById("now");
+const playBtn = document.getElementById("play");
+
+const starts  = SCENES.reduce((a,s,i)=>(a.push(i?a[i-1]+SCENES[i-1].dur:0),a),[]);
+const TOTAL   = SCENES.reduce((a,s)=>a+s.dur,0);
+document.getElementById("total").textContent = (TOTAL/1000).toFixed(1);
+track.setAttribute("aria-valuemax",(TOTAL/1000).toFixed(1));
+
+SCENES.forEach((s,i)=>{
+  const b = document.createElement("button");
+  b.className = "chip"; b.type = "button";
+  b.innerHTML = "<b>"+s.id+"</b>"+s.ad;
+  b.addEventListener("click",()=>seek(starts[i]));
+  chips.appendChild(b);
+  // sahne süresini zaman çizelgesine tik olarak işle
+  if(i){ const t=document.createElement("div"); t.className="tick";
+         t.style.left=(starts[i]/TOTAL*100)+"%"; track.appendChild(t); }
+});
+const chipEls = [...chips.children];
+
+let t = 0, current = -1, playing = true, last = performance.now();
+
+function sceneAt(ms){
+  let i = SCENES.length - 1;
+  while(i > 0 && ms < starts[i]) i--;
+  return i;
+}
+
+function activate(i){
+  scenes.forEach((s,k)=>{
+    if(k === i){
+      s.classList.add("reset");
+      void s.offsetWidth;             // animasyonları sıfırla
+      s.classList.remove("reset");
+      s.classList.add("active");
+    } else s.classList.remove("active");
+  });
+  chipEls.forEach((c,k)=>c.setAttribute("aria-current", k === i ? "true" : "false"));
+  current = i;
+  if(i === 2) countUp();
+}
+
+function countUp(){
+  const el = document.getElementById("counter");
+  const target = 10000, start = performance.now(), delay = 1400, dur = 1400;
+  const fmt = n => "$" + n.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  el.textContent = fmt(0);
+  (function step(now){
+    if(current !== 2) return;
+    const p = Math.min(1, Math.max(0, (now - start - delay) / dur));
+    el.textContent = fmt(target * (1 - Math.pow(1 - p, 3)));
+    if(p < 1) requestAnimationFrame(step);
+  })(start);
+}
+
+function seek(ms){
+  t = Math.max(0, Math.min(TOTAL - 1, ms));
+  activate(sceneAt(t));
+  render();
+}
+
+function render(){
+  fill.style.width = (t / TOTAL * 100) + "%";
+  nowEl.textContent = (t / 1000).toFixed(1);
+  track.setAttribute("aria-valuenow",(t/1000).toFixed(1));
+}
+
+function setPlaying(v){
+  playing = v;
+  stage.classList.toggle("paused", !v);
+  playBtn.textContent = v ? "Duraklat" : "Oynat";
+}
+
+playBtn.addEventListener("click",()=>setPlaying(!playing));
+document.getElementById("replay").addEventListener("click",()=>{ seek(0); setPlaying(true); });
+track.addEventListener("click",e=>{
+  const r = track.getBoundingClientRect();
+  seek((e.clientX - r.left) / r.width * TOTAL);
+});
+track.addEventListener("keydown",e=>{
+  if(e.key === "ArrowRight") seek(t + 500);
+  else if(e.key === "ArrowLeft") seek(t - 500);
+  else return;
+  e.preventDefault();
+});
+document.addEventListener("keydown",e=>{
+  if(e.code === "Space" && e.target === document.body){ e.preventDefault(); setPlaying(!playing); }
+});
+
+activate(0);
+render();
+
+requestAnimationFrame(function loop(now){
+  const dt = now - last; last = now;
+  if(playing){
+    t += dt;
+    if(t >= TOTAL) t -= TOTAL;             // döngü
+    const i = sceneAt(t);
+    if(i !== current) activate(i);
+    render();
+  }
+  requestAnimationFrame(loop);
+});
+</script>
