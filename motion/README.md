@@ -11,6 +11,7 @@ motion/
   render.mjs         herhangi bir overlay'i kare dizisine çeviren renderer
   fetch-fonts.sh     Montserrat + Inter + Playfair italic -> motion/fonts/
   STYLE.md           ölçülmüş kurgu dili — yeni bir kurguya başlarken önce bunu oku
+  founder-short/     70 sn kurucu shortu     (sakin katman, ASR ile altyazı)
   water-filter/      musluk filtresi reklamı  (tasarım sahneleri)
   car-review/        araba yorumu kurgusu     (kinetik altyazı + SFX)
 ```

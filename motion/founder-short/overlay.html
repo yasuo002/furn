@@ -1,0 +1,277 @@
+<meta charset="utf-8">
+<title>overlay-founder</title>
+<style>
+@font-face{font-family:MT;src:url('../fonts/Montserrat-900.ttf');font-weight:900}
+@font-face{font-family:MT;src:url('../fonts/Montserrat-800.ttf');font-weight:800}
+@font-face{font-family:IN;src:url('../fonts/Inter-800.ttf');font-weight:800}
+@font-face{font-family:IN;src:url('../fonts/Inter-600.ttf');font-weight:600}
+@font-face{font-family:IN;src:url('../fonts/Inter-400.ttf');font-weight:400}
+@font-face{font-family:PF;src:url('../fonts/PlayfairIt-500.ttf');font-style:italic;font-weight:500}
+
+/* Palet doğrudan çekimden alındı: duvarın nanesi, ahşabın sıcaklığı, gömleğin
+   koyusu. Doygunluk düşük tutuldu — amaç göz yormayan bir katman.          */
+:root{
+  --mint:#BFD9C0; --mint2:#8FBF9B; --acc:#9FD8A8;
+  --cream:#F5F2EC; --warm:#D9A98F; --ink:#0E1613;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent}
+body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,sans-serif;
+     -webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.sh{text-shadow:0 3px 22px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.45)}
+
+/* ---------- altyazı: siyah gömleğin üzerinde, plakasız ---------- */
+#cap{position:absolute;left:56px;right:56px;top:952px;height:180px;z-index:6;
+  display:flex;align-items:flex-start;justify-content:center}
+#capTxt{width:100%;text-align:center;font:800 43px/1.24 IN;letter-spacing:-.012em;
+  color:var(--cream);text-shadow:0 3px 20px rgba(0,0,0,.65),0 1px 2px rgba(0,0,0,.5)}
+#capTxt .wi{display:inline-block;margin:0 .11em;will-change:transform,opacity}
+#capTxt .hi{color:var(--acc)}
+#capTxt .sm{font-size:33px;font-weight:600;opacity:.62}
+#capTxt .q{font:italic 500 47px/1.24 PF;letter-spacing:0}
+
+/* ---------- panel: gömleğin üstünde, kutu yok ---------- */
+#pan{position:absolute;left:66px;right:66px;top:606px;z-index:5}
+#panT{font:800 19px/1 IN;letter-spacing:.24em;text-transform:uppercase;color:var(--mint2);
+  margin-bottom:22px;will-change:opacity,transform}
+.prow{position:relative;display:flex;align-items:center;gap:16px;margin-top:16px;
+  will-change:transform,opacity}
+.prow .dot{flex:0 0 9px;height:9px;border-radius:50%;background:var(--mint2)}
+.prow .txt{font:700 38px/1.2 IN;color:var(--cream);letter-spacing:-.01em}
+#pan.big .prow .txt{font:900 50px/1.1 MT;letter-spacing:-.02em;color:var(--mint)}
+#pan.big .prow .dot{background:var(--acc)}
+.prow .strike{position:absolute;left:25px;top:52%;height:3px;width:0;border-radius:2px;
+  background:var(--warm);opacity:.9}
+
+/* ---------- tam ekran soru kartı ---------- */
+#ask{position:absolute;inset:0;z-index:9;background:rgba(10,20,16,.90)}
+#askIn{position:absolute;left:70px;right:70px;top:470px;text-align:center}
+#askK{font:800 20px/1 IN;letter-spacing:.30em;text-transform:uppercase;color:var(--mint2)}
+#askL{margin-top:30px;font:900 66px/1.16 MT;letter-spacing:-.025em;color:var(--cream)}
+#askL b{color:var(--acc)}
+#askR{width:0;height:2px;margin:34px auto 0;background:var(--mint2);opacity:.7}
+
+/* ---------- marka rozeti ---------- */
+#brand{position:absolute;left:0;right:0;top:660px;text-align:center;z-index:6}
+#brand .in{display:inline-flex;align-items:center;gap:14px;padding:16px 26px;border-radius:16px;
+  background:rgba(12,22,18,.82);border:1px solid rgba(191,217,192,.22);
+  will-change:transform,opacity}
+#brand .mk{width:38px;height:38px;border-radius:11px;background:var(--acc);
+  display:flex;align-items:center;justify-content:center;font:900 21px/1 MT;color:var(--ink)}
+#brand .nm{font:800 29px/1.15 IN;letter-spacing:.02em;color:var(--cream);text-align:left}
+#brand .nm i{display:block;font:600 17px/1.3 IN;font-style:normal;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mint2);margin-top:3px}
+
+</style>
+
+<div id="stage">
+  <div id="pan"><div id="panT"></div></div>
+
+  <div id="ask">
+    <div id="askIn">
+      <div id="askK">artık ilk baktığım şey</div>
+      <div id="askL">Bu yapı<br><b>bensiz çalışabilir mi?</b></div>
+      <div id="askR"></div>
+    </div>
+  </div>
+
+  <div id="brand"><div class="in">
+    <div class="mk">A</div>
+    <div class="nm">Anadolu Girişim Ağı<i>girişimciyi yalnız bırakmaz</i></div>
+  </div></div>
+
+  <div id="cap"><div id="capTxt"></div></div>
+</div>
+
+<script>
+/* ============================================================
+   Sakin motion katmanı — window.setT(saniye)
+   Yay (spring) yok: her şey ease-out. Beyaz flaş, sert zıplama yok.
+   ============================================================ */
+const D = 69.87;
+const cl=(x,a=0,b=1)=>x<a?a:(x>b?b:x);
+const soft=x=>1-Math.pow(1-x,3);            /* outCubic — tek easing */
+const softer=x=>1-Math.pow(1-x,2);
+const lerp=(a,b,x)=>a+(b-a)*x;
+const px=v=>v.toFixed(2)+'px';
+const show=(el,on)=>{ el.style.display=on?'':'none'; };
+
+/* ---------- altyazı: *vurgu  -küçük  ~italik serif ---------- */
+const C=[
+ [0.22,1.28,'Girişimcilikte çoğu insan'],
+ [1.28,2.34,'*odağı *yanlış *yerde.'],
+ [2.34,3.55,'Herkes daha fazla satışın,'],
+ [3.55,4.68,'daha fazla reklamın'],
+ [4.68,6.20,'ve daha fazla sermayenin peşinde.'],
+ [6.20,7.72,'Ama hiç kimse -şunu konuşmuyor.'],
+ [7.72,8.60,'Bir şirketi büyüten'],
+ [8.60,9.48,'*sadece *para *değildir.'],
+ [9.48,10.80,'Sistemdir, ekiptir, network’tür.'],
+ [10.80,11.90,'Çünkü girişimcilik'],
+ [11.90,13.14,'tek başına yapılacak -bir -iş -değil.'],
+ [13.14,14.30,'Ben ilk girişimimde'],
+ [14.30,15.44,'bunu çok sert yaşadım.'],
+ [15.44,16.50,'Çok çalışıyordum,'],
+ [16.50,17.88,'gerçekten durmadan çalışıyordum.'],
+ [17.88,19.10,'Ve bir noktadan sonra'],
+ [19.10,20.20,'şunu fark ettim:'],
+ [20.20,21.54,'sorun *yetersiz *çalışmak değilmiş.'],
+ [21.54,22.75,'~Sorun ~yalnız ~çalışmak.'],
+ [22.75,24.02,'Çünkü doğru sistem yoksa'],
+ [24.02,25.40,'işler büyüdükçe karmaşıklaşır.'],
+ [25.40,26.58,'Doğru ekip yoksa'],
+ [26.58,27.90,'en iyi fikir bile ilerlemez.'],
+ [27.90,29.02,'Doğru çevre yoksa'],
+ [29.02,30.50,'aynı hatayı tekrar tekrar yaparsınız.'],
+ [30.50,31.70,'Ve bir gün girişimciliğe'],
+ [31.70,32.76,'olan bakış açım'],
+ [32.76,33.80,'*tamamen *değişti.'],
+ [33.80,34.84,'Artık bir işe başlarken'],
+ [34.84,35.90,'ilk baktığım şey şu:'],
+ [38.66,39.90,'her işi kendin yapmak değil.'],
+ [39.90,40.80,'Doğru *sistemi,'],
+ [40.80,41.80,'doğru *insanları'],
+ [41.80,43.06,'ve doğru *ağı kurabilmek.'],
+ [43.06,44.10,'Zaten bu yüzden de'],
+ [45.60,47.44,'Çünkü Türkiye’de, özellikle Anadolu’da'],
+ [47.44,48.70,'çok iyi fikirler var.'],
+ [48.70,50.00,'Ama birçok insanın çevresi yok,'],
+ [50.00,51.10,'yol gösterecek insanı yok,'],
+ [51.10,52.50,'tecrübe paylaşabileceği ağı yok.'],
+ [52.50,53.80,'O yüzden insanlar çoğu zaman'],
+ [53.80,54.90,'-fikirden *değil,'],
+ [54.90,56.10,'~yalnızlıktan ~kaybediyor.'],
+ [56.10,57.32,'Ben artık şuna inanıyorum:'],
+];
+const CAPS=C.map(([a,b,t])=>({a,b,w:t.split(' ')}));
+
+/* ---------- paneller: gömleğin üzerinde, kutu yok ---------- */
+const PANELS=[
+ {a:2.55,b:7.66,title:'herkesin peşinde olduğu',rows:[
+   {t:'daha fazla satış',   at:2.70, strike:6.35},
+   {t:'daha fazla reklam',  at:3.62, strike:6.55},
+   {t:'daha fazla sermaye', at:4.80, strike:6.75}]},
+ {a:9.44,b:13.10,title:'bir şirketi asıl büyüten',big:true,rows:[
+   {t:'sistem',  at:9.60},{t:'ekip', at:10.15},{t:'network', at:10.70}]},
+ {a:22.70,b:29.00,title:'yoksa ne oluyor',rows:[
+   {t:'doğru sistem yoksa  ·  karmaşıklaşır', at:22.85},
+   {t:'doğru ekip yoksa  ·  ilerlemez',       at:25.45},
+   {t:'doğru çevre yoksa  ·  aynı hata',      at:27.95}]},
+ {a:48.60,b:55.00,title:'iyi fikir var, ama',rows:[
+   {t:'çevre yok',        at:48.75},
+   {t:'yol gösteren yok', at:50.05},
+   {t:'paylaşacak ağ yok',at:51.20}]},
+ {a:57.32,b:61.25,title:'bir girişimcinin en büyük sermayesi',big:true,rows:[
+   {t:'doğru network', at:57.45},{t:'doğru sistem', at:58.15},{t:'doğru ekip', at:58.85}]},
+];
+/* Kaynağın kendi markalı kapanışı 61.4'te devreye giriyor; bu katman
+   ondan önce tamamen çekilir — kimsenin outro'sunun üzerine yazılmaz. */
+const T={ ask:[35.90,38.60], brand:[44.10,47.30], END:61.30 };
+
+/* ---------- altyazı çizimi ---------- */
+let key='';
+function draw(seg){
+  const k=seg.a+'|'+seg.b; if(k===key) return; key=k;
+  capTxt.innerHTML=seg.w.map(t=>{
+    let hi=false,q=false,sm=false;
+    while('*~-'.indexOf(t[0])>-1){
+      if(t[0]==='*')hi=true; else if(t[0]==='~')q=true; else sm=true; t=t.slice(1);
+    }
+    return '<span class="wi'+(hi?' hi':'')+(q?' q':'')+(sm?' sm':'')+'">'+t+'</span>';
+  }).join(' ');
+}
+function words(l,dur){
+  const ws=[...capTxt.querySelectorAll('.wi')];
+  const span=Math.min(.52,dur*.42), per=span/Math.max(1,ws.length);
+  ws.forEach((w,i)=>{
+    const p=cl((l-i*per)/.42), e=soft(p);        /* yumuşak, zıplamasız */
+    w.style.opacity=cl(p*1.6).toFixed(3);
+    w.style.transform='translate3d(0,'+px((1-e)*11)+',0)';
+  });
+}
+
+/* ---------- panel çizimi ---------- */
+let pkey='';
+function panel(P,l){
+  const k=P.a+''; 
+  if(pkey!==k){
+    pkey=k;
+    panT.textContent=P.title;
+    pan.className=P.big?'big':'';
+    [...pan.querySelectorAll('.prow')].forEach(n=>n.remove());
+    P.rows.forEach(r=>{
+      const d=document.createElement('div'); d.className='prow';
+      d.innerHTML='<i class="dot"></i><span class="txt">'+r.t+'</span><i class="strike"></i>';
+      pan.appendChild(d);
+    });
+  }
+  const o=soft(cl((P.b-(P.a+l))/.45));
+  const tp=soft(cl(l/.55));
+  panT.style.opacity=(tp*o).toFixed(3);
+  panT.style.transform='translate3d(0,'+px((1-tp)*-8)+',0)';
+  [...pan.querySelectorAll('.prow')].forEach((row,i)=>{
+    const r=P.rows[i], rl=P.a+l-r.at;
+    const e=soft(cl(rl/.62));
+    row.style.opacity=(cl(rl/.34)*o).toFixed(3);
+    row.style.transform='translate3d('+px((1-e)*-26)+',0,0)';
+    const st=row.querySelector('.strike');
+    if(r.strike!=null){
+      const s=soft(cl((P.a+l-r.strike)/.42));
+      st.style.width=px(s*(row.querySelector('.txt').offsetWidth+22));
+      st.style.opacity=(s*.9*o).toFixed(3);
+      row.querySelector('.txt').style.opacity=lerp(1,.42,s).toFixed(3);
+    } else { st.style.width='0'; }
+  });
+}
+
+window.setT=function(t){
+  /* ---------- altyazı ---------- */
+  const seg=CAPS.find(s=>t>=s.a&&t<s.b);
+  const inAsk=t>=T.ask[0]&&t<T.ask[1], inEnd=t>=T.END;
+  show(cap,!!seg&&!inAsk&&!inEnd);
+  if(seg&&!inAsk&&!inEnd){
+    draw(seg);
+    const l=t-seg.a, dur=seg.b-seg.a;
+    words(l,dur);
+    cap.style.opacity=(cl(l/.14)*soft(cl((seg.b-t)/.20))).toFixed(3);
+  }
+
+  /* ---------- panel ---------- */
+  {
+    const P=PANELS.find(p=>t>=p.a&&t<p.b);
+    show(pan,!!P&&!inAsk&&!inEnd);
+    if(P&&!inAsk&&!inEnd) panel(P,t-P.a);
+  }
+
+  /* ---------- tam ekran soru ---------- */
+  {
+    show(ask,inAsk);
+    if(inAsk){
+      const l=t-T.ask[0], o=soft(cl((T.ask[1]-t)/.34));
+      ask.style.opacity=(soft(cl(l/.34))*o).toFixed(3);
+      const k=soft(cl((l-.10)/.5));
+      askK.style.opacity=k.toFixed(3);
+      const q=soft(cl((l-.22)/.7));
+      askL.style.opacity=q.toFixed(3);
+      askL.style.transform='translate3d(0,'+px((1-q)*16)+',0)';
+      askR.style.width=px(soft(cl((l-.55)/.8))*260);
+    }
+  }
+
+  /* ---------- marka ---------- */
+  {
+    const e=t>=T.brand[0]&&t<T.brand[1];
+    show(brand,e&&!inEnd);
+    if(e){
+      const l=t-T.brand[0], o=soft(cl((T.brand[1]-t)/.42));
+      const k=soft(cl(l/.62));
+      brand.firstElementChild.style.opacity=(cl(l/.3)*o).toFixed(3);
+      brand.firstElementChild.style.transform=
+        'translate3d(0,'+px((1-k)*18)+',0) scale('+lerp(.97,1,k).toFixed(4)+')';
+    }
+  }
+
+};
+window.setT(0);
+document.documentElement.dataset.ready='1';
+</script>

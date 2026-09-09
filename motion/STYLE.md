@@ -185,9 +185,40 @@ Tek punto, tek ağırlık, tek renkle dizilmiş bir satır düz görünür. Bir 
 Vurgu kelimelerinde kelime değil **harf** animasyonu kullan: harfler sırayla
 hafif dönerek yükselir. Kelime blok halinde zıplayınca hareket ucuz duruyor.
 
+## 6d. Sakin varyant — "göz yormayan"
+
+Aynı dilin kısılmış hali. Uzun (60 sn+) tek plan konuşma videolarında hızlı
+varyant yorucu oluyor; şu değişikliklerle sakinleşiyor:
+
+| | Hızlı | Sakin |
+|---|---|---|
+| Easing | `spring` (taşar, zıplar) | sadece `outCubic` |
+| Altyazı temposu | 0.8 sn | **1.3 sn** |
+| Kelime girişi | 26 px + ölçek + harf harf | 11 px, sadece opaklık |
+| Geçiş flaşı | var | **yok** |
+| Zoom | vurgu darbeleri | 70 sn'de 1.00 → 1.045 tek yavaş kayma |
+| SFX | ~2 sn'de bir | **tüm videoda 2 yumuşak geçiş** |
+| Grafik | ~8 sn'de bir | ~8 sn'de bir (aynı) ama kutusuz |
+| Renk | yüksek kontrast aksan | doygunluğu düşük, çekimden alınmış |
+
+Kutuyu kaldırmak burada mümkün oldu çünkü konuşmacı **koyu bir üst** giyiyordu:
+gömlek zaten temiz bir tuval, panel arka planı gerekmedi. Kaynağa bakıp böyle
+bir alan var mı diye kontrol et — varsa kullan, yoksa 6b'deki panel.
+
+## 6e. Kaynağın kendi kapanışına dokunma
+
+Bu videonun son 8 saniyesi zaten markalı bir outro'ydu (uzay çekimi +
+"GİRİŞİM SENARYOSU"). İlk render onun üzerine kendi kapanış kartımı bindirmişti.
+**Kurgulamadan önce videonun son 10 saniyesine bak:** kendi outro'su, logosu ya
+da CTA'sı varsa katman ondan önce tamamen çekilmeli. Aynısı açılış için de
+geçerli.
+
 ## 7. Yeni kurgu için sıra
 
-1. `ffmpeg` ile kontakt sayfası çıkar, planları ve konuşmayı zaman damgalarıyla yaz
+1. `ffmpeg` ile kontakt sayfası çıkar; **ilk ve son 10 saniyeye ayrıca bak**
+   (kaynağın kendi açılış/kapanışı varsa katman oraya girmez)
+1b. Konuşma metni: gömülü altyazı varsa bandın değişiminden, yoksa ASR ile
+   (`founder-short/asr.py` — uzun geçiş metni, kısa geçiş zamanlamayı verir)
 2. Gömülü altyazı varsa: bandın kare kare değişimini ölçerek zamanlamayı çıkar, sonra `delogo` + yerel blur ile sil
 3. Zemin renginden paleti türet, aksanı seç
 4. Altyazıyı `CAPS` dizisine gir, `*` ile vurgulanacak kelimeleri işaretle
