@@ -1,0 +1,437 @@
+<title>Golf Karşılaştırma Kurgusu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=Lobster+Two:ital,wght@1,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --gold:#F0C14B;
+  --gold-2:#FFD87A;
+  --asphalt:#0F1216;
+  --asphalt-2:#1A2027;
+  --studio:#D9D9D6;
+  --studio-2:#B9B9B6;
+  --ink:#0E0F11;
+  --plate:#1B54D6;
+  --steel:#8A9099;
+  --shell:#0A0B0D;
+  --shell-2:#14171B;
+  --shell-line:#242A31;
+  --shell-text:#EFF1F3;
+  --shell-dim:#79828C;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --script:"Lobster Two",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1100px 620px at 50% -10%,#171C22 0%,transparent 60%),var(--shell);
+  color:var(--shell-text);font-family:var(--sans);min-height:100vh}
+.app{max-width:1080px;margin:0 auto;padding:22px 20px 40px;display:flex;flex-direction:column;gap:18px}
+.hud{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.hud h1{margin:0;font-size:19px;font-weight:700;letter-spacing:-.015em}
+.hud h1 em{font-family:var(--script);font-style:italic;color:var(--gold)}
+.hud .meta{font-family:var(--mono);font-size:11px;color:var(--shell-dim);letter-spacing:.08em;margin-top:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--shell-dim);background:transparent;
+  border:1px solid var(--shell-line);border-radius:999px;padding:6px 11px;cursor:pointer;display:flex;gap:7px;
+  transition:color .2s,border-color .2s,background .2s}
+.chip b{color:#4B535C;font-weight:500;transition:color .2s}
+.chip:hover{border-color:#39424B;color:var(--shell-text)}
+.chip[aria-current="true"]{background:var(--gold);border-color:var(--gold);color:#1E1503}
+.chip[aria-current="true"] b{color:#8A6608}
+.chip:focus-visible,button:focus-visible,.track:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+.stage-wrap{display:flex;justify-content:center}
+.stage{position:relative;overflow:hidden;aspect-ratio:9/16;height:min(72vh,720px);width:auto;max-width:100%;
+  border-radius:20px;background:var(--asphalt);box-shadow:0 40px 80px -30px rgba(0,0,0,.85),0 0 0 1px var(--shell-line);
+  font-size:clamp(9px,calc(min(72vh,720px)/44),17px);user-select:none}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .26s ease}
+.scene.active{opacity:1}
+.scene.reset *{animation:none !important}
+.scene:not(.active) *,.stage.paused *{animation-play-state:paused !important}
+.grain{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.06;
+  background-image:radial-gradient(#fff 1px,transparent 1px);background-size:3px 3px}
+
+/* ---- hareket sözlüğü (video 3) ---- */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(7%)}to{opacity:1;transform:none}}
+@keyframes punchIn{from{transform:scale(1)}to{transform:scale(1.22)}}      /* kesme yerine plan büyütme */
+@keyframes streak{0%{transform:translate(-12%,-8%) rotate(-14deg)}100%{transform:translate(12%,10%) rotate(-14deg)}}
+@keyframes wordPop{0%{opacity:0;transform:scale(.72) rotate(-6deg)}65%{opacity:1;transform:scale(1.07) rotate(1.5deg)}100%{opacity:1;transform:scale(1) rotate(-1.5deg)}}
+@keyframes linePop{0%{opacity:0;transform:translateY(.35em)}100%{opacity:1;transform:none}}
+@keyframes badgeLand{                                   /* ortada parlar, köşeye yerleşir */
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  18%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}
+  32%{transform:translate(-50%,-50%) scale(1)}
+  62%{transform:translate(-50%,-50%) scale(1)}
+  100%{transform:translate(-292%,-372%) scale(.46)}
+}
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes beamTilt{0%{transform:rotate(0deg)}55%{transform:rotate(9deg)}100%{transform:rotate(7.5deg)}}
+@keyframes panL{0%{opacity:0;transform:translateY(0)}20%{opacity:1}55%{transform:translateY(-2.4em)}100%{opacity:1;transform:translateY(-2.1em)}}
+@keyframes panR{0%{opacity:0;transform:translateY(0)}20%{opacity:1}55%{transform:translateY(2.4em)}100%{opacity:1;transform:translateY(2.1em)}}
+@keyframes tierIn{from{opacity:0;transform:translateY(1.1em) scaleX(.86)}to{opacity:1;transform:none}}
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 .5em rgba(240,193,75,.45))}50%{filter:drop-shadow(0 0 1.4em rgba(240,193,75,.85))}}
+
+/* ================= 01 · KARŞILAŞTIRMA KABUĞU ================= */
+.s1{background:linear-gradient(160deg,#E4E4E1 0%,var(--studio) 45%,var(--studio-2) 100%)}
+.s1 .streaks{position:absolute;inset:-25%;opacity:.5;
+  background:repeating-linear-gradient(104deg,rgba(255,255,255,.75) 0 5%,rgba(0,0,0,.05) 5% 13%);
+  filter:blur(14px);animation:streak 12s ease-in-out infinite alternate}
+.cards{position:absolute;left:5%;right:5%;top:9%;height:58%;display:flex;align-items:flex-end;gap:2%}
+.pane{position:relative;border-radius:.7em;overflow:hidden;background:var(--asphalt);
+  box-shadow:0 1.4em 2.6em -1em rgba(0,0,0,.45)}
+.pane .lbl{position:absolute;left:0;right:0;top:-1.7em;text-align:center;color:var(--ink);
+  font-weight:800;font-size:.95em;letter-spacing:-.01em}
+.pane .car{position:absolute;left:6%;right:6%;top:50%;transform:translateY(-50%)}
+.pane .car svg{width:100%;display:block}
+.pane .price{position:absolute;left:0;right:0;bottom:6%;text-align:center;color:#fff;
+  font-weight:800;font-size:1.05em;font-variant-numeric:tabular-nums}
+.pane .price small{display:block;font-family:var(--mono);font-size:.52em;font-weight:400;
+  letter-spacing:.14em;color:var(--steel);margin-bottom:.3em}
+.pane.small{width:31%;height:66%;animation:rise .7s cubic-bezier(.2,.85,.2,1) .15s both;filter:saturate(.55) brightness(.82)}
+.pane.small .lbl{font-size:.78em}
+.pane.big{flex:1;height:100%;animation:rise .8s cubic-bezier(.2,.85,.2,1) .45s both}
+.pane.big .glow{position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 45%,rgba(240,193,75,.22),transparent 70%)}
+.s1 .verdict{position:absolute;left:8%;right:8%;top:70%;text-align:center;color:var(--ink)}
+.s1 .verdict .l1{display:block;font-size:1.95em;font-weight:800;letter-spacing:-.03em;
+  animation:linePop .55s cubic-bezier(.2,.9,.2,1) 1.15s both}
+.s1 .verdict .l2{display:block;font-size:1.05em;font-weight:600;color:#4A4E53;margin-top:.35em;
+  animation:linePop .55s cubic-bezier(.2,.9,.2,1) 1.4s both}
+.s1 .cta{position:absolute;left:8%;right:8%;bottom:7%;text-align:center;color:var(--ink);
+  animation:fadeIn .6s ease 1.9s both}
+.s1 .cta b{display:block;font-size:1.5em;font-weight:800;letter-spacing:-.02em}
+.s1 .cta span{display:block;font-size:.92em;font-weight:600;color:#565A5F;margin-top:.15em}
+
+/* ================= 02 · KAHRAMAN KELİME ================= */
+.s2{background:radial-gradient(120% 85% at 50% 42%,#242C36 0%,#12171D 55%,#080A0D 100%)}
+.s2 .shot{position:absolute;inset:0;animation:punchIn 4.2s cubic-bezier(.3,0,.5,1) both}
+.s2 .shot .car{position:absolute;left:6%;right:6%;top:34%;transform:translateY(-50%)}
+.s2 .shot .car svg{width:100%;display:block}
+.s2 .shot .road{position:absolute;left:0;right:0;top:46%;height:.1em;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent)}
+.hero{position:absolute;left:8%;right:8%;top:58%;text-align:center;line-height:1.15}
+.hero .l{display:block;color:#fff;font-size:1.55em;font-weight:700;letter-spacing:-.02em;
+  animation:linePop .5s cubic-bezier(.2,.9,.2,1) both}
+.hero .l1{animation-delay:.5s}
+.hero .l2{animation-delay:1.75s}
+.hero .word{display:block;font-family:var(--script);font-style:italic;font-weight:700;
+  color:var(--gold-2);font-size:3.4em;line-height:.8;margin:-.12em 0 -.06em;
+  text-shadow:0 0 .5em rgba(240,193,75,.55),0 .06em .12em rgba(0,0,0,.5);
+  animation:wordPop .6s cubic-bezier(.3,1.4,.4,1) 1.1s both}
+
+/* ================= ortak: rozet + noktalı yol ================= */
+.badge{position:absolute;left:50%;top:50%;width:4.4em;height:4.4em;border-radius:.85em;
+  border:.16em solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1em;font-weight:800;background:rgba(255,255,255,.05);
+  box-shadow:0 0 1.6em rgba(240,193,75,.55),inset 0 0 1.2em rgba(240,193,75,.25);
+  animation:badgeLand 2.4s cubic-bezier(.5,0,.2,1) both;z-index:5}
+.badge span{font-size:2.1em;line-height:1}
+.path{position:absolute;inset:0;pointer-events:none}
+.path path{fill:none;stroke:rgba(255,255,255,.55);stroke-width:1.4;stroke-linecap:round;
+  stroke-dasharray:2.5 5;stroke-dashoffset:120;vector-effect:non-scaling-stroke;
+  animation:dash 1.4s linear 2.3s both}
+
+/* ================= 03 · TERAZİ ================= */
+.s3{background:radial-gradient(110% 80% at 50% 45%,#232B34 0%,#111519 55%,#07090B 100%)}
+.scale{position:absolute;left:8%;right:8%;top:22%}
+.scale .frame{width:100%;display:block;animation:fadeIn .7s ease .3s both}
+.scale .beam{transform-box:view-box;transform-origin:150px 24px;
+  animation:beamTilt 1.5s cubic-bezier(.35,1.2,.5,1) 1.4s both}
+.dish{position:absolute;width:34%;text-align:center;border-radius:.4em;padding:.55em .45em;z-index:2;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(3px)}
+.dish .t{display:block;font-family:var(--mono);font-size:.6em;letter-spacing:.12em;color:var(--steel);margin-bottom:.25em}
+.dish .v{display:block;font-size:.92em;font-weight:700;color:#fff;line-height:1.25}
+.dish.l{left:0;top:40%;animation:panL 1.5s cubic-bezier(.35,1.2,.5,1) 1.4s both}
+.dish.r{right:0;top:40%;background:rgba(240,193,75,.16);border-color:rgba(240,193,75,.6);
+  box-shadow:0 0 1.4em rgba(240,193,75,.3);animation:panR 1.5s cubic-bezier(.35,1.2,.5,1) 1.4s both}
+.dish.r .v{color:var(--gold-2)}
+.s3 .caption,.s4 .caption,.s5 .caption{position:absolute;left:8%;right:8%;bottom:12%;text-align:center;color:#fff}
+.s3 .caption .a,.s4 .caption .a{display:block;font-size:1.55em;font-weight:800;letter-spacing:-.03em;
+  animation:linePop .55s cubic-bezier(.2,.9,.2,1) 2.5s both}
+.s3 .caption .b,.s4 .caption .b{display:block;font-size:.95em;font-weight:600;color:#9AA1A9;margin-top:.35em;
+  animation:linePop .55s cubic-bezier(.2,.9,.2,1) 2.75s both}
+
+/* ================= 04 · PİRAMİT ================= */
+.s4{background:radial-gradient(110% 80% at 50% 45%,#262019 0%,#131009 55%,#07060B 100%)}
+.pyr{position:absolute;left:50%;top:28%;transform:translateX(-50%);width:48%;
+  display:flex;flex-direction:column;align-items:center}
+.pyr .tier{position:relative;color:#fff;font-weight:800;font-size:1.5em;line-height:1;
+  display:flex;align-items:center;justify-content:center;animation:tierIn .55s cubic-bezier(.2,.9,.2,1) both}
+.pyr .t1{width:34%;height:2.6em;clip-path:polygon(50% 0,100% 100%,0 100%);background:#4A3A12;animation-delay:2.05s}
+.pyr .t2{width:64%;height:2.2em;clip-path:polygon(15% 0,85% 0,100% 100%,0 100%);background:#B98F1E;animation-delay:1.75s}
+.pyr .t3{width:94%;height:2.2em;clip-path:polygon(10% 0,90% 0,100% 100%,0 100%);background:var(--gold);color:#1E1503;animation-delay:1.45s}
+.pyr .lab{position:absolute;font-size:.72em;font-weight:700;color:#fff;white-space:nowrap;font-style:normal}
+.pyr .lab1{left:104%;top:1.1em;animation:fadeIn .4s ease 2.45s both}
+.pyr .lab2{right:104%;top:4.4em;animation:fadeIn .4s ease 2.25s both}
+.pyr .lab3{left:100%;top:7.4em;color:#F0E4C4;animation:fadeIn .4s ease 2.05s both}
+
+/* ================= 05 · KAPANIŞ ================= */
+.s5{background:radial-gradient(120% 85% at 50% 40%,#2A323C 0%,#12161B 52%,#06080A 100%)}
+.s5 .shot{position:absolute;inset:0;animation:punchIn 4.5s cubic-bezier(.3,0,.5,1) both}
+.s5 .beamlight{position:absolute;left:-20%;right:-20%;top:22%;height:36%;
+  background:radial-gradient(55% 100% at 50% 50%,rgba(240,193,75,.26),transparent 70%)}
+.s5 .car{position:absolute;left:5%;right:5%;top:36%;transform:translateY(-50%)}
+.s5 .car svg{width:100%;display:block;filter:drop-shadow(0 1.4em 1.8em rgba(0,0,0,.6))}
+.s5 .plate{position:absolute;left:50%;top:52%;transform:translateX(-50%);display:flex;border-radius:.2em;
+  overflow:hidden;border:.08em solid #0C0E10;background:#fff;animation:fadeIn .5s ease 1.1s both}
+.s5 .plate .tr{background:var(--plate);color:#fff;font-family:var(--mono);font-size:.58em;
+  padding:.45em .4em;display:flex;align-items:flex-end}
+.s5 .plate .no{color:#0C0E10;font-weight:800;font-size:.95em;letter-spacing:.06em;padding:.3em .5em}
+.s5 .hero{top:60%}
+.s5 .cta{position:absolute;left:8%;right:8%;bottom:6.5%;text-align:center;
+  animation:fadeIn .6s ease 3.1s both}
+.s5 .cta b{display:block;color:#fff;font-size:1.35em;font-weight:800;letter-spacing:-.02em}
+.s5 .cta span{display:block;font-family:var(--mono);font-size:.72em;letter-spacing:.1em;color:var(--steel);margin-top:.3em}
+
+/* ---- kontroller ---- */
+.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px solid var(--shell-line);padding-top:16px}
+button.ctl{appearance:none;border:1px solid var(--shell-line);background:var(--shell-2);color:var(--shell-text);
+  border-radius:999px;height:38px;padding:0 18px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;cursor:pointer}
+button.ctl:hover{background:#1B2027}
+button.ctl.primary{background:var(--gold);border-color:var(--gold);color:#1E1503;font-weight:500}
+.track{flex:1;min-width:200px;height:6px;border-radius:999px;background:var(--shell-2);position:relative;
+  overflow:hidden;cursor:pointer;border:1px solid var(--shell-line)}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold);width:0}
+.track .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--shell);opacity:.9}
+.time{font-family:var(--mono);font-size:12px;color:var(--shell-dim);font-variant-numeric:tabular-nums}
+.note{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--shell-dim);
+  border-top:1px solid var(--shell-line);padding-top:14px;max-width:74ch}
+.note b{color:var(--shell-text);font-weight:500}
+@media (prefers-reduced-motion:reduce){.scene *{animation-duration:1ms !important;animation-delay:0ms !important;animation-iteration-count:1 !important}}
+@media (max-width:640px){.stage{height:min(62vh,560px)}.hud{flex-direction:column;align-items:flex-start}}
+</style>
+
+<div class="app">
+  <header class="hud">
+    <div>
+      <h1>Golf parasına — <em>karşılaştırma kurgusu</em></h1>
+      <div class="meta">9:16 · 5 sahne · 24 sn · üçüncü referansın mekaniğiyle</div>
+    </div>
+    <nav class="chips" id="chips" aria-label="Sahneler"></nav>
+  </header>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+
+      <!-- 01 KARŞILAŞTIRMA KABUĞU -->
+      <section class="scene s1">
+        <div class="streaks"></div>
+        <div class="cards">
+          <div class="pane small">
+            <span class="lbl">İKİNCİ EL</span>
+            <div class="car">
+              <svg viewBox="0 0 420 150" aria-hidden="true">
+                <path d="M14 112c0-10 6-16 18-19l30-7 34-30c9-8 20-12 33-12h84c14 0 27 5 37 14l26 25 42 8c14 3 22 10 22 20v8H14z" fill="#3A424B"/>
+                <path d="M118 55l24-21c6-5 13-8 21-8h32v29zm82 0V26h34c9 0 17 3 24 9l24 20z" fill="#0E1216"/>
+                <g fill="#0B0E11"><circle cx="112" cy="118" r="27"/><circle cx="318" cy="118" r="27"/></g>
+                <g fill="#6E7883"><circle cx="112" cy="118" r="13"/><circle cx="318" cy="118" r="13"/></g>
+              </svg>
+            </div>
+            <div class="price"><small>2019 · DİZEL</small>₺1.450.000</div>
+          </div>
+          <div class="pane big">
+            <div class="glow"></div>
+            <span class="lbl">SIFIR KİLOMETRE</span>
+            <div class="car">
+              <svg viewBox="0 0 460 150" aria-hidden="true">
+                <path d="M10 116c0-12 8-19 22-22l46-9 46-38c11-9 24-13 39-13h96c17 0 33 6 45 18l32 32 52 10c15 3 24 11 24 22v6H10z" fill="#E8EBEF"/>
+                <path d="M132 47l30-25c7-6 15-9 24-9h38v34zm104 0V13h38c11 0 21 4 29 12l23 22z" fill="#141A21"/>
+                <circle cx="24" cy="94" r="10" fill="#FFF3D6"/>
+                <g fill="#0B0E11"><circle cx="128" cy="120" r="28"/><circle cx="352" cy="120" r="28"/></g>
+                <g fill="#7C8794"><circle cx="128" cy="120" r="13"/><circle cx="352" cy="120" r="13"/></g>
+              </svg>
+            </div>
+            <div class="price"><small>0 KM · GARANTİLİ</small>₺1.450.000</div>
+          </div>
+        </div>
+        <div class="verdict">
+          <span class="l1">Aynı para. Aynı gün.</span>
+          <span class="l2">Tek fark: neyi seçtiğiniz.</span>
+        </div>
+        <div class="cta">
+          <b>Yorumlara "FİYAT" yaz</b>
+          <span>listeyi hemen göndereyim</span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 02 KAHRAMAN KELİME -->
+      <section class="scene s2">
+        <div class="shot">
+          <div class="car">
+            <svg viewBox="0 0 420 150" aria-hidden="true">
+              <path d="M14 112c0-10 6-16 18-19l30-7 34-30c9-8 20-12 33-12h84c14 0 27 5 37 14l26 25 42 8c14 3 22 10 22 20v8H14z" fill="#2E353D"/>
+              <path d="M118 55l24-21c6-5 13-8 21-8h32v29zm82 0V26h34c9 0 17 3 24 9l24 20z" fill="#0E1216"/>
+              <circle cx="26" cy="96" r="9" fill="#F0C14B"/>
+              <g fill="#0B0E11"><circle cx="112" cy="118" r="27"/><circle cx="318" cy="118" r="27"/></g>
+              <g fill="#6E7883"><circle cx="112" cy="118" r="13"/><circle cx="318" cy="118" r="13"/></g>
+            </svg>
+          </div>
+          <div class="road"></div>
+        </div>
+        <div class="hero">
+          <span class="l l1">dizel otomatik bir</span>
+          <span class="word">Golf</span>
+          <span class="l l2">parasına…</span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 03 ROZET 1 + TERAZİ -->
+      <section class="scene s3">
+        <div class="badge"><span>1</span></div>
+        <div class="scale">
+          <svg class="frame" viewBox="0 0 300 156" aria-hidden="true">
+            <rect x="146" y="24" width="8" height="104" rx="4" fill="#fff"/>
+            <rect x="108" y="128" width="84" height="10" rx="5" fill="#fff"/>
+            <rect x="118" y="138" width="64" height="8" rx="4" fill="#E6E9EC"/>
+            <g class="beam">
+              <rect x="30" y="20" width="240" height="8" rx="4" fill="#fff"/>
+              <circle cx="150" cy="24" r="9" fill="#fff"/>
+              <line x1="52" y1="26" x2="52" y2="72" stroke="#fff" stroke-width="2"/>
+              <line x1="248" y1="26" x2="248" y2="72" stroke="#fff" stroke-width="2"/>
+            </g>
+          </svg>
+          <div class="dish l"><span class="t">ÖNCE</span><span class="v">2019 Golf<br>118.000 km</span></div>
+          <div class="dish r"><span class="t">SONRA</span><span class="v">Sıfır km<br>garantili</span></div>
+        </div>
+        <div class="caption">
+          <span class="a">Kefede aynı rakam var.</span>
+          <span class="b">Ağır basan taraf değişti.</span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 04 ROZET 2 + PİRAMİT -->
+      <section class="scene s4">
+        <div class="badge"><span>2</span></div>
+        <svg class="path" viewBox="0 0 90 160" aria-hidden="true">
+          <path d="M66 50 C 60 51, 56 53, 51 55"/>
+          <path d="M26 62 C 32 63, 35 64, 39 65"/>
+          <path d="M66 73 C 60 74, 56 74, 52 74"/>
+        </svg>
+        <div class="pyr">
+          <div class="tier t1">1</div>
+          <div class="tier t2">2</div>
+          <div class="tier t3">3</div>
+          <i class="lab lab1">Garanti</i>
+          <i class="lab lab2">Sıfır km</i>
+          <i class="lab lab3">Aynı bütçe</i>
+        </div>
+        <div class="caption">
+          <span class="a">Taban aynı, tepe farklı.</span>
+          <span class="b">Bütçeyi değil, sırayı değiştirdik.</span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+      <!-- 05 KAPANIŞ -->
+      <section class="scene s5">
+        <div class="shot">
+          <div class="beamlight"></div>
+          <div class="car">
+            <svg viewBox="0 0 460 150" aria-hidden="true">
+              <path d="M10 116c0-12 8-19 22-22l46-9 46-38c11-9 24-13 39-13h96c17 0 33 6 45 18l32 32 52 10c15 3 24 11 24 22v6H10z" fill="#E8EBEF"/>
+              <path d="M132 47l30-25c7-6 15-9 24-9h38v34zm104 0V13h38c11 0 21 4 29 12l23 22z" fill="#141A21"/>
+              <path d="M10 116h440v6H10z" fill="#AFB7C1"/>
+              <circle cx="24" cy="94" r="10" fill="#FFF3D6"/>
+              <g fill="#0B0E11"><circle cx="128" cy="120" r="28"/><circle cx="352" cy="120" r="28"/></g>
+              <g fill="#7C8794"><circle cx="128" cy="120" r="13"/><circle cx="352" cy="120" r="13"/></g>
+            </svg>
+          </div>
+        </div>
+        <div class="plate"><span class="tr">TR</span><span class="no">34 ABC 123</span></div>
+        <div class="hero">
+          <span class="l l1">bu arabayı</span>
+          <span class="word">alabilirsiniz</span>
+        </div>
+        <div class="cta">
+          <b>Yorumlara "FİYAT" yaz</b>
+          <span>FİYATLAR ÖRNEKTİR · KENDİ RAKAMINIZLA DEĞİŞTİRİN</span>
+        </div>
+        <div class="grain"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctl primary" id="play">DURAKLAT</button>
+    <button class="ctl" id="replay">BAŞTAN</button>
+    <div class="track" id="track" role="slider" aria-label="Zaman çizelgesi" tabindex="0" aria-valuemin="0" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+    </div>
+    <div class="time"><span id="now">0.0</span> / <span id="total">0.0</span> sn</div>
+  </div>
+
+  <p class="note">
+    Üçüncü referanstan alınanlar: <b>karşılaştırma kabuğu</b> (küçük ham kart / büyük kurgulu kart),
+    <b>kahraman kelime</b> (altın el yazısı, satırın üstüne binen), <b>bölüm rozeti</b> (ortada parlar, köşeye yerleşir),
+    <b>noktalı yol</b>, <b>terazi</b> ve <b>piramit</b> kavram grafikleri, kesme yerine <b>plan büyütme</b>.
+    Rakamlar ve plaka örnektir.
+  </p>
+</div>
+
+<script>
+const SCENES = [
+  { id:"01", ad:"KARŞILAŞTIRMA", dur:5200 },
+  { id:"02", ad:"KAHRAMAN KELİME", dur:4200 },
+  { id:"03", ad:"TERAZİ", dur:5000 },
+  { id:"04", ad:"PİRAMİT", dur:5200 },
+  { id:"05", ad:"KAPANIŞ", dur:4600 }
+];
+const el = id => document.getElementById(id);
+const stage = el("stage"), scenes = [...stage.querySelectorAll(".scene")], chips = el("chips");
+const starts = SCENES.reduce((a,s,i)=>(a.push(i ? a[i-1] + SCENES[i-1].dur : 0), a), []);
+const TOTAL = SCENES.reduce((a,s)=>a + s.dur, 0);
+el("total").textContent = (TOTAL/1000).toFixed(1);
+el("track").setAttribute("aria-valuemax",(TOTAL/1000).toFixed(1));
+
+SCENES.forEach((s,i)=>{
+  const b = document.createElement("button");
+  b.className = "chip"; b.type = "button"; b.innerHTML = "<b>"+s.id+"</b>"+s.ad;
+  b.addEventListener("click",()=>seek(starts[i]));
+  chips.appendChild(b);
+  if(i){ const t = document.createElement("div"); t.className = "tick";
+         t.style.left = (starts[i]/TOTAL*100)+"%"; el("track").appendChild(t); }
+});
+const chipEls = [...chips.children];
+let t = 0, current = -1, playing = true, last = performance.now();
+const sceneAt = ms => { let i = SCENES.length-1; while(i > 0 && ms < starts[i]) i--; return i; };
+
+function activate(i){
+  scenes.forEach((s,k)=>{
+    if(k === i){ s.classList.add("reset"); void s.offsetWidth; s.classList.remove("reset"); s.classList.add("active"); }
+    else s.classList.remove("active");
+  });
+  chipEls.forEach((c,k)=>c.setAttribute("aria-current", k === i ? "true" : "false"));
+  current = i;
+}
+function seek(ms){ t = Math.max(0, Math.min(TOTAL-1, ms)); activate(sceneAt(t)); render(); }
+function render(){
+  el("fill").style.width = (t/TOTAL*100)+"%";
+  el("now").textContent = (t/1000).toFixed(1);
+  el("track").setAttribute("aria-valuenow",(t/1000).toFixed(1));
+}
+function setPlaying(v){ playing = v; stage.classList.toggle("paused", !v); el("play").textContent = v ? "DURAKLAT" : "OYNAT"; }
+el("play").addEventListener("click",()=>setPlaying(!playing));
+el("replay").addEventListener("click",()=>{ seek(0); setPlaying(true); });
+el("track").addEventListener("click",e=>{ const r = e.currentTarget.getBoundingClientRect(); seek((e.clientX-r.left)/r.width*TOTAL); });
+el("track").addEventListener("keydown",e=>{
+  if(e.key === "ArrowRight") seek(t+500); else if(e.key === "ArrowLeft") seek(t-500); else return; e.preventDefault();
+});
+document.addEventListener("keydown",e=>{
+  if(e.code === "Space" && e.target === document.body){ e.preventDefault(); setPlaying(!playing); }
+});
+activate(0); render();
+requestAnimationFrame(function loop(now){
+  const dt = now - last; last = now;
+  if(playing){
+    t += dt; if(t >= TOTAL) t -= TOTAL;
+    const i = sceneAt(t); if(i !== current) activate(i);
+    render();
+  }
+  requestAnimationFrame(loop);
+});
+</script>
