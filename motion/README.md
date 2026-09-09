@@ -8,8 +8,9 @@ render edilir, ffmpeg ile videoya bindirilir.
 ## Kullanım
 
 ```bash
-npm install                 # playwright (chromium indirir)
-./motion/fetch-fonts.sh     # Montserrat + Inter -> motion/fonts/
+npm install                    # playwright (chromium indirir)
+./motion/fetch-fonts.sh        # Montserrat + Inter + Playfair italic -> motion/fonts/
+./motion/make-stills.sh girdi.mp4   # kart gorselleri -> motion/img/
 ./motion/build.sh girdi.mp4 motion/out/reklam.mp4
 ```
 
@@ -42,18 +43,23 @@ Zamanlama tek bir tabloda toplanmıştır — saniye cinsinden `[başlangıç, b
 
 ```js
 const T = {
-  hook :[ 0.30,  4.30],   // kanca:  "MUSLUKTAN AKAN / SU TEMİZ Mİ?"
-  step :[ 4.55,  8.35],   // 01 KURULUM: "MUSLUĞA TAK"
-  ring :[ 6.60,  8.30],   //   musluk ucundaki vurgu halkası
-  use  :[ 8.60, 10.30],   // çip: "SÜZÜLMÜŞ SUYLA YIKA"
-  proof:[10.55, 14.45],   // kanıt: "FİLTREDE KALANLAR"
-  arw  :[11.95, 14.35],   //   tortuyu gösteren ok + halka
-  reuse:[14.70, 18.75],   // sayaç 30 + YIKA → SIK → TEKRAR TAK
-  ben  :[19.00, 23.30],   // 3 maddelik fayda listesi
-  clear:[23.50, 24.85],   // çip: "BERRAK, TORTUSUZ SU"
-  end  :[24.90,     D],   // kapanış kartı + CTA
+  scA  :[ 0.00,  2.95],   // TASARIM SAHNESİ — açılış kartı
+  step :[ 4.45,  8.30],   // 01 KURULUM: "MUSLUĞA TAK"
+  ring :[ 6.60,  8.25],   //   musluk ucundaki vurgu halkası
+  use  :[ 8.50, 10.30],   // çip: "SÜZÜLMÜŞ SUYLA YIKA"
+  proof:[10.55, 14.85],   // kanıt: "FİLTREDE KALANLAR"
+  arw  :[11.95, 14.40],   //   tortuyu gösteren ok + halka
+  scB  :[15.05, 18.55],   // TASARIM SAHNESİ — önce / sonra
+  reuse:[18.75, 21.45],   // sayaç 30 + YIKA → SIK → TEKRAR TAK
+  ben  :[21.65, 24.15],   // 3 maddelik fayda listesi
+  scC  :[24.30,     D],   // TASARIM SAHNESİ — kapanış + CTA
 };
 ```
+
+`scA` / `scB` / `scC` **opak** tam ekran sahnelerdir: altlarındaki görüntüyü
+tamamen kapatırlar, yani videonun süresi ve sesi hiç değişmeden araya tasarım
+sahnesi girmiş olur. Bu sahnelerin denk geldiği pencereler görüntüde tekrara
+düşen bölümler (kutu açılışı, filtrenin durulanması, son plan) seçildi.
 
 Kaynak videoyu değiştirirsen `D` sabitini ve bu aralıkları yeni akışa göre
 güncellemen gerekir; `ring` ve `arw` ayrıca ekrandaki bir noktayı hedefler
@@ -70,6 +76,23 @@ güncellemen gerekir; `ring` ve `arw` ayrıca ekrandaki bir noktayı hedefler
 | Halka / ok | SVG `stroke-dasharray` ile çizilerek ürünü işaret eder |
 | Sayaç | 0 → 30 sayarak "30 güne kadar tek filtre" mesajını verir |
 | Kapanış kartı | Logo, slogan, nabız atan CTA ve parlama (shine) efekti |
+
+## Tasarım sahneleri
+
+Üç tam ekran sahne, açık zemin üzerinde havada duran kart diline oturur:
+
+| Sahne | Ne | Nasıl |
+|---|---|---|
+| `scA` açılış | Koyu lacivert kart, içinde glow'lu ürün karesi, halka aksanlar | Kart alttan yaylanarak gelir, görsel dönerek yerine oturur, wordmark kelime kelime yükselir |
+| `scB` önce/sonra | İki beyaz kart yan yana (kirli filtre / berrak su), altta `önce/sonra` | Kartlar zıt yönlerden kayar, `sonra` italik serif sağdan gelir, köşede PIP ve karaoke caption |
+| `scC` kapanış | Koyu kart, CTA düğmesi, marka | Açılışla aynı iskelet; düğme nabız atar, üzerinden parlama geçer |
+
+Ortak tipografi kalıbı: **kalın sans + italik serif** (`musluktan akan su` /
+*`temiz mi?`*). Kart içindeki duraǧan kareler yavaş Ken Burns ile büyütülür,
+böylece donmuş görüntü hissi vermez.
+
+Caption baloncuǧu karaoke gibi çalışır: `karaoke(el, p)` kelimeleri sırayla
+sarıya çevirir.
 
 ## Notlar
 
