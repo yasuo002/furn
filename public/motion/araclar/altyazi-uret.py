@@ -49,7 +49,7 @@ CSS = """
 body{margin:0;background:transparent}
 .stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:transparent}
 .cap{position:absolute;left:6%;right:6%;top:67%;display:flex;flex-wrap:wrap;
-  justify-content:center;align-items:baseline;gap:.08em .24em}
+  justify-content:center;align-items:baseline;font-size:78px;gap:.10em .26em}
 .cap .k{display:inline-block;white-space:pre;font-family:'Archivo',sans-serif;font-weight:800;
   font-size:78px;letter-spacing:-.025em;color:#fff;line-height:1.14;
   text-shadow:0 6px 26px rgba(0,0,0,.85),0 2px 7px rgba(0,0,0,.7)}
@@ -86,9 +86,9 @@ function kur(i){
       el.appendChild(c); harfler.push(c); }); }
     else { el.textContent=txt; el.dataset.d=off.toFixed(3); harfler.push(el); }
   };
-  if(ws.length && ws.every(w=>w.s==="box")){                 // kutu grubu tek plaka
+  if(ws.length && ws.every(w=>w.s==="box")){                 // kutu grubu tek plaka, bütün olarak gelir
     const s=document.createElement("span"); s.className="k box";
-    ekle(s, ws.map(w=>w.t).join(" "), HARF.box, 0); capEl.appendChild(s); return;
+    ekle(s, ws.map(w=>w.t).join(" "), 0, 0); capEl.appendChild(s); return;
   }
   ws.forEach((w,wi)=>{ const s=document.createElement("span");
     s.className="k"+(w.s==="plain"?"":" "+w.s);
