@@ -66,6 +66,17 @@ def riser(dur=1.30):
         out.append((b[i] * 1.5 + math.sin(ph) * 0.30) * (p ** 2.1))
     return out
 
+def tick(dur=0.055):
+    """Altyazi obegi degisiminde calan kisa tiz tik — dokusal, vurucu degil."""
+    n = int(dur * FS)
+    b = svf_band(noise(n), lambda i: 4200.0, q=1.6)
+    out, ph = [], 0.0
+    for i in range(n):
+        t = i / FS
+        ph += 2 * math.pi * 2600.0 / FS
+        out.append((b[i] * 1.6 + math.sin(ph) * 0.35) * math.exp(-95.0 * t))
+    return out
+
 def ding(dur=0.80):
     n = int(dur * FS)
     out = []
@@ -78,22 +89,35 @@ def ding(dur=0.80):
 
 # --- olay listesi: (saniye, ses, kazanc, stereo_pan[-1..1]) ---
 EVENTS = [
+    # --- altyazi obegi tikleri (dokusal, 0.20 seviye) ---
+    (1.70, 'tick', 0.20,  0.10), (3.26, 'tick', 0.20, -0.10),
+    (7.18, 'tick', 0.20,  0.10), (8.91, 'tick', 0.20, -0.10),
+    (10.78,'tick', 0.20,  0.10), (12.33,'tick', 0.20, -0.10),
+    (16.76,'tick', 0.20,  0.10),
+    # --- istif listesi satirlari ---
+    (13.30,'tick', 0.24, -0.20), (13.68,'tick', 0.24, 0.00),
+    (14.07,'tick', 0.24,  0.20),
+    # --- kesimler ve grafik girisleri ---
     (0.02, 'whoosh', 0.55, -0.25),
-    (0.80, 'impact', 0.70,  0.00),
-    (2.50, 'whoosh', 0.50,  0.30),
-    (4.32, 'pop',    0.55, -0.20),
-    (5.50, 'riser',  0.42,  0.00),   # "BMW!" oncesi yukselis
-    (5.60, 'impact', 0.95,  0.00),
-    (6.34, 'whoosh', 0.48,  0.35),
-    (6.86, 'pop',    0.50,  0.40),
+    (2.53, 'whoosh', 0.50,  0.30),   # kaynak kamera kesimi
+    (3.98, 'whoosh', 0.44, -0.20),
+    (6.34, 'whoosh', 0.48,  0.35),   # kaynak kamera kesimi
     (8.02, 'whoosh', 0.44, -0.35),
-    (8.48, 'pop',    0.50, -0.40),
-    (9.82, 'whoosh', 0.46,  0.20),
-    (11.76,'pop',    0.55,  0.00),
-    (12.92,'riser',  0.40,  0.00),   # blurlu liste anina yukselis
-    (15.05,'impact', 0.85,  0.00),
+    (9.81, 'whoosh', 0.46,  0.20),   # kaynak kamera kesimi
     (15.80,'whoosh', 0.55, -0.20),
-    (16.28,'impact', 0.70,  0.00),
+    # --- kart / cip girisleri ---
+    (6.86, 'pop',    0.50,  0.40),
+    (8.48, 'pop',    0.50, -0.40),
+    (11.76,'pop',    0.55,  0.00),   # konusmaci degisimi
+    # --- vurgu darbeleri ---
+    (0.86, 'impact', 0.70,  0.00),   # GOLF PARASINA
+    (4.78, 'impact', 0.62,  0.00),   # GEMI GIBI
+    (5.60, 'impact', 0.95,  0.00),   # BMW!
+    (15.06,'impact', 0.85,  0.00),   # Golf alirsin
+    (16.28,'impact', 0.70,  0.00),   # final kart
+    # --- yukselisler (sonu hedefe hizalanir) ---
+    (5.50, 'riser',  0.42,  0.00),
+    (12.90,'riser',  0.40,  0.00),
     (16.95,'ding',   0.45,  0.15),
 ]
 
@@ -106,7 +130,7 @@ def main():
     for at, kind, gain, pan in EVENTS:
         if kind not in cache:
             cache[kind] = {'whoosh': whoosh, 'impact': impact, 'pop': pop,
-                           'riser': riser, 'ding': ding}[kind]()
+                           'riser': riser, 'ding': ding, 'tick': tick}[kind]()
         buf = cache[kind]
         # riser hedefe VARMALI, o yuzden basi degil sonu hizalanir
         start = int((at - len(buf) / FS) * FS) if kind == 'riser' else int(at * FS)

@@ -23,8 +23,8 @@ DUR="${DUR:-17.71}"
 # crop bu ffmpeg derlemesinde eval=frame desteklemedigi icin
 # scale=...:eval=frame + sabit merkez crop kullaniliyor.
 Z="1.02"
-for p in 0.82 4.34 5.62 9.84 12.94 15.07 16.30; do
-  Z="$Z+0.085*exp(-((t-$p)/0.22)*((t-$p)/0.22))"
+for p in 0.86 2.53 4.78 5.62 6.34 9.81 12.94 15.06 16.30; do
+  Z="$Z+0.075*exp(-((t-$p)/0.22)*((t-$p)/0.22))"
 done
 
 echo "1/3  SFX sentezleniyor"
@@ -48,7 +48,7 @@ gblur=sigma=10:enable='between(t,12.94,15.04)',\
 eq=contrast=1.06:saturation=1.08[bg];\
 [bg][1:v]overlay=0:0:format=auto,format=yuv420p[v];\
 [0:a]volume=0.94[a0];[2:a]volume=1.0[a1];\
-[a0][a1]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.97:level=disabled[aout]" \
+[a0][a1]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.82:level=disabled[aout]" \
   -map "[v]" -map "[aout]" \
   -c:v libx264 -preset slow -crf 18 -profile:v high -level 4.1 -r "$FPS" \
   -c:a aac -b:a 160k -ar 48000 -movflags +faststart -y "$OUT"

@@ -7,7 +7,12 @@ Yeni bir kurguya başlarken önce bunu, sonra `water-filter/` ve `car-review/`
 klasörlerindeki çalışan örnekleri oku.
 
 Aşağıdaki her sayı, referans videolar üzerinde ffmpeg + küçük Python
-betikleriyle **ölçüldü** — göz kararı değil.
+betikleriyle **ölçüldü** — göz kararı değil. Ekran değişimi hep aynı komutla
+sayılır, yoksa rakamlar karşılaştırılabilir olmuyor:
+
+```bash
+ffmpeg -i V.mp4 -vf "crop=720:420:0:620,select='gt(scene,0.04)',metadata=print:file=-" -f null -
+```
 
 ---
 
@@ -17,7 +22,7 @@ betikleriyle **ölçüldü** — göz kararı değil.
 |---|---|---|---|
 | Süre | 34.9 s | 32.5 s | 22.2 s |
 | Sert kesim | 8 → ort. **4.4 s**/plan | 8 → ort. **4.1 s**/plan | yok (sabit split-screen) |
-| Ekrandaki yazı değişimi | 37 → **0.94 s**'de bir | 54 → **0.60 s**'de bir | kart içinde |
+| Ekrandaki değişim | 52 → **0.67 s**'de bir | 57 → **0.57 s**'de bir | kart içinde |
 | Ses transient'leri | 48, medyan aralık **0.54 s** | 18, medyan aralık **1.12 s** | — |
 | Transient dağılımı | %58 tiz (whoosh), %8 bas (impact) | %44 tiz, %11 bas | — |
 | Baskın renkler | `#2188AC` `#6CA4BD` `#90BFD0` `#D8EDEC` | `#C99270` `#AC866E` `#614B38` `#F6F1ED` | `#0D2810` `#143817` + altın |
@@ -25,6 +30,11 @@ betikleriyle **ölçüldü** — göz kararı değil.
 **Çıkan kural:** ekranda bir şey ortalama **her 0.6–1.0 saniyede** değişiyor.
 Bu tempo bu tarzın belkemiği — yazı değişmiyorsa grafik giriyor, o da yoksa
 kamera yaklaşıyor. Boş geçen 1.5 saniye yok.
+
+Uyarı: referanslar 32–35 sn ve bol B-roll'lu, o yüzden bandın hızlı ucundalar.
+17 sn'lik yoğun konuşmalı bir klipte 0.8 sn civarı gerçekçi; oraya inmek için
+metni daha da kısaltmak okunurluğu bozuyor. Tempoyu metni kıyarak değil,
+**grafik olayı ekleyerek** artır.
 
 ---
 
