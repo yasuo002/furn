@@ -21,7 +21,7 @@ fetch() {
 
 echo "fontlar indiriliyor..."
 fetch Montserrat  'Montserrat:wght@700;800;900'
-fetch Inter       'Inter:wght@400;600;800;900'
+fetch Inter       'Inter:wght@200;300;400;600;800;900'
 fetch PlayfairIt  'Playfair+Display:ital,wght@1,400;1,500;1,600'   # italik serif wordmark
 fetch Poppins     'Poppins:wght@500;600;700;800'                   # yuvarlak geometrik sans
 fetch GreatVibes  'Great+Vibes'                                    # altin kaligrafik vurgu

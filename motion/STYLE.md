@@ -205,6 +205,60 @@ Kutuyu kaldırmak burada mümkün oldu çünkü konuşmacı **koyu bir üst** gi
 gömlek zaten temiz bir tuval, panel arka planı gerekmedi. Kaynağa bakıp böyle
 bir alan var mı diye kontrol et — varsa kullan, yoksa 6b'deki panel.
 
+## 6g. Sahne sahne dizgi
+
+Videonun tamamını tek altyazı stiliyle geçmek yazıyı düz gösteriyor. Her öbeğe
+kendi dizgisini ver; işaretler `overlay.html` içindeki metnin başına yazılır:
+
+| İşaret | Ne | Nerede |
+|---|---|---|
+| `^` | Bebas Neue, 1.5× büyük, harf harf açılır | Cümlenin vurduğu kelime |
+| `*` | Aksan rengi | İkincil vurgu |
+| `~` | Playfair italik | Duygu, alıntı, düşünce |
+| `&` | Great Vibes script | Videoda **bir kez**; kapanış gibi bir an |
+| `-` | Inter 200, küçük, %66 opak | Bağlaç ve dolgu kelimeler |
+
+Öbeğin kendisi de üç düzenden birini alır: `thin` (Inter 200, 51 px — sakin,
+düşünen satırlar), `center` (Inter 800, 43 px — normal), `left` (sola dayalı,
+46 px — liste gibi ardışık cümleler). Aynı satırda ince + kalın + italik
+birlikte olunca yazı tasarlanmış görünüyor; hepsi aynı puntoda olunca altyazı
+görünüyor.
+
+Animasyon da işarete göre değişir: düz kelimeler soldan maskeyle açılır,
+Bebas kelimeleri harf harf gelir, serif/script sağdan süzülür.
+
+## 6h. Kendi başına duran motion graphic sahneleri
+
+Referans videolarda grafiklerin bir kısmı altyazıya eşlik etmiyor — **sahneyi
+devralıyor**. Konuşmacı kaybolur, ekranı 3–6 saniyeliğine animasyonlu bir
+grafik alır. Bu, uzun konuşmalarda en çok işe yarayan şey.
+
+Kural: her sahne söylenen şeyin **görsel karşılığı** olmalı, süsleme değil.
+
+| Sahne | Ne anlatıyor | Nasıl çalışıyor |
+|---|---|---|
+| Terazi | "para mı, yapı mı" | Kefeler, konuşmacı "ama hiç kimse şunu konuşmuyor" derken terazi devrilir |
+| Üç sütun | üçlü yapı | Numaralı (01/02/03) sütunlar sırayla yükselir, tepelerinde Bebas etiket |
+| Kırılan bağlar | "X yoksa şu olur" | Yatay çizgiler ortadan kopar, iki parça ayrılır |
+| Dağınık ağ | "kimsenin çevresi yok" | Bağlantısız noktalar, üçünün yanında etiket |
+| Bağlanan ağ | kapanış | Aynı noktalar; aralarına çizgiler çizilir, script bir satırla biter |
+
+Son iki sahne aynı nokta düzenini paylaşıyor: önce kopuk, sonra bağlı. Aynı
+görselin dönüşmesi, iki ayrı grafikten çok daha güçlü.
+
+Toplam tam ekran süresi videonun **%25–30'unu geçmesin**; üstünde slayt
+gösterisine dönüyor. Bu 70 sn'lik kurguda 21 sn (≈%30).
+
+Etiketleri noktaya sabitlerken taşmayı kontrol et: `offsetWidth` ile sağa
+sığmıyorsa etiketi noktanın soluna al.
+
+## 6i. Ne zaman hiç ses efekti koymamalı
+
+Kaynakta zaten müzik varsa ve kurgu görsel olarak yeterince olay taşıyorsa
+efekt eklemek sadece çamur yapıyor. Bu videoda hepsi kaldırıldı: çıktının ses
+seviyesi kaynakla birebir aynı (−17.2 dB). Efekt, **görüntünün tek başına
+anlatamadığı** bir vurgu varsa eklenir; ritim doldurmak için değil.
+
 ## 6f. Tek plan videoyu izlenebilir kılmak
 
 60 sn+ tek plan bir konuşmada asıl sorun grafik azlığı değil, **kadrajın hiç

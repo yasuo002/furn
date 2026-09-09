@@ -1,91 +1,126 @@
 <meta charset="utf-8">
 <title>overlay-founder</title>
 <style>
-@font-face{font-family:MT;src:url('../fonts/Montserrat-900.ttf');font-weight:900}
+@font-face{font-family:IN;src:url('../fonts/Inter-900.ttf');font-weight:900}
 @font-face{font-family:IN;src:url('../fonts/Inter-800.ttf');font-weight:800}
 @font-face{font-family:IN;src:url('../fonts/Inter-600.ttf');font-weight:600}
+@font-face{font-family:IN;src:url('../fonts/Inter-300.ttf');font-weight:300}
+@font-face{font-family:IN;src:url('../fonts/Inter-200.ttf');font-weight:200}
 @font-face{font-family:PF;src:url('../fonts/PlayfairIt-500.ttf');font-style:italic;font-weight:500}
-@font-face{font-family:BB;src:url('../fonts/Bebas-400.ttf')}                 /* sıkışık display */
+@font-face{font-family:BB;src:url('../fonts/Bebas-400.ttf')}
 @font-face{font-family:GK;src:url('../fonts/Grotesk-700.ttf');font-weight:700}
 @font-face{font-family:GK;src:url('../fonts/Grotesk-500.ttf');font-weight:500}
 @font-face{font-family:MO;src:url('../fonts/Mono-700.ttf');font-weight:700}
 @font-face{font-family:MO;src:url('../fonts/Mono-500.ttf');font-weight:500}
+@font-face{font-family:GV;src:url('../fonts/GreatVibes-400.ttf')}
 
 :root{ --mint:#BFD9C0; --mint2:#8FBF9B; --acc:#9FD8A8; --cream:#F5F2EC;
-       --warm:#D9A98F; --ink:#0E1613; }
+       --warm:#D9A98F; --ink:#0E1613; --dim:rgba(245,242,236,.34); }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:transparent}
 body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,sans-serif;
      -webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
-.sh{text-shadow:0 3px 22px rgba(0,0,0,.55),0 1px 3px rgba(0,0,0,.45)}
+.scn{position:absolute;inset:0;z-index:9;background:rgba(9,18,15,.94)}
+.skick{position:absolute;left:0;right:0;top:214px;text-align:center;
+  font:700 19px/1 MO;letter-spacing:.28em;text-transform:uppercase;color:var(--mint2)}
 
-/* ---------- üst: ilerleme + bölüm etiketi ---------- */
+/* ---------- üst şerit ---------- */
 #prog{position:absolute;left:0;top:0;height:3px;width:100%;background:rgba(255,255,255,.12);z-index:12}
 #progB{position:absolute;left:0;top:0;height:100%;width:0;background:var(--acc);opacity:.75}
 #chap{position:absolute;left:48px;top:112px;z-index:11;display:flex;align-items:center;gap:12px}
 #chapR{width:0;height:2px;background:var(--mint2);opacity:.6}
 #chapT{font:700 18px/1 MO;letter-spacing:.16em;text-transform:uppercase;color:var(--mint2);
-  text-shadow:0 2px 12px rgba(0,0,0,.7);will-change:opacity,transform}
+  text-shadow:0 2px 12px rgba(0,0,0,.7)}
 
-/* ---------- altyazı ---------- */
-#cap{position:absolute;left:56px;right:56px;top:952px;height:180px;z-index:6;
-  display:flex;align-items:flex-start;justify-content:center}
-#capTxt{width:100%;text-align:center;font:800 43px/1.24 IN;letter-spacing:-.012em;
-  color:var(--cream);text-shadow:0 3px 20px rgba(0,0,0,.65),0 1px 2px rgba(0,0,0,.5)}
-#capTxt .wi{display:inline-block;margin:0 .11em;padding:0 .04em;
+/* ---------- altyazı: sahneye göre farklı dizgi ---------- */
+#cap{position:absolute;left:52px;right:52px;top:940px;height:200px;z-index:6;
+  display:flex;align-items:flex-start}
+#capTxt{width:100%;text-align:center;color:var(--cream);
+  text-shadow:0 3px 20px rgba(0,0,0,.68),0 1px 2px rgba(0,0,0,.5)}
+#capTxt.center{font:800 43px/1.24 IN;letter-spacing:-.012em}
+#capTxt.thin  {font:200 51px/1.26 IN;letter-spacing:-.005em;color:rgba(245,242,236,.93)}
+#capTxt.left  {font:800 46px/1.20 IN;letter-spacing:-.014em;text-align:left}
+#capTxt .wi{display:inline-block;margin:0 .10em;padding:0 .04em;
   will-change:transform,opacity,clip-path}
 #capTxt .hi{color:var(--acc)}
-#capTxt .sm{font-size:33px;font-weight:600;opacity:.62}
-#capTxt .q{font:italic 500 47px/1.24 PF;letter-spacing:0}
+#capTxt .bb{font-family:BB;font-weight:400;letter-spacing:.02em}
+#capTxt.center .bb{font-size:66px}  #capTxt.thin .bb{font-size:72px}
+#capTxt.left   .bb{font-size:70px}
+#capTxt .q {font-family:PF;font-style:italic;font-weight:500;letter-spacing:0}
+#capTxt.center .q{font-size:47px} #capTxt.thin .q{font-size:52px} #capTxt.left .q{font-size:50px}
+#capTxt .gv{font-family:GV;font-weight:400;color:var(--mint)}
+#capTxt.center .gv{font-size:64px} #capTxt.thin .gv{font-size:70px}
+#capTxt .sm{font-weight:200;opacity:.66}
+#capTxt.center .sm{font-size:33px} #capTxt.thin .sm{font-size:40px} #capTxt.left .sm{font-size:35px}
 #capTxt .ch{display:inline-block;will-change:transform,opacity}
 
-/* ---------- liste paneli ---------- */
-#pan{position:absolute;left:66px;right:66px;top:606px;z-index:5}
-#panT{font:700 18px/1 MO;letter-spacing:.22em;text-transform:uppercase;color:var(--mint2);
-  margin-bottom:22px;will-change:opacity,transform}
-.prow{position:relative;display:flex;align-items:center;gap:16px;margin-top:16px;
-  will-change:transform,opacity}
-.prow .dot{flex:0 0 9px;height:9px;border-radius:50%;background:var(--mint2)}
-.prow .txt{font:700 38px/1.2 GK;color:var(--cream);letter-spacing:-.01em}
-.prow .strike{position:absolute;left:25px;top:52%;height:3px;width:0;border-radius:2px;
-  background:var(--warm);opacity:.9}
+/* ---------- kırılan bağlar paneli (gömlek üzerinde) ---------- */
+#brk{position:absolute;left:70px;right:70px;top:604px;z-index:5}
+#brkT{font:700 18px/1 MO;letter-spacing:.22em;text-transform:uppercase;color:var(--mint2);
+  margin-bottom:26px}
+.brow{position:relative;height:62px;margin-top:10px}
+.brow .lbl{position:absolute;left:0;top:0;font:700 32px/1.1 GK;color:var(--cream);
+  text-shadow:0 3px 14px rgba(0,0,0,.7)}
+.brow .ln{position:absolute;left:0;top:46px;height:3px;border-radius:2px;background:var(--mint2)}
+.brow .rn{position:absolute;top:46px;height:3px;border-radius:2px;background:var(--warm)}
 
-/* ---------- düğüm diyagramı (üçlü) ---------- */
-#nodes{position:absolute;left:0;right:0;top:588px;height:250px;z-index:5}
-#nsvg{position:absolute;inset:0;width:720px;height:250px;overflow:visible}
-.nlab{position:absolute;text-align:center;width:220px;font:700 27px/1.2 GK;color:var(--cream);
-  text-shadow:0 3px 16px rgba(0,0,0,.7);will-change:opacity,transform}
-#nfoot{position:absolute;left:0;right:0;top:212px;text-align:center;
-  font:700 19px/1 MO;letter-spacing:.22em;text-transform:uppercase;color:var(--mint2);
-  will-change:opacity}
+/* ---------- S1 terazi ---------- */
+#s1svg{position:absolute;left:0;top:300px;width:720px;height:420px;overflow:visible}
+#s1L,#s1R{position:absolute;text-align:center;width:280px;
+  text-shadow:0 3px 16px rgba(0,0,0,.6)}
+#s1L{left:36px;top:620px;font:400 76px/1 BB;color:var(--warm);letter-spacing:.02em}
+#s1R{left:398px;top:618px;font:700 36px/1.26 GK;color:var(--acc)}
+#s1F{position:absolute;left:0;right:0;top:800px;text-align:center;
+  font:200 44px/1.3 IN;color:rgba(245,242,236,.9)}
+#s1F b{font-weight:800}
 
-/* ---------- tam ekran kinetik tipografi ---------- */
-#kin{position:absolute;inset:0;z-index:9;background:rgba(9,18,15,.92)}
-#kinIn{position:absolute;left:56px;right:56px;top:0;bottom:0;
+/* ---------- S2 sütunlar ---------- */
+#s2{position:absolute;left:64px;right:64px;top:340px;height:520px}
+.pcol{position:absolute;bottom:0;width:168px;border-radius:14px 14px 0 0;
+  background:linear-gradient(180deg,rgba(159,216,168,.34),rgba(159,216,168,.08));
+  border:1px solid rgba(159,216,168,.35);border-bottom:none;will-change:height,opacity}
+.pnum{position:absolute;left:0;width:168px;text-align:center;font:700 18px/1 MO;
+  letter-spacing:.18em;color:var(--mint2)}
+.plab{position:absolute;left:0;width:168px;text-align:center;font:400 42px/1 BB;
+  letter-spacing:.03em;color:var(--cream)}
+#s2F{position:absolute;left:0;right:0;top:892px;text-align:center;
+  font:700 20px/1 MO;letter-spacing:.24em;text-transform:uppercase;color:var(--mint2)}
+
+/* ---------- S4 / S5 ağ haritası ---------- */
+#netsvg{position:absolute;left:0;top:286px;width:720px;height:620px;overflow:visible}
+.nlbl{position:absolute;font:700 27px/1.15 GK;color:var(--cream);white-space:nowrap;
+  text-shadow:0 3px 14px rgba(0,0,0,.7);will-change:opacity,transform}
+#netF{position:absolute;left:0;right:0;top:952px;text-align:center;
+  font:200 42px/1.3 IN;color:rgba(245,242,236,.92)}
+#netF b{font-weight:800;color:var(--acc)}
+#netG{position:absolute;left:0;right:0;top:948px;text-align:center;
+  font:400 78px/1.1 GV;color:var(--mint)}
+
+/* ---------- kinetik tam ekran ---------- */
+#kin{position:absolute;inset:0;z-index:9;background:rgba(9,18,15,.93)}
+#kinIn{position:absolute;left:52px;right:52px;top:0;bottom:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center}
 #kinK{font:700 19px/1 MO;letter-spacing:.28em;text-transform:uppercase;color:var(--mint2);
-  margin-bottom:26px}
-#kinL{text-align:center;font:400 118px/.94 BB;letter-spacing:.012em;color:var(--cream);
-  text-transform:uppercase}
+  margin-bottom:28px}
+#kinL{text-align:center;font:400 122px/.92 BB;letter-spacing:.012em;color:var(--cream)}
 #kinL .kw{display:inline-block;margin:0 .07em;will-change:transform,opacity}
 #kinL .kw.a{color:var(--acc)}
 
-/* ---------- tam ekran soru ---------- */
-#ask{position:absolute;inset:0;z-index:9;background:rgba(10,20,16,.90)}
-#askIn{position:absolute;left:70px;right:70px;top:462px;text-align:center}
+/* ---------- soru kartı ---------- */
+#ask{position:absolute;inset:0;z-index:9;background:rgba(10,20,16,.92)}
+#askIn{position:absolute;left:66px;right:66px;top:452px;text-align:center}
 #askK{font:700 19px/1 MO;letter-spacing:.28em;text-transform:uppercase;color:var(--mint2)}
-#askL{margin-top:30px;font:900 66px/1.16 MT;letter-spacing:-.025em;color:var(--cream)}
-#askL b{color:var(--acc)}
-#askR{width:0;height:2px;margin:34px auto 0;background:var(--mint2);opacity:.7}
+#askL{margin-top:32px;font:200 56px/1.22 IN;color:var(--cream)}
+#askL b{font:400 84px/1.05 BB;letter-spacing:.02em;color:var(--acc);display:block;margin-top:10px}
+#askR{width:0;height:2px;margin:36px auto 0;background:var(--mint2);opacity:.7}
 
 /* ---------- marka ---------- */
-#brand{position:absolute;left:0;right:0;top:660px;text-align:center;z-index:6}
+#brand{position:absolute;left:0;right:0;top:648px;text-align:center;z-index:6}
 #brand .in{display:inline-flex;align-items:center;gap:14px;padding:16px 26px;border-radius:16px;
-  background:rgba(12,22,18,.82);border:1px solid rgba(191,217,192,.22);
-  will-change:transform,opacity}
+  background:rgba(12,22,18,.84);border:1px solid rgba(191,217,192,.22)}
 #brand .mk{width:38px;height:38px;border-radius:11px;background:var(--acc);
   display:flex;align-items:center;justify-content:center;font:400 26px/1 BB;color:var(--ink)}
-#brand .nm{font:700 29px/1.15 GK;letter-spacing:.01em;color:var(--cream);text-align:left}
+#brand .nm{font:700 29px/1.15 GK;color:var(--cream);text-align:left}
 #brand .nm i{display:block;font:500 16px/1.3 MO;font-style:normal;letter-spacing:.12em;
   text-transform:uppercase;color:var(--mint2);margin-top:4px}
 </style>
@@ -94,14 +129,34 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
   <div id="prog"><div id="progB"></div></div>
   <div id="chap"><i id="chapR"></i><div id="chapT"></div></div>
 
-  <div id="pan"><div id="panT"></div></div>
+  <!-- kırılan bağlar (gömlek üzerinde, konuşmacı görünür kalır) -->
+  <div id="brk"><div id="brkT">yoksa ne oluyor</div></div>
 
-  <div id="nodes">
-    <svg id="nsvg" viewBox="0 0 720 250"></svg>
-    <div class="nlab" id="nl0" style="left:40px;top:118px"></div>
-    <div class="nlab" id="nl1" style="left:250px;top:118px"></div>
-    <div class="nlab" id="nl2" style="left:460px;top:118px"></div>
-    <div id="nfoot"></div>
+  <!-- S1: terazi -->
+  <div class="scn" id="s1">
+    <div class="skick">herkesin baktığı yer</div>
+    <svg id="s1svg" viewBox="0 0 720 420"></svg>
+    <div id="s1L">PARA</div>
+    <div id="s1R">sistem · ekip<br>network</div>
+    <div id="s1F">ama <b>hiç kimse</b> şunu konuşmuyor</div>
+  </div>
+
+  <!-- S2: üç sütun -->
+  <div class="scn" id="s2w">
+    <div class="skick">bir şirketi asıl büyüten</div>
+    <div id="s2"></div>
+    <div id="s2F">para değil, yapı</div>
+  </div>
+
+  <!-- S4/S5: ağ haritası -->
+  <div class="scn" id="net">
+    <div class="skick" id="netK"></div>
+    <svg id="netsvg" viewBox="0 0 720 620"></svg>
+    <div class="nlbl" id="nb0"></div>
+    <div class="nlbl" id="nb1"></div>
+    <div class="nlbl" id="nb2"></div>
+    <div id="netF"></div>
+    <div id="netG">en büyük sermaye</div>
   </div>
 
   <div id="kin"><div id="kinIn"><div id="kinK"></div><div id="kinL"></div></div></div>
@@ -109,7 +164,7 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
   <div id="ask">
     <div id="askIn">
       <div id="askK">artık ilk baktığım şey</div>
-      <div id="askL">Bu yapı<br><b>bensiz çalışabilir mi?</b></div>
+      <div id="askL">Bu yapı<b>bensiz çalışabilir mi?</b></div>
       <div id="askR"></div>
     </div>
   </div>
@@ -124,108 +179,83 @@ body{width:720px;height:1280px;overflow:hidden;position:relative;font-family:IN,
 
 <script>
 /* ============================================================
-   window.setT(saniye) — hareketli ama sakin: easing hep ease-out,
-   sadece vurgu anlarında hafif bir taşma var.
+   window.setT(saniye).  Ses efekti yok — kurgu tamamen görsel.
    ============================================================ */
-const D = 69.87, LAYER_END = 61.30;   /* kaynağın kendi outro'su 61.4'te giriyor */
+const D=69.87, LAYER_END=61.30;
 const cl=(x,a=0,b=1)=>x<a?a:(x>b?b:x);
 const soft=x=>1-Math.pow(1-x,3);
-const softer=x=>1-Math.pow(1-x,2);
-const nudge=(x,s=1.25)=>1+(s+1)*Math.pow(x-1,3)+s*Math.pow(x-1,2);  /* çok az taşar */
+const nudge=(x,s=1.25)=>1+(s+1)*Math.pow(x-1,3)+s*Math.pow(x-1,2);
 const lerp=(a,b,x)=>a+(b-a)*x;
 const px=v=>v.toFixed(2)+'px';
 const show=(el,on)=>{ el.style.display=on?'':'none'; };
 
-/* ---------- altyazı:  *vurgu  -küçük  ~italik ---------- */
+/* Altyazı işaretleri:  *vurgu  ^Bebas  ~italik serif  &script  -ince  ------ */
 const C=[
- [0.22,1.28,'Girişimcilikte çoğu insan'],
- [1.28,2.34,'*odağı *yanlış *yerde.'],
- [2.34,3.55,'Herkes daha fazla satışın,'],
- [3.55,4.68,'daha fazla reklamın'],
- [4.68,6.20,'ve daha fazla sermayenin peşinde.'],
- [6.20,7.72,'Ama hiç kimse -şunu konuşmuyor.'],
- [7.72,8.60,'Bir şirketi büyüten'],
- [8.60,9.44,'*sadece *para *değildir.'],
- [13.14,14.30,'Ben ilk girişimimde'],
- [14.30,15.44,'bunu çok sert yaşadım.'],
- [15.44,16.50,'Çok çalışıyordum,'],
- [16.50,17.88,'gerçekten durmadan çalışıyordum.'],
- [17.88,19.10,'Ve bir noktadan sonra'],
- [19.10,20.20,'şunu fark ettim:'],
- [20.20,21.44,'sorun *yetersiz *çalışmak değilmiş.'],
- [23.06,24.02,'Çünkü doğru sistem yoksa'],
- [24.02,25.40,'işler büyüdükçe karmaşıklaşır.'],
- [25.40,26.58,'Doğru ekip yoksa'],
- [26.58,27.90,'en iyi fikir bile ilerlemez.'],
- [27.90,29.02,'Doğru çevre yoksa'],
- [29.02,30.50,'aynı hatayı tekrar tekrar yaparsınız.'],
- [30.50,31.70,'Ve bir gün girişimciliğe'],
- [31.70,32.76,'olan bakış açım'],
- [32.76,33.80,'*tamamen *değişti.'],
- [33.80,34.84,'Artık bir işe başlarken'],
- [34.84,35.86,'ilk baktığım şey şu:'],
- [38.66,39.90,'her işi kendin yapmak değil.'],
- [39.90,40.80,'Doğru *sistemi,'],
- [40.80,41.80,'doğru *insanları'],
- [41.80,43.06,'ve doğru *ağı kurabilmek.'],
- [43.06,44.10,'Zaten bu yüzden de'],
- [45.60,47.44,'Çünkü Türkiye’de, özellikle Anadolu’da'],
- [47.44,48.54,'çok iyi fikirler var.'],
- [48.70,50.00,'Ama birçok insanın çevresi yok,'],
- [50.00,51.10,'yol gösterecek insanı yok,'],
- [51.10,52.50,'tecrübe paylaşabileceği ağı yok.'],
- [52.50,53.80,'O yüzden insanlar çoğu zaman'],
- [53.80,54.82,'-fikirden *değil,'],
- [56.24,57.32,'Ben artık şuna inanıyorum:'],
+ [0.22,1.28,'-Girişimcilikte *çoğu *insan','thin'],
+ [1.28,2.34,'^ODAĞI ^YANLIŞ ~yerde.','center'],
+ [2.34,3.55,'Herkes -daha -fazla ^SATIŞIN,','left'],
+ [3.55,4.68,'-daha -fazla ^REKLAMIN','left'],
+ [7.72,8.60,'-Bir şirketi büyüten','thin'],
+ [8.60,9.44,'^SADECE ^PARA ~değildir.','center'],
+ [13.14,14.30,'-Ben ilk girişimimde','thin'],
+ [14.30,15.44,'bunu *çok *sert yaşadım.','center'],
+ [15.44,16.50,'-Çok çalışıyordum,','thin'],
+ [16.50,17.88,'gerçekten ^DURMADAN çalışıyordum.','center'],
+ [17.88,19.10,'-Ve bir noktadan sonra','thin'],
+ [19.10,20.20,'şunu ~fark ~ettim:','thin'],
+ [20.20,21.44,'sorun ^YETERSİZ ^ÇALIŞMAK -değilmiş.','center'],
+ [23.06,24.02,'-Çünkü doğru *sistem yoksa','thin'],
+ [24.02,25.40,'işler büyüdükçe ^KARMAŞIKLAŞIR.','center'],
+ [25.40,26.58,'-Doğru *ekip yoksa','thin'],
+ [26.58,27.90,'en iyi fikir bile ^İLERLEMEZ.','center'],
+ [27.90,29.02,'-Doğru *çevre yoksa','thin'],
+ [29.02,30.50,'aynı hatayı ~tekrar ~tekrar yaparsınız.','center'],
+ [30.50,31.70,'-Ve bir gün girişimciliğe','thin'],
+ [31.70,32.76,'-olan bakış açım','thin'],
+ [32.76,33.80,'^TAMAMEN ^DEĞİŞTİ.','center'],
+ [33.80,34.84,'-Artık bir işe başlarken','thin'],
+ [34.84,35.86,'ilk baktığım şey şu:','thin'],
+ [38.66,39.90,'her işi ~kendin ~yapmak -değil.','thin'],
+ [39.90,40.80,'Doğru ^SİSTEMİ,','left'],
+ [40.80,41.80,'doğru ^İNSANLARI','left'],
+ [41.80,43.06,'ve doğru ^AĞI kurabilmek.','left'],
+ [43.06,44.10,'-Zaten bu yüzden de','thin'],
+ [45.60,47.44,'-Çünkü Türkiye’de, özellikle ^ANADOLU’DA','center'],
+ [47.44,48.60,'çok iyi ^FİKİRLER var.','center'],
+ [53.90,54.82,'-fikirden *değil,','center'],
+ [56.24,57.32,'Ben artık şuna ~inanıyorum:','thin'],
 ];
-const CAPS=C.map(([a,b,t])=>({a,b,w:t.split(' ')}));
+const CAPS=C.map(([a,b,t,st])=>({a,b,w:t.split(' '),st}));
 
-/* ---------- liste panelleri ---------- */
-const PANELS=[
- {a:2.55,b:7.66,title:'herkesin peşinde olduğu',rows:[
-   {t:'daha fazla satış',   at:2.70, strike:6.35},
-   {t:'daha fazla reklam',  at:3.62, strike:6.55},
-   {t:'daha fazla sermaye', at:4.80, strike:6.75}]},
- {a:23.00,b:29.00,title:'yoksa ne oluyor',rows:[
-   {t:'doğru sistem yoksa  ·  karmaşıklaşır', at:23.10},
-   {t:'doğru ekip yoksa  ·  ilerlemez',       at:25.45},
-   {t:'doğru çevre yoksa  ·  aynı hata',      at:27.95}]},
- {a:48.60,b:55.00,title:'iyi fikir var, ama',rows:[
-   {t:'çevre yok',        at:48.75},
-   {t:'yol gösteren yok', at:50.05},
-   {t:'paylaşacak ağ yok',at:51.20}]},
-];
-
-/* ---------- düğüm diyagramı: tez ve kapanış (geri çağrı) ---------- */
-const NODES=[
- {a:9.44,b:13.10,foot:'bir şirketi asıl büyüten',
-  n:[['sistem',9.60],['ekip',10.20],['network',10.80]]},
- {a:57.32,b:LAYER_END,foot:'bir girişimcinin en büyük sermayesi',
-  n:[['doğru\nnetwork',57.45],['doğru\nsistem',58.10],['doğru\nekip',58.75]]},
-];
-
-/* ---------- tam ekran kinetik anlar ---------- */
 const KIN=[
- {a:21.44,b:23.00,k:'asıl sorun',       w:[['SORUN',0],['YALNIZ',1],['ÇALIŞMAK',1]]},
- {a:54.82,b:56.24,k:'o yüzden',         w:[['YALNIZLIKTAN',1],['KAYBEDİYOR',0]]},
+ {a:21.44,b:23.00,k:'asıl sorun',   w:[['SORUN',0],['YALNIZ',1],['ÇALIŞMAK',1]]},
+ {a:54.82,b:56.24,k:'o yüzden',     w:[['YALNIZLIKTAN',1],['KAYBEDİYOR',0]]},
 ];
-
-/* ---------- bölüm etiketleri ---------- */
+const BRK={a:24.10,b:29.00,rows:[
+ {t:'sistem yok',  at:24.20, brk:24.80},
+ {t:'ekip yok',    at:25.50, brk:26.10},
+ {t:'çevre yok',   at:28.00, brk:28.45}]};
 const CHAP=[[0.60,'01 / odak'],[9.44,'02 / sistem'],[21.44,'03 / yalnızlık'],
             [33.00,'04 / soru'],[43.00,'05 / ağ'],[57.32,'06 / sermaye']];
-const T={ ask:[35.86,38.60], brand:[44.10,47.30] };
+const T={ s1:[4.95,7.66], s2:[9.56,13.10], ask:[35.86,38.60], brand:[44.10,47.30],
+          net:[48.80,53.80], close:[57.40,LAYER_END] };
 
-/* ---------- altyazı çizimi ---------- */
+/* ---------- altyazı ---------- */
 let key='';
 function draw(seg){
   const k=seg.a+'|'+seg.b; if(k===key) return; key=k;
+  capTxt.className=seg.st;
   capTxt.innerHTML=seg.w.map(t=>{
-    let hi=false,q=false,sm=false;
-    while('*~-'.indexOf(t[0])>-1){
-      if(t[0]==='*')hi=true; else if(t[0]==='~')q=true; else sm=true; t=t.slice(1);
+    const c=[]; let letters=false;
+    while('*^~&-'.indexOf(t[0])>-1){
+      const m=t[0];
+      if(m==='*'){c.push('hi');} else if(m==='^'){c.push('bb');letters=true;}
+      else if(m==='~'){c.push('q');} else if(m==='&'){c.push('gv');}
+      else c.push('sm');
+      t=t.slice(1);
     }
-    const inner = hi ? [...t].map(c=>'<span class="ch">'+c+'</span>').join('') : t;
-    return '<span class="wi'+(hi?' hi':'')+(q?' q':'')+(sm?' sm':'')+'">'+inner+'</span>';
+    const inner = letters ? [...t].map(ch=>'<span class="ch">'+ch+'</span>').join('') : t;
+    return '<span class="wi '+c.join(' ')+'">'+inner+'</span>';
   }).join(' ');
 }
 function words(l,dur){
@@ -235,107 +265,169 @@ function words(l,dur){
     const p=cl((l-i*per)/.46), e=soft(p);
     w.style.opacity=cl(p*1.7).toFixed(3);
     const chs=w.querySelectorAll('.ch');
-    if(chs.length){                       /* vurgu: harf harf + kısa parıltı */
+    if(chs.length){                                   /* Bebas: harf harf */
       chs.forEach((c,j)=>{
-        const cp=cl((p*chs.length-j)/1.7), ce=nudge(cp);
+        const cp=cl((p*chs.length-j)/1.8), ce=nudge(cp);
         c.style.opacity=cl(cp*1.9).toFixed(3);
-        c.style.transform='translate3d(0,'+px((1-ce)*16)+',0)';
+        c.style.transform='translate3d(0,'+px((1-ce)*18)+',0)';
       });
-      const g=Math.exp(-Math.pow((p-.62)/.34,2));
-      w.style.textShadow='0 3px 20px rgba(0,0,0,.65),0 0 '+px(g*30)+
-                         ' rgba(159,216,168,'+(g*.75).toFixed(2)+')';
-      w.style.transform='translate3d(0,'+px((1-e)*6)+',0)';
+      w.style.transform='none'; w.style.clipPath='none';
+    } else if(w.classList.contains('q')||w.classList.contains('gv')){
+      w.style.transform='translate3d('+px((1-e)*24)+',0,0)';  /* serif: sağdan */
       w.style.clipPath='none';
-    } else if(w.classList.contains('q')){  /* alıntı: sağdan süzülür */
-      w.style.transform='translate3d('+px((1-e)*26)+',0,0)';
-      w.style.clipPath='none';
-    } else {                               /* normal: soldan maskeyle açılır */
+    } else {                                          /* düz: soldan maske */
       w.style.transform='translate3d(0,'+px((1-e)*8)+',0)';
-      w.style.clipPath='inset(-18% '+((1-soft(cl(p*1.25)))*100).toFixed(1)+'% -18% -6%)';
+      w.style.clipPath='inset(-20% '+((1-soft(cl(p*1.25)))*100).toFixed(1)+'% -20% -6%)';
     }
   });
 }
 
-/* ---------- liste paneli ---------- */
-let pkey='';
-function panel(P,l){
-  if(pkey!==P.a+''){
-    pkey=P.a+'';
-    panT.textContent=P.title;
-    [...pan.querySelectorAll('.prow')].forEach(n=>n.remove());
-    P.rows.forEach(r=>{
-      const d=document.createElement('div'); d.className='prow';
-      d.innerHTML='<i class="dot"></i><span class="txt">'+r.t+'</span><i class="strike"></i>';
-      pan.appendChild(d);
-    });
-  }
-  const o=soft(cl((P.b-(P.a+l))/.45)), tp=soft(cl(l/.55));
-  panT.style.opacity=(tp*o).toFixed(3);
-  panT.style.transform='translate3d(0,'+px((1-tp)*-8)+',0)';
-  [...pan.querySelectorAll('.prow')].forEach((row,i)=>{
-    const r=P.rows[i], rl=P.a+l-r.at, e=soft(cl(rl/.62));
-    row.style.opacity=(cl(rl/.34)*o).toFixed(3);
-    row.style.transform='translate3d('+px((1-e)*-26)+',0,0)';
-    const st=row.querySelector('.strike');
-    if(r.strike!=null){
-      const s=soft(cl((P.a+l-r.strike)/.42));
-      st.style.width=px(s*(row.querySelector('.txt').offsetWidth+22));
-      st.style.opacity=(s*.9*o).toFixed(3);
-      row.querySelector('.txt').style.opacity=lerp(1,.42,s).toFixed(3);
-    } else st.style.width='0';
-  });
+/* ---------- S1 terazi ---------- */
+(function(){
+  s1svg.innerHTML=
+   '<line id="s1p" x1="360" y1="150" x2="360" y2="330" stroke="#8FBF9B" stroke-width="3"/>'+
+   '<path id="s1b" d="M170 150 L550 150" stroke="#F5F2EC" stroke-width="5" stroke-linecap="round"/>'+
+   '<circle id="s1c" cx="360" cy="150" r="11" fill="#9FD8A8"/>'+
+   '<path id="s1pl" d="M110 150 L230 150 L200 230 L140 230 Z" fill="rgba(217,169,143,.22)" stroke="#D9A98F" stroke-width="3" stroke-linejoin="round"/>'+
+   '<path id="s1pr" d="M490 150 L610 150 L580 230 L520 230 Z" fill="rgba(159,216,168,.20)" stroke="#9FD8A8" stroke-width="3" stroke-linejoin="round"/>'+
+   '<path id="s1base" d="M290 330 L430 330" stroke="#8FBF9B" stroke-width="4" stroke-linecap="round"/>';
+})();
+function scene1(l,dur){
+  const o=soft(cl((dur-l)/.34));
+  s1.style.opacity=(soft(cl(l/.28))*o).toFixed(3);
+  const b=soft(cl(l/.7));
+  s1svg.style.opacity=b.toFixed(3);
+  /* 1.35 sn'de terazi paradan yapıya devrilir */
+  const tip=soft(cl((l-1.35)/.85));
+  const ang=lerp(-9,9,tip);
+  ['s1b','s1c','s1pl','s1pr'].forEach(id=>
+    document.getElementById(id).setAttribute('transform','rotate('+ang.toFixed(2)+' 360 150)'));
+  s1L.style.opacity=(soft(cl((l-.30)/.5))*lerp(1,.42,tip)).toFixed(3);
+  s1L.style.transform='translate3d(0,'+px(lerp(0,-34,tip))+',0)';
+  s1R.style.opacity=(soft(cl((l-.48)/.5))*lerp(.42,1,tip)).toFixed(3);
+  s1R.style.transform='translate3d(0,'+px(lerp(-34,0,tip))+',0)';
+  const f=soft(cl((l-1.55)/.7));
+  s1F.style.opacity=f.toFixed(3);
+  s1F.style.transform='translate3d(0,'+px((1-f)*16)+',0)';
 }
 
-/* ---------- düğüm diyagramı ---------- */
-const NX=[150,360,570], NY=72, NR=34;
+/* ---------- S2 üç sütun ---------- */
+const P2=[['01','SİSTEM',300],['02','EKİP',380],['03','NETWORK',460]];
+(function(){
+  s2.innerHTML=P2.map((p,i)=>{
+    const x=i*212;
+    return '<div class="pcol" id="pc'+i+'" style="left:'+x+'px"></div>'+
+           '<div class="pnum" id="pn'+i+'" style="left:'+x+'px">'+p[0]+'</div>'+
+           '<div class="plab" id="pl'+i+'" style="left:'+x+'px">'+p[1]+'</div>';
+  }).join('');
+})();
+function scene2(l,dur){
+  const o=soft(cl((dur-l)/.34));
+  s2w.style.opacity=(soft(cl(l/.28))*o).toFixed(3);
+  P2.forEach((p,i)=>{
+    const rl=l-(.28+i*.42), e=soft(cl(rl/.75)), h=p[2]*e;
+    const col=document.getElementById('pc'+i);
+    col.style.height=px(h); col.style.opacity=cl(rl/.3).toFixed(3);
+    const num=document.getElementById('pn'+i), lab=document.getElementById('pl'+i);
+    num.style.bottom=px(h+72); num.style.opacity=cl((rl-.30)/.4).toFixed(3);
+    lab.style.bottom=px(h+22); lab.style.opacity=cl((rl-.22)/.4).toFixed(3);
+  });
+  s2F.style.opacity=(soft(cl((l-1.5)/.7))*o).toFixed(3);
+}
+
+/* ---------- S4/S5 ağ haritası ---------- */
+const DOTS=[[96,64],[236,18],[380,72],[528,20],[624,110],
+            [140,214],[292,176],[452,206],[596,244],
+            [110,344],[262,326],[418,362],[556,332],[648,268],
+            [200,452],[372,470],[534,436]];
+const EDGES=[[0,5],[5,9],[9,14],[1,6],[6,10],[10,15],[2,7],[7,11],[11,15],
+             [3,8],[8,12],[12,16],[4,13],[13,8],[6,2],[10,7],[7,12],[14,15],[15,16]];
 (function(){
   let s='';
-  for(let i=0;i<2;i++)
-    s+='<path class="nln" id="nln'+i+'" d="M'+(NX[i]+NR)+' '+NY+' L'+(NX[i+1]-NR)+' '+NY+
-       '" stroke="#8FBF9B" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
-  for(let i=0;i<3;i++)
-    s+='<circle class="ncr" id="ncr'+i+'" cx="'+NX[i]+'" cy="'+NY+'" r="'+NR+
-       '" fill="rgba(159,216,168,.14)" stroke="#9FD8A8" stroke-width="2.5"/>'+
-       '<circle id="nct'+i+'" cx="'+NX[i]+'" cy="'+NY+'" r="7" fill="#9FD8A8"/>';
-  nsvg.innerHTML=s;
-})();
-let nkey='';
-function diagram(N,l){
-  if(nkey!==N.a+''){
-    nkey=N.a+'';
-    N.n.forEach((x,i)=>{
-      document.getElementById('nl'+i).innerHTML=x[0].replace('\n','<br>');
-    });
-    nfoot.textContent=N.foot;
-  }
-  const o=soft(cl((N.b-(N.a+l))/.5));
-  N.n.forEach((x,i)=>{
-    const rl=N.a+l-x[1], e=nudge(cl(rl/.66));
-    const c=document.getElementById('ncr'+i), d=document.getElementById('nct'+i),
-          lb=document.getElementById('nl'+i);
-    const a=(cl(rl/.3)*o).toFixed(3);
-    c.setAttribute('opacity',a); d.setAttribute('opacity',a);
-    c.setAttribute('r',(NR*lerp(.4,1,e)).toFixed(1));
-    d.setAttribute('r',(7*lerp(.2,1,cl(rl/.5))).toFixed(1));
-    lb.style.opacity=(cl((rl-.12)/.4)*o).toFixed(3);
-    lb.style.transform='translate3d(0,'+px((1-soft(cl((rl-.12)/.6)))*12)+',0)';
-    if(i<2){
-      const ln=document.getElementById('nln'+i), L=NX[1]-NX[0]-2*NR;
-      const g=soft(cl((N.a+l-x[1]-.42)/.5));
-      ln.setAttribute('stroke-dasharray',L);
-      ln.setAttribute('stroke-dashoffset',(L*(1-g)).toFixed(1));
-      ln.setAttribute('opacity',(g*.85*o).toFixed(3));
-    }
+  EDGES.forEach((e,i)=>{
+    const a=DOTS[e[0]], b=DOTS[e[1]];
+    s+='<line class="ne" id="ne'+i+'" x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+
+       '" stroke="#9FD8A8" stroke-width="2" opacity="0"/>';
   });
-  nfoot.style.opacity=(soft(cl((l-.15)/.6))*o*.95).toFixed(3);
+  DOTS.forEach((d,i)=>{
+    s+='<circle id="nd'+i+'" cx="'+d[0]+'" cy="'+d[1]+'" r="7" fill="#F5F2EC" opacity="0"/>';
+  });
+  netsvg.innerHTML=s;
+})();
+const NLB=[[6,'çevre yok'],[11,'yol gösteren yok'],[8,'paylaşacak ağ yok']];
+const NLB2=[[6,'doğru network'],[11,'doğru sistem'],[8,'doğru ekip']];
+function netScene(l,dur,connect,labels,kick,foot){
+  const o=soft(cl((dur-l)/.34));
+  net.style.opacity=(soft(cl(l/.30))*o).toFixed(3);
+  netK.textContent=kick;
+  DOTS.forEach((d,i)=>{
+    const p=soft(cl((l-.10-(i%6)*.055)/.6));
+    const c=document.getElementById('nd'+i);
+    c.setAttribute('opacity',(p*(connect?.95:.55)).toFixed(3));
+    c.setAttribute('r',(connect?lerp(5,8,p):lerp(4,6.5,p)).toFixed(1));
+    c.setAttribute('fill',connect?'#9FD8A8':'rgba(245,242,236,.75)');
+  });
+  EDGES.forEach((e,i)=>{
+    const ln=document.getElementById('ne'+i);
+    if(!connect){ ln.setAttribute('opacity','0'); return; }
+    const a=DOTS[e[0]], b=DOTS[e[1]];
+    const L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    const g=soft(cl((l-.55-i*.055)/.55));
+    ln.setAttribute('stroke-dasharray',L);
+    ln.setAttribute('stroke-dashoffset',(L*(1-g)).toFixed(1));
+    ln.setAttribute('opacity',(g*.55).toFixed(3));
+  });
+  labels.forEach(([di,txt],i)=>{
+    const el=document.getElementById('nb'+i), d=DOTS[di];
+    el.textContent=txt;
+    el.style.top=px(286+d[1]-16);
+    el.style.left=px(d[0]+22); el.style.right='auto';
+    if(d[0]+22+el.offsetWidth > 686){          /* sağa sığmıyorsa sola al */
+      el.style.left='auto'; el.style.right=px(720-d[0]+22);
+    }
+    const p=soft(cl((l-.85-i*.55)/.6));
+    el.style.opacity=p.toFixed(3);
+    el.style.transform='translate3d('+px((1-p)*-12)+',0,0)';
+  });
+  const showG = foot==='gv';
+  show(netF,!showG); show(netG,showG);
+  const f=soft(cl((l-2.0)/.8));
+  if(showG){ netG.style.opacity=f.toFixed(3);
+             netG.style.transform='translate3d(0,'+px((1-f)*14)+',0)'; }
+  else { netF.innerHTML=foot; netF.style.opacity=f.toFixed(3);
+         netF.style.transform='translate3d(0,'+px((1-f)*14)+',0)'; }
 }
 
-/* ---------- tam ekran kinetik ---------- */
+/* ---------- kırılan bağlar ---------- */
+(function(){
+  BRK.rows.forEach((r,i)=>{
+    const d=document.createElement('div'); d.className='brow'; d.id='br'+i;
+    d.innerHTML='<span class="lbl">'+r.t+'</span><i class="ln"></i><i class="rn"></i>';
+    brk.appendChild(d);
+  });
+})();
+function broken(l){
+  const o=soft(cl((BRK.b-(BRK.a+l))/.42));
+  brkT.style.opacity=(soft(cl(l/.5))*o).toFixed(3);
+  BRK.rows.forEach((r,i)=>{
+    const row=document.getElementById('br'+i), rl=BRK.a+l-r.at;
+    const e=soft(cl(rl/.55));
+    row.style.opacity=(cl(rl/.3)*o).toFixed(3);
+    row.querySelector('.lbl').style.transform='translate3d('+px((1-e)*-22)+',0,0)';
+    const g=soft(cl((BRK.a+l-r.brk)/.5));      /* çizgi ortadan kopar */
+    const W=580, half=W/2;
+    const ln=row.querySelector('.ln'), rn=row.querySelector('.rn');
+    ln.style.width=px(e*half-g*54); ln.style.left='0';
+    rn.style.width=px(e*half-g*54); rn.style.left=px(half+g*54);
+    rn.style.opacity=g.toFixed(3); ln.style.opacity='1';
+  });
+}
+
+/* ---------- kinetik ---------- */
 let kkey='';
 function kinetic(K,l){
   if(kkey!==K.a+''){
-    kkey=K.a+'';
-    kinK.textContent=K.k;
+    kkey=K.a+''; kinK.textContent=K.k;
     kinL.innerHTML=K.w.map(([t,a])=>'<span class="kw'+(a?' a':'')+'">'+t+'</span>').join(' ');
   }
   const dur=K.b-K.a, o=soft(cl((dur-l)/.30));
@@ -349,76 +441,60 @@ function kinetic(K,l){
 }
 
 window.setT=function(t){
-  const over = t>=LAYER_END;                 /* kaynağın kendi kapanışı */
-  const inAsk=t>=T.ask[0]&&t<T.ask[1];
+  const over=t>=LAYER_END;
   const K=KIN.find(k=>t>=k.a&&t<k.b);
-  const busy = inAsk || !!K;
+  const inAsk=t>=T.ask[0]&&t<T.ask[1];
+  const in1=t>=T.s1[0]&&t<T.s1[1], in2=t>=T.s2[0]&&t<T.s2[1];
+  const in4=t>=T.net[0]&&t<T.net[1], in5=t>=T.close[0]&&t<T.close[1];
+  const full = inAsk||!!K||in1||in2||in4||in5;
 
-  /* ---------- üst şerit ---------- */
-  show(prog,!over); show(chap,!over&&!busy);
+  show(prog,!over); show(chap,!over&&!full);
   if(!over){
     progB.style.width=(cl(t/LAYER_END)*100).toFixed(2)+'%';
     let c=null; for(const x of CHAP) if(t>=x[0]) c=x;
-    if(c){
-      const l=t-c[0];
+    if(c){ const l=t-c[0], e=soft(cl(l/.7));
       chapT.textContent=c[1];
-      const e=soft(cl(l/.7));
       chapT.style.opacity=cl(l/.4).toFixed(3);
       chapT.style.transform='translate3d('+px((1-e)*-14)+',0,0)';
-      chapR.style.width=px(e*26);
-    }
+      chapR.style.width=px(e*26); }
   }
 
-  /* ---------- altyazı ---------- */
   const seg=CAPS.find(s=>t>=s.a&&t<s.b);
-  show(cap,!!seg&&!busy&&!over);
-  if(seg&&!busy&&!over){
-    draw(seg);
-    words(t-seg.a, seg.b-seg.a);
+  show(cap,!!seg&&!full&&!over);
+  if(seg&&!full&&!over){
+    draw(seg); words(t-seg.a,seg.b-seg.a);
     cap.style.opacity=(cl((t-seg.a)/.14)*soft(cl((seg.b-t)/.20))).toFixed(3);
   }
 
-  /* ---------- liste paneli ---------- */
-  {
-    const P=PANELS.find(p=>t>=p.a&&t<p.b);
-    show(pan,!!P&&!busy&&!over);
-    if(P&&!busy&&!over) panel(P,t-P.a);
+  const inB=t>=BRK.a&&t<BRK.b;
+  show(brk,inB&&!full&&!over); if(inB&&!full&&!over) broken(t-BRK.a);
+
+  show(s1,in1&&!over);   if(in1&&!over) scene1(t-T.s1[0],T.s1[1]-T.s1[0]);
+  show(s2w,in2&&!over);  if(in2&&!over) scene2(t-T.s2[0],T.s2[1]-T.s2[0]);
+  show(net,(in4||in5)&&!over);
+  if(in4&&!over) netScene(t-T.net[0],T.net[1]-T.net[0],false,NLB,'anadolu’da eksik olan',
+                          'iyi fikir var, <b>bağ yok</b>');
+  if(in5&&!over) netScene(t-T.close[0],T.close[1]-T.close[0],true,NLB2,'bir girişimcinin','gv');
+  show(kin,!!K&&!over);  if(K&&!over) kinetic(K,t-K.a);
+
+  show(ask,inAsk&&!over);
+  if(inAsk&&!over){
+    const l=t-T.ask[0], o=soft(cl((T.ask[1]-t)/.34));
+    ask.style.opacity=(soft(cl(l/.34))*o).toFixed(3);
+    askK.style.opacity=soft(cl((l-.10)/.5)).toFixed(3);
+    const q=soft(cl((l-.22)/.7));
+    askL.style.opacity=q.toFixed(3);
+    askL.style.transform='translate3d(0,'+px((1-q)*16)+',0)';
+    askR.style.width=px(soft(cl((l-.60)/.8))*260);
   }
 
-  /* ---------- düğüm diyagramı ---------- */
-  {
-    const N=NODES.find(n=>t>=n.a&&t<n.b);
-    show(nodes,!!N&&!busy&&!over);
-    if(N&&!busy&&!over) diagram(N,t-N.a);
-  }
-
-  /* ---------- kinetik tam ekran ---------- */
-  { show(kin,!!K&&!over); if(K&&!over) kinetic(K,t-K.a); }
-
-  /* ---------- soru kartı ---------- */
-  {
-    show(ask,inAsk&&!over);
-    if(inAsk&&!over){
-      const l=t-T.ask[0], o=soft(cl((T.ask[1]-t)/.34));
-      ask.style.opacity=(soft(cl(l/.34))*o).toFixed(3);
-      askK.style.opacity=soft(cl((l-.10)/.5)).toFixed(3);
-      const q=soft(cl((l-.22)/.7));
-      askL.style.opacity=q.toFixed(3);
-      askL.style.transform='translate3d(0,'+px((1-q)*16)+',0)';
-      askR.style.width=px(soft(cl((l-.55)/.8))*260);
-    }
-  }
-
-  /* ---------- marka ---------- */
-  {
-    const e=t>=T.brand[0]&&t<T.brand[1];
-    show(brand,e&&!over&&!busy);
-    if(e&&!over){
-      const l=t-T.brand[0], o=soft(cl((T.brand[1]-t)/.42)), k=nudge(cl(l/.7));
-      brand.firstElementChild.style.opacity=(cl(l/.3)*o).toFixed(3);
-      brand.firstElementChild.style.transform=
-        'translate3d(0,'+px((1-k)*20)+',0) scale('+lerp(.94,1,k).toFixed(4)+')';
-    }
+  const inBr=t>=T.brand[0]&&t<T.brand[1];
+  show(brand,inBr&&!over&&!full);
+  if(inBr&&!over){
+    const l=t-T.brand[0], o=soft(cl((T.brand[1]-t)/.42)), k=nudge(cl(l/.7));
+    brand.firstElementChild.style.opacity=(cl(l/.3)*o).toFixed(3);
+    brand.firstElementChild.style.transform=
+      'translate3d(0,'+px((1-k)*20)+',0) scale('+lerp(.94,1,k).toFixed(4)+')';
   }
 };
 window.setT(0);
