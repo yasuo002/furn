@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Yerel Video Editörü</title>
+<link rel="stylesheet" href="/editor.css" />
+</head>
+<body>
+<header class="top">
+  <h1>🎬 Yerel Video Editörü</h1>
+  <span class="badge" id="modeBadge">yerel</span>
+  <span class="spacer"></span>
+  <select id="projectSelect" style="width:220px"></select>
+  <button id="newProject" class="ghost">+ Yeni proje</button>
+</header>
+
+<div class="wrap" id="setup">
+  <div class="card">
+    <h2>1) Örnek alınacak videolar <span class="badge">3–10 adet</span></h2>
+    <p class="hint">Edit tarzını buradan öğreniyorum: kesim temposu, plan uzunluğu, altyazı sıklığı ve efekt yoğunluğu ölçülüyor.</p>
+    <div class="drop" id="dropRef">Videoları buraya sürükleyin ya da tıklayıp seçin</div>
+    <div class="grid" id="refGrid"></div>
+    <div class="stat" id="styleStat"></div>
+  </div>
+
+  <div class="card">
+    <h2>2) Editlenecek video</h2>
+    <p class="hint">Dikey yüklerseniz çıktı da dikey olur — kaynak çözünürlüğü korunur.</p>
+    <div class="drop" id="dropTarget">Ana videoyu buraya bırakın</div>
+    <div class="grid" id="targetGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>3) SFX <span class="badge">isteğe bağlı</span></h2>
+    <p class="hint">Kullanmamı istediğiniz ses efektleri. Vuruş noktalarına otomatik yerleştirilir, editörden taşıyabilirsiniz.</p>
+    <div class="drop" id="dropSfx">Ses dosyalarını buraya bırakın</div>
+    <div class="grid" id="sfxGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>4) Brief</h2>
+    <p class="hint">Altyazı metinleri buradan üretilir (ANTHROPIC_API_KEY varsa modelle, yoksa metniniz bölünerek).</p>
+    <textarea id="brief" rows="3" placeholder="Örn: El yapımı ahşap sehpa. Dayanıklı. 3 günde kapında. Bugün %20 indirim."></textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="analyzeBtn">Stili öğren ve kurgula</button>
+      <span class="badge" id="analyzeState"></span>
+    </div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <h2>Sonuç</h2>
+    <p class="hint">Videoya tıklayın → katman bazlı editör açılır.</p>
+    <div class="result">
+      <div class="thumb" id="openEditor">
+        <video id="resultVideo" muted playsinline></video>
+        <div class="play">▶ Editörü aç</div>
+      </div>
+      <div>
+        <div class="stat" id="timelineStat"></div>
+        <div class="row" style="margin-top:10px">
+          <button id="openEditorBtn">Editörü aç</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid" id="exportGrid"></div>
+  </div>
+</div>
+
+<!-- ---------- EDİTÖR ---------- -->
+<div class="editor" id="editor">
+  <div class="ebar">
+    <button class="ghost" id="closeEditor">← Geri</button>
+    <strong id="editorTitle">Editör</strong>
+    <span class="badge" id="outBadge"></span>
+    <span class="spacer"></span>
+    <button id="addCaptionBtn">+ Altyazı</button>
+    <select id="addMotionSel" style="width:150px">
+      <option value="">+ Grafik/hareket</option>
+      <option value="zoom">Zoom vuruşu</option>
+      <option value="shake">Sarsıntı</option>
+      <option value="flash">Flaş geçiş</option>
+      <option value="bar">Alt bant</option>
+      <option value="wipe">Silme geçişi</option>
+      <option value="lowerthird">Alt bilgi şeridi</option>
+      <option value="circle">Vurgu dairesi</option>
+    </select>
+    <button id="saveBtn">Kaydet</button>
+    <button class="primary" id="exportBtn">Dışa aktar</button>
+  </div>
+
+  <div class="body">
+    <div class="pane">
+      <h3>Katmanlar</h3>
+      <div id="layerList"></div>
+    </div>
+
+    <div class="stage">
+      <div class="canvas-wrap" id="canvasWrap">
+        <video id="editVideo" playsinline></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <div class="transport">
+        <button id="playBtn">▶</button>
+        <span class="time" id="timeLabel">0.00 / 0.00</span>
+        <input type="range" id="scrub" min="0" max="1000" value="0" />
+      </div>
+    </div>
+
+    <div class="pane">
+      <h3>Özellikler</h3>
+      <div id="props"><p class="hint" style="color:var(--muted)">Bir katman seçin.</p></div>
+      <h3 style="margin-top:16px">Çıktı</h3>
+      <div class="field">
+        <label>Orijinal video sesi</label>
+        <input type="range" id="srcGain" min="0" max="150" value="100" />
+      </div>
+      <div id="exportLog" class="log"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="tl" id="timelineEl"></div>
+    <div class="chat">
+      <div class="chatlog" id="chatLog"></div>
+      <div class="chips">
+        <span class="chip">3. saniyede "İndirim başladı" yaz</span>
+        <span class="chip">2. altyazıyı kırmızı yap ve büyüt</span>
+        <span class="chip">5-6 sn arası zoom ekle</span>
+        <span class="chip">dosya ekleyip "4. saniyede bu sesi ekle"</span>
+      </div>
+      <div class="chatbar">
+        <button id="attachBtn" title="Dosya ekle">📎</button>
+        <input id="chatInput" placeholder="Şurayı değiştir, şuraya şu sesi ekle… (dosya da ekleyebilirsiniz)" />
+        <button class="primary" id="sendBtn">Uygula</button>
+      </div>
+      <div class="chips" id="attachList"></div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="filePicker" multiple hidden />
+<script src="/editor.js"></script>
+</body>
+</html>
