@@ -54,7 +54,12 @@ npm start
    ortalama plan uzunluğu, tempo, altyazı ve efekt yoğunluğu bir *stil profili*ne dönüşür.
 2. **Editlenecek video** — çıktı kaynak çözünürlüğünü korur, yani dikey giren dikey çıkar.
 3. **SFX (isteğe bağlı)** — vuruş noktalarına otomatik yerleşir, sonra taşınabilir.
-4. **Brief** — altyazı metinleri buradan üretilir (`ANTHROPIC_API_KEY` varsa modelle).
+4. **Yapay zekâ talimatı** — serbest metin alanı. Ne istediğini yaz: tempo (`hızlı`, `sakin`),
+   altyazı yoğunluğu ve stili (`büyük harf`, `sarı`, `altta`, `kutu`, `daktilo`), hangi efektler
+   kullanılsın/kullanılmasın (`zoom ve flaş kullan, sarsıntı istemiyorum`), SFX kullanılsın mı.
+   Tırnak içine aldığın ya da satır başına `-` koyduğun cümleler birebir altyazı olur; yoksa
+   metinler talimattan üretilir (`ANTHROPIC_API_KEY` varsa modelle). Talimattan ne anlaşıldığı
+   "Talimatı uygula ve kurgula" sonrası kartın altında özetlenir.
 
 "Stili öğren ve kurgula" sonucu videoya tıklayınca editör açılır:
 

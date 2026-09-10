@@ -39,13 +39,30 @@
   </div>
 
   <div class="card">
-    <h2>4) Brief</h2>
-    <p class="hint">Altyazı metinleri buradan üretilir (ANTHROPIC_API_KEY varsa modelle, yoksa metniniz bölünerek).</p>
-    <textarea id="brief" rows="3" placeholder="Örn: El yapımı ahşap sehpa. Dayanıklı. 3 günde kapında. Bugün %20 indirim."></textarea>
+    <h2>4) Yapay zekâ talimatı 🤖</h2>
+    <p class="hint">Ne yapmamı istiyorsan buraya serbestçe yaz: tempo, altyazı stili, hangi efektler,
+      SFX kullanılsın mı, hatta ekrana çıkacak metinlerin kendisi. Tırnak içine aldığın ya da satır başına
+      “-” koyduğun cümleler birebir altyazı olur.</p>
+    <textarea id="instruction" rows="6" placeholder="Örn:
+Hızlı tempolu bir reklam kurgula, altyazılar büyük harf ve sarı olsun, altta dursun.
+Zoom ve flaş kullan, sarsıntı istemiyorum. SFX'leri vuruşlara koy.
+Ekranda şu metinler geçsin:
+- El yapımı ahşap sehpa
+- 3 günde kapında
+- Bugün %20 indirim"></textarea>
+    <div class="chips" style="margin-top:8px" id="instrChips">
+      <span class="chip">Hızlı tempolu kurgula</span>
+      <span class="chip">Altyazılar büyük harf ve sarı olsun</span>
+      <span class="chip">Sade tut, az efekt kullan</span>
+      <span class="chip">Altyazı istemiyorum, sadece efekt</span>
+      <span class="chip">Zoom ve flaş kullan, sarsıntı olmasın</span>
+      <span class="chip">SFX kullanma</span>
+    </div>
     <div class="row" style="margin-top:12px">
-      <button class="primary" id="analyzeBtn">Stili öğren ve kurgula</button>
+      <button class="primary" id="analyzeBtn">Talimatı uygula ve kurgula</button>
       <span class="badge" id="analyzeState"></span>
     </div>
+    <div class="stat" id="planStat"></div>
   </div>
 
   <div class="card" id="resultCard" style="display:none">

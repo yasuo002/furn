@@ -49,8 +49,9 @@ async function openProject(id) {
   project = await jfetch(`${api}/projects/${id}`);
   localStorage.setItem('projectId', id);
   timeline = project.timeline;
-  $('#brief').value = project.brief || '';
+  $('#instruction').value = project.instruction || project.brief || '';
   renderSetup();
+  renderPlan();
   if (timeline) renderResult();
 }
 
@@ -125,14 +126,31 @@ $('#analyzeBtn').onclick = async () => {
   try {
     project = await jfetch(`${api}/projects/${project.id}/analyze`, {
       method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ brief: $('#brief').value }),
+      body: JSON.stringify({ instruction: $('#instruction').value }),
     });
     timeline = project.timeline;
     $('#analyzeState').textContent = 'hazır';
+    renderPlan();
     renderResult();
     $('#resultCard').scrollIntoView({ behavior: 'smooth' });
   } catch (e) { $('#analyzeState').textContent = ''; toast('Hata: ' + e.message, 6000); }
 };
+
+// Talimattan ne anlaşıldığını kullanıcıya göster.
+function renderPlan() {
+  const p = project.plan;
+  const el = $('#planStat');
+  if (!p) { el.innerHTML = ''; return; }
+  const bits = [];
+  bits.push(`Tempo: <b>${p.pace || project.style?.pace || 'referanslardan'}</b>`);
+  bits.push(`Altyazı: <b>${p.captionMode === 'none' ? 'kapalı' : p.captionTexts?.length ? p.captionTexts.length + ' metin (talimattan)' : p.captionMode}</b>`);
+  bits.push(`Efektler: <b>${p.effects?.allow ? (p.effects.allow.join(', ') || 'kapalı') : 'otomatik'}</b>`);
+  bits.push(`SFX: <b>${p.useSfx === false ? 'kullanılmayacak' : 'kullanılacak'}</b>`);
+  if (p.captionStyle && Object.keys(p.captionStyle).length) {
+    bits.push(`Yazı stili: <b>${Object.entries(p.captionStyle).map(([k, v]) => `${k}=${v}`).join(', ')}</b>`);
+  }
+  el.innerHTML = bits.map((b) => `<span>${b}</span>`).join('');
+}
 
 function renderResult() {
   $('#resultCard').style.display = '';
@@ -329,6 +347,22 @@ function wireClips() {
 /* --- önizleme çizimi --- */
 function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
+// Önizlemede de export'takiyle aynı satır kaydırma.
+function wrapLines(text, maxPx) {
+  const out = [];
+  for (const para of text.split('\n')) {
+    const words = para.split(/\s+/).filter(Boolean);
+    let cur = '';
+    for (const w of words) {
+      const next = cur ? cur + ' ' + w : w;
+      if (ctx.measureText(next).width <= maxPx || !cur) cur = next;
+      else { out.push(cur); cur = w; }
+    }
+    out.push(cur);
+  }
+  return out.filter((l) => l !== undefined);
+}
+
 function drawCaption(l, t) {
   const st = l.style || {};
   const W = canvas.width, H = canvas.height;
@@ -349,7 +383,7 @@ function drawCaption(l, t) {
   if (st.rotation) ctx.rotate(st.rotation * Math.PI / 180);
   ctx.font = `${st.bold === false ? '' : 'bold '}${fs}px "DejaVu Sans", system-ui, sans-serif`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  const lines = String(text).split('\n');
+  const lines = wrapLines(String(text), W * 0.9);
   lines.forEach((line, i) => {
     const ly = (i - (lines.length - 1) / 2) * fs * 1.2;
     if (st.bg === 'box') {
@@ -595,7 +629,13 @@ wireDrop($('#dropTarget'), 'target', 'video/*');
 wireDrop($('#dropSfx'), 'sfx', 'audio/*');
 $('#newProject').onclick = newProject;
 $('#projectSelect').onchange = (e) => openProject(e.target.value);
-$('#brief').onchange = () => { /* analiz sırasında gönderiliyor */ };
+document.querySelectorAll('#instrChips .chip').forEach((c) => {
+  c.onclick = () => {
+    const ta = $('#instruction');
+    ta.value = (ta.value.trim() + '\n' + c.textContent).trim();
+    ta.focus();
+  };
+});
 window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 jfetch(`${api}/config`).then((c) => { $('#modeBadge').textContent = c.llm ? 'yerel + Claude API' : 'yerel (kural tabanlı)'; });
 loadProjects();

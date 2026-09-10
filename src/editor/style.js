@@ -96,49 +96,73 @@ export function chunkText(text, count) {
   return chunks.slice(0, count).map((s) => s.trim());
 }
 
-// Builds the initial layer stack for the target video from the style profile.
-export function buildTimeline({ target, style, brief = '', sfx = [] }) {
+// Builds the initial layer stack for the target video from the style profile
+// and the plan parsed out of the user's AI instruction.
+export function buildTimeline({ target, style, brief = '', sfx = [], plan = null }) {
   const dur = target.meta.duration || 10;
   // Kısa videoda referans temposu kadar uzun plan bırakmayalım: en az 4 vuruş çıksın.
   const shot = Math.max(0.6, Math.min(style.shotLength, Math.max(1.2, dur / 4)));
   const beats = [];
   for (let t = 0; t < dur - 0.25; t += shot) beats.push(Math.round(t * 100) / 100);
 
-  const captionCount = Math.max(1, Math.round(beats.length * style.captionRatio));
-  const texts = chunkText(brief, captionCount);
+  const captionCount = Math.max(0, Math.round(beats.length * style.captionRatio));
+  const explicit = plan?.captionTexts?.length ? plan.captionTexts : null;
+  const texts = explicit || chunkText(brief, captionCount);
+  const total = explicit ? Math.min(explicit.length, Math.max(beats.length, explicit.length)) : captionCount;
+  const capStyle = { ...DEFAULT_CAPTION_STYLE, ...(plan?.captionStyle || {}) };
+  const presets = plan?.effects?.allow?.length ? plan.effects.allow
+    : plan?.effects?.allow ? [] : ['flash', 'zoom', 'shake', 'wipe'];
+  const intensity = plan?.effects?.intensity ?? 1;
   const layers = [];
 
-  beats.forEach((t, i) => {
-    const end = Math.min(dur, t + shot);
-    if (i < captionCount) {
-      const text = texts[i] || `Sahne ${i + 1}`;
+  // Talimatta metin varsa satır sayısı kadar eşit dilime böl.
+  const slots = explicit
+    ? explicit.map((_, i) => (i * dur) / explicit.length)
+    : beats;
+
+  slots.forEach((t, i) => {
+    const slotLen = explicit ? dur / explicit.length : shot;
+    const end = Math.min(dur, t + slotLen);
+    if (i < total) {
+      let text = texts[i] || `Sahne ${i + 1}`;
+      if (plan?.captionStyle?.uppercase) text = text.toLocaleUpperCase('tr-TR');
+      const anim = capStyle.anim || (i % 3 === 0 ? 'pop' : i % 3 === 1 ? 'slide' : 'fade');
       layers.push(captionLayer(text, t + 0.1, Math.max(t + 0.8, end - 0.1), {
-        style: { ...DEFAULT_CAPTION_STYLE, anim: i % 3 === 0 ? 'pop' : i % 3 === 1 ? 'slide' : 'fade' },
+        style: { ...capStyle, anim: plan?.captionStyle?.anim || anim },
       }));
-    }
-    // Motion accents land on the beat, following the reference pacing.
-    if (i > 0 && i / beats.length <= Math.max(style.accentRatio, 0.5)) {
-      const preset = i % 4 === 1 ? 'flash' : i % 4 === 2 ? 'zoom' : i % 4 === 3 ? 'shake' : 'wipe';
-      const len = preset === 'flash' ? 0.18 : preset === 'wipe' ? 0.4 : 0.6;
-      layers.push(motionLayer(preset, t, Math.min(dur, t + len)));
     }
   });
 
-  // Optional SFX: one hit per accent, in the order the user uploaded them.
-  const accents = layers.filter((l) => l.type === 'motion');
-  sfx.forEach((s, i) => {
-    const at = accents[i]?.start ?? Math.min(dur - 0.1, i * shot);
-    layers.push({
-      id: newId('sfx_'),
-      type: 'sfx',
-      name: s.originalName || 'SFX',
-      visible: true,
-      file: s.fileName,
-      url: s.url,
-      start: round(at),
-      gain: 1,
+  // Hareket vuruşları her zaman kesim ritmine oturur (altyazı sayısından bağımsız).
+  if (presets.length) {
+    beats.forEach((t, i) => {
+      if (i === 0) return;
+      if (i / beats.length > Math.max(style.accentRatio, 0.5)) return;
+      const preset = presets[(i - 1) % presets.length];
+      const len = preset === 'flash' ? 0.18 : preset === 'wipe' ? 0.4 : preset === 'lowerthird' ? 2.4 : 0.6;
+      layers.push(motionLayer(preset, t, Math.min(dur, t + len), { intensity }));
     });
-  });
+  }
+
+  // İsteğe bağlı SFX: vuruş noktalarına, yükleme sırasına göre.
+  const accents = layers.filter((l) => l.type === 'motion');
+  if (plan?.useSfx !== false) {
+    sfx.forEach((s, i) => {
+      const at = accents[i]?.start ?? Math.min(dur - 0.1, i * shot);
+      layers.push({
+        id: newId('sfx_'),
+        type: 'sfx',
+        name: s.originalName || 'SFX',
+        visible: true,
+        file: s.fileName,
+        url: s.url,
+        start: round(at),
+        gain: 1,
+      });
+    });
+  }
+
+  layers.sort((a, b) => a.start - b.start);
 
   return {
     output: {
@@ -147,6 +171,7 @@ export function buildTimeline({ target, style, brief = '', sfx = [] }) {
       fps: Math.min(60, Math.max(24, Math.round(target.meta.fps || 30))),
       duration: Math.round(dur * 100) / 100,
       orientation: target.meta.orientation, // dikey video → dikey çıktı
+      sourceAudioGain: plan?.sourceAudioGain ?? 1,
     },
     layers,
   };

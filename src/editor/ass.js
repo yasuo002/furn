@@ -17,6 +17,24 @@ const ts = (sec) => {
   return `${h}:${String(m).padStart(2, '0')}:${rest.toFixed(2).padStart(5, '0')}`;
 };
 
+// Kaba genişlik tahminiyle satır kaydırma: metin kadraja sığsın.
+function wrap(text, fontPx, maxPx) {
+  const perChar = fontPx * 0.55;
+  const maxChars = Math.max(6, Math.floor(maxPx / perChar));
+  return String(text ?? '').split('\n').map((para) => {
+    const words = para.split(/\s+/).filter(Boolean);
+    const lines = [];
+    let cur = '';
+    for (const w of words) {
+      if (!cur) cur = w;
+      else if ((cur + ' ' + w).length <= maxChars) cur += ' ' + w;
+      else { lines.push(cur); cur = w; }
+    }
+    if (cur) lines.push(cur);
+    return lines.join('\n');
+  }).join('\n');
+}
+
 const esc = (t) => String(t ?? '').replace(/\\/g, '\\\\').replace(/\{/g, '(').replace(/\}/g, ')').replace(/\r?\n/g, '\\N');
 
 function header(w, h) {
@@ -24,7 +42,7 @@ function header(w, h) {
 ScriptType: v4.00+
 PlayResX: ${w}
 PlayResY: ${h}
-WrapStyle: 2
+WrapStyle: 0
 ScaledBorderAndShadow: yes
 
 [V4+ Styles]
@@ -65,7 +83,7 @@ function captionEvents(layer, w, h) {
     for (let i = 1; i <= text.length; i++) {
       const s = layer.start + (i - 1) * step;
       const e = i === text.length ? layer.end : layer.start + i * step;
-      events.push({ start: s, end: e, style, tags: [...base, `\\pos(${x},${y})`].join(''), text: esc(text.slice(0, i)) });
+      events.push({ start: s, end: e, style, tags: [...base, `\\pos(${x},${y})`].join(''), text: esc(wrap(text.slice(0, i), fs, w * 0.9)) });
     }
     return events;
   }
@@ -76,7 +94,7 @@ function captionEvents(layer, w, h) {
   else if (st.anim === 'slide') anim = `\\move(${x},${y + Math.round(h * 0.06)},${x},${y},0,220)\\fad(120,120)`;
   const pos = st.anim === 'slide' ? '' : `\\pos(${x},${y})`;
 
-  events.push({ start: layer.start, end: layer.end, style, tags: [...base, pos, anim].join(''), text: esc(layer.text) });
+  events.push({ start: layer.start, end: layer.end, style, tags: [...base, pos, anim].join(''), text: esc(wrap(layer.text, fs, w * 0.9)) });
   return events;
 }
 

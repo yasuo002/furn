@@ -8,7 +8,8 @@ import {
   saveMedia, mediaDir, exportDir,
 } from './store.js';
 import { probe, probeAudio, sceneCuts, thumbnail } from './probe.js';
-import { buildStyleProfile, buildTimeline, chunkText, captionLayer } from './style.js';
+import { buildStyleProfile, buildTimeline } from './style.js';
+import { parseDirective, applyPlanToStyle } from './directive.js';
 import { parseInstruction, applyOps } from './ops.js';
 import { renderProject } from './render.js';
 import { LLM_ENABLED, instructionToOps, writeCaptions } from './llm.js';
@@ -107,21 +108,29 @@ editorRouter.post('/projects/:id/analyze', wrap(async (req, res) => {
   if (!project.target) throw new Error('Önce editlenecek videoyu yükleyin.');
   if (project.references.length < 1) throw new Error('En az 1 (önerilen 3-10) örnek video yükleyin.');
 
-  project.brief = req.body?.brief ?? project.brief ?? '';
-  project.style = buildStyleProfile(project.references);
+  // "brief" artık serbest bir yapay zekâ talimatı: tempo, altyazı, efekt ve SFX kararlarını sürüyor.
+  project.instruction = req.body?.instruction ?? req.body?.brief ?? project.instruction ?? '';
+  const plan = parseDirective(project.instruction);
+  project.plan = plan;
+  project.style = applyPlanToStyle(buildStyleProfile(project.references), plan);
   project.timeline = buildTimeline({
     target: project.target,
     style: project.style,
-    brief: project.brief,
+    brief: project.instruction,
     sfx: project.sfx,
+    plan,
   });
 
-  // Anahtar varsa altyazı metinlerini modele yazdır.
-  if (LLM_ENABLED) {
+  // Anahtar varsa altyazı metinlerini modele yazdır (talimatta birebir metin yoksa).
+  if (LLM_ENABLED && !plan.captionTexts.length && plan.captionMode !== 'none') {
     try {
       const caps = project.timeline.layers.filter((l) => l.type === 'caption');
-      const texts = await writeCaptions({ brief: project.brief, count: caps.length, style: project.style });
-      caps.forEach((c, i) => { if (texts[i]) { c.text = texts[i]; c.name = texts[i].slice(0, 24); } });
+      const texts = await writeCaptions({ brief: project.instruction, count: caps.length, style: project.style });
+      caps.forEach((c, i) => {
+        if (!texts[i]) return;
+        c.text = plan.captionStyle.uppercase ? texts[i].toLocaleUpperCase('tr-TR') : texts[i];
+        c.name = c.text.slice(0, 24);
+      });
     } catch (e) {
       project.chat.push({ role: 'system', text: `Model altyazıları yazamadı (${e.message}); yerel metinler kullanıldı.`, at: new Date().toISOString() });
     }
