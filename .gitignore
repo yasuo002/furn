@@ -1,3 +1,6 @@
 node_modules/
 .env
 *.log
+KURGU_STUDYO/proje/
+KURGU_STUDYO/cikti/
+KURGU_STUDYO/varliklar/whisper/

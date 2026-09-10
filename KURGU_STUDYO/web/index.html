@@ -1,0 +1,100 @@
+<!doctype html><html lang="tr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurgu Stüdyo</title>
+<link rel="stylesheet" href="/web/stil.css">
+</head><body>
+
+<header>
+  <div class="marka">KURGU<span>STÜDYO</span></div>
+  <div class="ustbilgi" id="ustbilgi"></div>
+  <div class="ustdugme">
+    <button id="btnOnizle" class="ikincil" disabled>6 sn önizleme</button>
+    <button id="btnExport" disabled>Bilgisayarıma aktar</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============================ SOL: kaynaklar ============================ -->
+  <aside class="sol">
+    <section class="kutu">
+      <h2>1 · Örnek videolar <small>3–10 tane</small></h2>
+      <p class="ipucu">Edit tarzını buradan öğreniyorum: kesim ritmi, renk paleti, yazı yoğunluğu.</p>
+      <div class="birak" id="birakRef"><b>Sürükle bırak</b><span>veya tıkla</span>
+        <input type="file" id="dosRef" accept="video/*" multiple hidden></div>
+      <ul class="liste" id="listeRef"></ul>
+      <button id="btnAnaliz" class="ikincil tamgen" disabled>Tarzı çıkar</button>
+      <div class="profil" id="profil"></div>
+    </section>
+
+    <section class="kutu">
+      <h2>2 · Editlenecek video</h2>
+      <div class="birak" id="birakHedef"><b>Videoyu bırak</b><span>dikey eklersen çıktı da dikey olur</span>
+        <input type="file" id="dosHedef" accept="video/*" hidden></div>
+      <ul class="liste" id="listeHedef"></ul>
+      <button id="btnIsle" class="tamgen" disabled>Kurgula</button>
+    </section>
+
+    <section class="kutu">
+      <h2>3 · Ses efektleri <small>isteğe bağlı</small></h2>
+      <div class="birak ince" id="birakSfx"><b>SFX bırak</b>
+        <input type="file" id="dosSfx" accept="audio/*" multiple hidden></div>
+      <ul class="liste" id="listeSfx"></ul>
+    </section>
+  </aside>
+
+  <!-- ============================ ORTA: editör ============================ -->
+  <section class="orta">
+    <div class="sahnealan" id="sahnealan">
+      <div class="cerceve" id="cerceve">
+        <video id="vid" playsinline></video>
+        <iframe id="kat" src="/web/sahne/sahne.html" scrolling="no"></iframe>
+      </div>
+      <div class="bosperde" id="bosperde">
+        <div>
+          <h3>Video ekle, kurgulayayım</h3>
+          <p>Soldan editlenecek videoyu bırak, “Kurgula”ya bas.<br>
+             Altyazılar ve motion grafikler ayrı katmanlar olarak gelir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button id="btnOynat" class="yuvarlak">▶</button>
+      <span class="tk" id="tkSimdi">0:00</span>
+      <input type="range" id="cubuk" min="0" max="100" step="0.01" value="0">
+      <span class="tk" id="tkToplam">0:00</span>
+      <label class="onay"><input type="checkbox" id="katGoster" checked> katmanlar</label>
+    </div>
+
+    <div class="zaman" id="zaman"></div>
+  </section>
+
+  <!-- ============================ SAĞ: katman ============================ -->
+  <aside class="sag">
+    <section class="kutu ozellik" id="ozellik">
+      <h2>Katman</h2>
+      <p class="ipucu">Zaman çizelgesinden bir katman seç.</p>
+    </section>
+  </aside>
+</main>
+
+<!-- ============================ SOHBET ============================ -->
+<footer>
+  <div class="sohbet" id="sohbet"></div>
+  <div class="girdi">
+    <button id="btnEk" title="Dosya ekle">＋</button>
+    <input type="file" id="dosEk" multiple hidden>
+    <div class="ekler" id="ekler"></div>
+    <textarea id="metin" rows="1" placeholder="Şurayı değiştir, şuraya şu sesi ekle… (Enter: gönder)"></textarea>
+    <button id="btnGonder">Uygula</button>
+  </div>
+</footer>
+
+<div class="perde" id="perde"><div class="kutucuk">
+  <h3 id="perdeBaslik">Çalışıyor</h3>
+  <div class="ilerlemekap"><i id="ilerleme"></i></div>
+  <p id="perdeMesaj">…</p>
+</div></div>
+
+<script src="/web/app.js"></script>
+</body></html>

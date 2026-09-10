@@ -1,0 +1,6 @@
+imageio-ffmpeg
+numpy
+pillow
+playwright
+sherpa-onnx
+anthropic
