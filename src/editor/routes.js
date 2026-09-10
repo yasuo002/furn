@@ -116,7 +116,6 @@ editorRouter.post('/projects/:id/analyze', wrap(async (req, res) => {
   project.timeline = buildTimeline({
     target: project.target,
     style: project.style,
-    brief: project.instruction,
     sfx: project.sfx,
     plan,
   });

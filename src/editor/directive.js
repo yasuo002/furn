@@ -34,13 +34,22 @@ function findColor(text) {
   return text.match(/#[0-9a-f]{3,6}\b/i)?.[0] || null;
 }
 
-// Talimatın içinde tırnaklı ya da "-" ile başlayan satırlar birebir altyazı olur.
+// Talimat metninin kendisi ASLA altyazıya dönüşmez. Ekrana yazı ancak kullanıcı
+// açıkça istediğinde çıkar: tırnak içine aldığı cümleler ya da "şu metinler geçsin:"
+// gibi bir başlıktan sonra gelen madde satırları.
+const LITERAL_MARKER = /(ekranda|şu metin|su metin|şunlar yazsın|sunlar yazsin|altyazılar\s*:|altyazilar\s*:|metinler\s*:|yazılar\s*:|yazilar\s*:|şu yazılar|su yazilar)/i;
+
 function explicitLines(text) {
   const lines = [];
   for (const m of text.matchAll(/["“”]([^"“”]{1,120})["“”]/g)) lines.push(m[1].trim());
+
+  // Madde satırları yalnızca yukarıdaki gibi bir başlıktan SONRA gelirse metin sayılır.
+  let literalMode = false;
   for (const line of text.split('\n')) {
+    if (LITERAL_MARKER.test(line)) { literalMode = true; continue; }
     const m = line.match(/^\s*(?:[-•*]|\d+[.)])\s+(.{1,120})$/);
-    if (m) lines.push(m[1].trim());
+    if (m && literalMode) lines.push(m[1].trim());
+    else if (!m && line.trim() && literalMode && !/[:]$/.test(line.trim())) literalMode = false;
   }
   return [...new Set(lines)].filter(Boolean);
 }
@@ -66,7 +75,7 @@ export function parseDirective(text = '') {
 
   // Altyazı yoğunluğu
   if (t.split(/[.;,\n]+/).some((c) => /(altyazı|altyazi|yazı|yazi|caption|metin)/i.test(c) && NEGATION.test(c) && !/["“”\-•*]/.test(c))) plan.captionMode = 'none';
-  else if (has(t, /(az|minimum|sade|birkaç|birkac)\s*(altyazı|altyazi|yazı|yazi|metin|caption)/i)) plan.captionMode = 'few';
+  else if (has(t, /(?<!\p{L})(az|minimum|sade|birkaç|birkac)(?!\p{L})\s*(altyazı|altyazi|yazı|yazi|metin|caption)/iu)) plan.captionMode = 'few';
   else if (has(t, /(bol|çok|cok|yoğun|yogun|her sahnede)\s*(altyazı|altyazi|yazı|yazi|metin|caption)/i)) plan.captionMode = 'many';
 
   // Altyazı stili
@@ -101,14 +110,16 @@ export function parseDirective(text = '') {
   const finalAllow = [...new Set(allow)].filter((p) => !plan.effects.deny.includes(p));
   if (finalAllow.length) plan.effects.allow = finalAllow;
   else if (plan.effects.none || (plan.effects.deny.length && !allow.length)) plan.effects.allow = [];
-  if (has(t, /(sade|minimal|abartma|az efekt)/i)) plan.effects.intensity = 0.6;
-  if (has(t, /(agresif|sert|abartılı|abartili|çok efekt|cok efekt)/i)) plan.effects.intensity = 1.5;
+  // "sadece" kelimesi "sade" sanılmasın diye kelime sınırı unicode-duyarlı.
+  if (has(t, /(?<!\p{L})(sade|minimal|abartma|az efekt)(?!\p{L})/iu)) plan.effects.intensity = 0.6;
+  if (has(t, /(?<!\p{L})(agresif|sert|abartılı|abartili|çok efekt|cok efekt)(?!\p{L})/iu)) plan.effects.intensity = 1.5;
 
   // SFX
   if (t.split(/[.;,\n]+/).some((c) => /(sfx|ses efekt|efekt sesi)/i.test(c) && NEGATION.test(c))) plan.useSfx = false;
   if (has(t, /(sesi kıs|sesi kis|orijinal sesi kapat|müziksiz|muziksiz)/i)) plan.sourceAudioGain = has(t, /kapat|müziksiz|muziksiz/i) ? 0 : 0.35;
 
-  if (plan.captionTexts.length) plan.notes.push(`${plan.captionTexts.length} altyazı metni talimattan birebir alındı`);
+  plan.captionSource = plan.captionTexts.length ? 'talimatta verilen metinler' : 'yer tutucu (metni editörden yazın)';
+  if (plan.captionTexts.length) plan.notes.push(`${plan.captionTexts.length} altyazı metni talimatta birebir verilmiş`);
   if (plan.pace) plan.notes.push(`tempo: ${plan.pace}`);
   if (plan.captionMode !== 'auto') plan.notes.push(`altyazı: ${plan.captionMode}`);
   if (plan.effects.allow) plan.notes.push(`efektler: ${plan.effects.allow.join(', ') || 'kapalı'}`);

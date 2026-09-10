@@ -40,16 +40,14 @@
 
   <div class="card">
     <h2>4) Yapay zekâ talimatı 🤖</h2>
-    <p class="hint">Ne yapmamı istiyorsan buraya serbestçe yaz: tempo, altyazı stili, hangi efektler,
-      SFX kullanılsın mı, hatta ekrana çıkacak metinlerin kendisi. Tırnak içine aldığın ya da satır başına
-      “-” koyduğun cümleler birebir altyazı olur.</p>
+    <p class="hint">Buraya <b>ne yapmamı istediğini</b> yaz — bu metin ekrana altyazı olarak çıkmaz.
+      Tempo, hangi efektler kullanılsın/kullanılmasın, altyazı stili, SFX tercihi… Ekranda belirli bir
+      yazı çıkmasını istiyorsan onu ayrıca <b>tırnak içinde</b> ver ya da
+      “Ekranda şu metinler geçsin:” satırının altına madde madde yaz.</p>
     <textarea id="instruction" rows="6" placeholder="Örn:
-Hızlı tempolu bir reklam kurgula, altyazılar büyük harf ve sarı olsun, altta dursun.
-Zoom ve flaş kullan, sarsıntı istemiyorum. SFX'leri vuruşlara koy.
-Ekranda şu metinler geçsin:
-- El yapımı ahşap sehpa
-- 3 günde kapında
-- Bugün %20 indirim"></textarea>
+Ürünü öne çıkaran hızlı tempolu bir reklam kurgula. Vuruşlarda zoom ve flaş kullan,
+sarsıntı istemiyorum. Altyazılar büyük harf, sarı ve altta dursun; SFX'leri vuruşlara koy.
+İlk saniyede dikkat çeken bir açılış olsun."></textarea>
     <div class="chips" style="margin-top:8px" id="instrChips">
       <span class="chip">Hızlı tempolu kurgula</span>
       <span class="chip">Altyazılar büyük harf ve sarı olsun</span>
@@ -57,6 +55,7 @@ Ekranda şu metinler geçsin:
       <span class="chip">Altyazı istemiyorum, sadece efekt</span>
       <span class="chip">Zoom ve flaş kullan, sarsıntı olmasın</span>
       <span class="chip">SFX kullanma</span>
+      <span class="chip">Ekranda şu metinler geçsin:</span>
     </div>
     <div class="row" style="margin-top:12px">
       <button class="primary" id="analyzeBtn">Talimatı uygula ve kurgula</button>

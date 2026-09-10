@@ -143,7 +143,8 @@ function renderPlan() {
   if (!p) { el.innerHTML = ''; return; }
   const bits = [];
   bits.push(`Tempo: <b>${p.pace || project.style?.pace || 'referanslardan'}</b>`);
-  bits.push(`Altyazı: <b>${p.captionMode === 'none' ? 'kapalı' : p.captionTexts?.length ? p.captionTexts.length + ' metin (talimattan)' : p.captionMode}</b>`);
+  bits.push(`Altyazı: <b>${p.captionMode === 'none' ? 'kapalı' : p.captionMode}</b>`);
+  if (p.captionMode !== 'none') bits.push(`Metinler: <b>${p.captionTexts?.length ? p.captionTexts.length + ' adet, talimatta verildi' : (project.plan?.captionSource || 'yer tutucu')}</b>`);
   bits.push(`Efektler: <b>${p.effects?.allow ? (p.effects.allow.join(', ') || 'kapalı') : 'otomatik'}</b>`);
   bits.push(`SFX: <b>${p.useSfx === false ? 'kullanılmayacak' : 'kullanılacak'}</b>`);
   if (p.captionStyle && Object.keys(p.captionStyle).length) {

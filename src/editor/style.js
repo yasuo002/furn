@@ -81,24 +81,9 @@ export const MOTION_LABELS = {
 
 function round(n) { return Math.round(Math.max(0, n) * 100) / 100; }
 
-// Splits the brief / description into caption-sized chunks.
-export function chunkText(text, count) {
-  const clean = String(text || '').replace(/\s+/g, ' ').trim();
-  if (!clean) return [];
-  const parts = clean.split(/(?<=[.!?…])\s+|\s*\|\s*|\n+/).filter(Boolean);
-  const words = clean.split(' ');
-  let chunks = parts.length >= count ? parts : [];
-  if (!chunks.length) {
-    const per = Math.max(2, Math.ceil(words.length / Math.max(1, count)));
-    chunks = [];
-    for (let i = 0; i < words.length; i += per) chunks.push(words.slice(i, i + per).join(' '));
-  }
-  return chunks.slice(0, count).map((s) => s.trim());
-}
-
 // Builds the initial layer stack for the target video from the style profile
 // and the plan parsed out of the user's AI instruction.
-export function buildTimeline({ target, style, brief = '', sfx = [], plan = null }) {
+export function buildTimeline({ target, style, sfx = [], plan = null }) {
   const dur = target.meta.duration || 10;
   // Kısa videoda referans temposu kadar uzun plan bırakmayalım: en az 4 vuruş çıksın.
   const shot = Math.max(0.6, Math.min(style.shotLength, Math.max(1.2, dur / 4)));
@@ -106,9 +91,13 @@ export function buildTimeline({ target, style, brief = '', sfx = [], plan = null
   for (let t = 0; t < dur - 0.25; t += shot) beats.push(Math.round(t * 100) / 100);
 
   const captionCount = Math.max(0, Math.round(beats.length * style.captionRatio));
+  // Talimat metni altyazıya çevrilmez; metin yalnızca kullanıcı açıkça verdiyse gelir,
+  // yoksa editörde doldurulacak yer tutucular oluşur.
   const explicit = plan?.captionTexts?.length ? plan.captionTexts : null;
-  const texts = explicit || chunkText(brief, captionCount);
-  const total = explicit ? Math.min(explicit.length, Math.max(beats.length, explicit.length)) : captionCount;
+  // Metin verilmediyse çizelgeyi doldurmak yerine birkaç yer tutucu bırak.
+  const placeholderCount = Math.min(captionCount, 4);
+  const texts = explicit || Array.from({ length: placeholderCount }, (_, i) => `(metin girin ${i + 1})`);
+  const total = explicit ? explicit.length : placeholderCount;
   const capStyle = { ...DEFAULT_CAPTION_STYLE, ...(plan?.captionStyle || {}) };
   const presets = plan?.effects?.allow?.length ? plan.effects.allow
     : plan?.effects?.allow ? [] : ['flash', 'zoom', 'shake', 'wipe'];
