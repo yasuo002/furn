@@ -11,6 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
+app.get('/favicon.ico', (_req, res) => res.status(204).end());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '25mb' }));
 

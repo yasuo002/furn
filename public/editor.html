@@ -23,7 +23,13 @@
       flaş sayısı, kamera/kurgu hareket enerjisi ve grafik renk paleti. Yükleme birkaç saniye sürebilir.</p>
     <div class="drop" id="dropRef">Videoları buraya sürükleyin ya da tıklayıp seçin</div>
     <div class="grid" id="refGrid"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="learnBtn">🎓 Örnekleri incele ve öğren</button>
+      <span class="badge" id="learnState"></span>
+    </div>
+    <div class="log" id="learnLog"></div>
     <div class="stat" id="styleStat"></div>
+    <div id="lessonBox"></div>
   </div>
 
   <div class="card">
@@ -60,15 +66,16 @@ sarsıntı istemiyorum. Altyazılar büyük harf, sarı ve altta dursun; SFX'ler
       <span class="chip">Ekranda şu metinler geçsin:</span>
     </div>
     <div class="row" style="margin-top:12px">
-      <button class="primary" id="analyzeBtn">Talimatı uygula ve kurgula</button>
+      <button class="primary" id="analyzeBtn">🎬 Videoyu sahne sahne kurgula ve üret</button>
       <span class="badge" id="analyzeState"></span>
     </div>
     <div class="stat" id="planStat"></div>
+    <div class="log" id="buildLog"></div>
   </div>
 
   <div class="card" id="resultCard" style="display:none">
     <h2>Sonuç</h2>
-    <p class="hint">Videoya tıklayın → katman bazlı editör açılır.</p>
+    <p class="hint">Videoya tıklayın → katman bazlı editör açılır; orada her şeyi sağa sola çekip düzeltebilirsiniz.</p>
     <div class="result">
       <div class="thumb" id="openEditor">
         <video id="resultVideo" muted playsinline></video>
@@ -81,6 +88,7 @@ sarsıntı istemiyorum. Altyazılar büyük harf, sarı ve altta dursun; SFX'ler
         </div>
       </div>
     </div>
+    <div id="decisionBox"></div>
     <div class="grid" id="exportGrid"></div>
   </div>
 </div>

@@ -52,6 +52,8 @@ async function openProject(id) {
   $('#instruction').value = project.instruction || project.brief || '';
   renderSetup();
   renderPlan();
+  renderLessons();
+  renderDecisions();
   if (timeline) renderResult();
 }
 
@@ -134,24 +136,13 @@ function renderSetup() {
   document.querySelectorAll('.tile .x').forEach((b) => {
     b.onclick = (e) => { e.stopPropagation(); removeMedia(b.dataset.role, b.dataset.file); };
   });
-  $('#analyzeBtn').disabled = !project.target || project.references.length === 0;
+  $('#learnBtn').disabled = project.references.length === 0;
+  $('#analyzeBtn').disabled = !project.target || !project.grammar;
+  $('#analyzeState').textContent = project.grammar ? '' : 'önce örnekleri öğrenin';
 }
 
 /* ---------------- analiz ---------------- */
-$('#analyzeBtn').onclick = async () => {
-  $('#analyzeState').textContent = 'analiz ediliyor…';
-  try {
-    project = await jfetch(`${api}/projects/${project.id}/analyze`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ instruction: $('#instruction').value }),
-    });
-    timeline = project.timeline;
-    $('#analyzeState').textContent = 'hazır';
-    renderPlan();
-    renderResult();
-    $('#resultCard').scrollIntoView({ behavior: 'smooth' });
-  } catch (e) { $('#analyzeState').textContent = ''; toast('Hata: ' + e.message, 6000); }
-};
+$('#analyzeBtn').onclick = () => buildVideo();
 
 // Talimattan ne anlaşıldığını kullanıcıya göster.
 function renderPlan() {
@@ -172,7 +163,11 @@ function renderPlan() {
 
 function renderResult() {
   $('#resultCard').style.display = '';
-  $('#resultVideo').src = project.target.url;
+  // Üretilmiş bir çıktı varsa onu göster; yoksa kaynak video.
+  const latest = project.exports?.[0];
+  const v = $('#resultVideo');
+  v.src = (latest?.url || project.target.url) + '#t=0.1';
+  v.preload = 'metadata';
   const o = timeline.output;
   const c = timeline.layers.filter((l) => l.type === 'caption').length;
   const m = timeline.layers.filter((l) => l.type === 'motion').length;
@@ -183,6 +178,120 @@ function renderResult() {
   $('#exportGrid').innerHTML = (project.exports || []).map((e) => `
     <div class="tile"><video src="${e.url}" controls></video>
     <div class="meta">${e.width}×${e.height}<br><a href="${api}/projects/${project.id}/download/${e.file}">⬇ Bilgisayara indir</a></div></div>`).join('');
+}
+
+
+// Sunucudan akan ilerleme satırlarını okur (öğrenme/kurgulama süreçleri).
+async function stream(url, body, { onLog, onDone, onError }) {
+  const res = await fetch(url, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body || {}),
+  });
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const parts = buf.split('\n\n'); buf = parts.pop();
+    for (const p of parts) {
+      const ev = p.match(/^event: (.+)$/m)?.[1];
+      const data = JSON.parse(p.match(/^data: (.+)$/m)?.[1] || '{}');
+      if (ev === 'log') onLog?.(data.message);
+      else if (ev === 'done') onDone?.(data);
+      else if (ev === 'error') onError?.(data.error);
+    }
+  }
+}
+
+const appendLog = (el, msg) => { el.textContent += msg + '\n'; el.scrollTop = el.scrollHeight; };
+
+// --- 1) ÖĞREN ---
+$('#learnBtn').onclick = async () => {
+  const log = $('#learnLog');
+  log.textContent = '';
+  $('#learnBtn').disabled = true;
+  $('#learnState').textContent = 'inceleniyor…';
+  await stream(`${api}/projects/${project.id}/learn`, {}, {
+    onLog: (m) => appendLog(log, m),
+    onError: (e) => { toast('Hata: ' + e, 6000); $('#learnState').textContent = ''; },
+    onDone: async () => {
+      project = await jfetch(`${api}/projects/${project.id}`);
+      $('#learnState').textContent = 'öğrenildi ✔';
+      renderSetup();
+      renderLessons();
+    },
+  });
+  $('#learnBtn').disabled = false;
+};
+
+// Öğrenilenlerin sahne sahne dökümü.
+function renderLessons() {
+  const box = $('#lessonBox');
+  const g = project.grammar;
+  if (!g) { box.innerHTML = ''; return; }
+  const rows = (project.lessons || []).map((v) => `
+    <div style="margin-top:10px">
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:4px">${v.name} — ${v.scenes.length} sahne</div>
+      <div style="display:grid;gap:3px">
+        ${v.scenes.map((s) => `<div class="chip" style="text-align:left">
+          #${s.index + 1} ${s.start}–${s.end}s · ${s.role}
+          ${s.hasText ? ' · yazı' : ''}${s.cutFlash ? ' · flaş' : ''}${s.highMotion ? ' · hareketli' : s.still ? ' · durgun' : ''}
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  box.innerHTML = `
+    <div style="margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#10141d">
+      <b style="font-size:13px">Öğrenilen kurgu grameri</b>
+      <div class="stat" style="margin-top:6px">
+        <span>İncelenen: <b>${g.videosStudied} video / ${g.scenesStudied} sahne</b></span>
+        <span>Ortalama sahne: <b>${g.avgSceneDuration}s</b></span>
+        <span>Yazılı sahne: <b>%${Math.round(g.textSceneRatio * 100)}</b></span>
+        <span>Kesimde flaş: <b>%${Math.round(g.flashOnCutRatio * 100)}</b></span>
+        <span>Hareketli sahne: <b>%${Math.round(g.highMotionRatio * 100)}</b></span>
+        ${g.caption ? `<span>Yazı stili: <b>y%${g.caption.y}, punto %${g.caption.fontSize}, ${g.caption.color}, ${g.caption.avgDuration}s</b></span>` : ''}
+      </div>
+      ${rows}
+    </div>`;
+}
+
+// --- 2) KURGULA + ÜRET ---
+async function buildVideo() {
+  const log = $('#buildLog');
+  log.textContent = '';
+  $('#analyzeBtn').disabled = true;
+  $('#analyzeState').textContent = 'kurgulanıyor…';
+  await stream(`${api}/projects/${project.id}/build`, { instruction: $('#instruction').value }, {
+    onLog: (m) => appendLog(log, m),
+    onError: (e) => { toast('Hata: ' + e, 7000); $('#analyzeState').textContent = ''; },
+    onDone: async () => {
+      project = await jfetch(`${api}/projects/${project.id}`);
+      timeline = project.timeline;
+      $('#analyzeState').textContent = 'hazır ✔';
+      renderPlan();
+      renderDecisions();
+      renderResult();
+      $('#resultCard').scrollIntoView({ behavior: 'smooth' });
+    },
+  });
+  $('#analyzeBtn').disabled = false;
+}
+
+// Hangi sahnede ne yapıldığı.
+function renderDecisions() {
+  const box = $('#decisionBox');
+  const d = project.decisions;
+  if (!d?.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#10141d">
+      <b style="font-size:13px">Sahne sahne ne yapıldı</b>
+      <div style="display:grid;gap:3px;margin-top:6px">
+        ${d.map((x) => `<div class="chip" style="text-align:left">
+          Sahne ${x.scene} · ${x.start}–${x.end}s · ${x.role} · hareket ${x.motion} → <b style="color:var(--text)">${x.actions.join(', ')}</b>
+        </div>`).join('')}
+      </div>
+    </div>`;
 }
 
 $('#openEditor').onclick = openEditor;

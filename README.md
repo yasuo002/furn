@@ -68,7 +68,22 @@ npm start
    (`ANTHROPIC_API_KEY` varsa metinleri model yazar). Talimattan ne anlaşıldığı
    "Talimatı uygula ve kurgula" sonrası kartın altında özetlenir.
 
-"Stili öğren ve kurgula" sonucu videoya tıklayınca editör açılır:
+### Akış
+
+1. **🎓 Örnekleri incele ve öğren** — örnek videolar sahne sahne çözümlenir (`src/editor/learn.js`):
+   her sahnenin rolü (açılış / aksiyon / ürün-detay / anlatım / kapanış), yazı var mı, kesimde flaş
+   atılmış mı, sahne hareketli mi durgun mu. Sonuç bir **kurgu grameri**dir: yazılı sahne oranı,
+   kesimde flaş oranı, hareketli sahne oranı, ortalama sahne süresi ve öğrenilen yazı stili.
+   İlerleme canlı akar, öğrenilenler sahne listesiyle birlikte ekranda gösterilir.
+2. **🎬 Videoyu sahne sahne kurgula ve üret** — hedef video da sahnelere ayrılır (kesimsiz uzun
+   çekimler, örneklerdeki ortalama sahne süresine göre hareketin en sakin olduğu yerlerden bölünür)
+   ve her sahne için karar verilir (`src/editor/director.js`): durgun sahneye zoom, hareketli sahneye
+   sarsıntı, kesime flaş/wipe, ürün-detay sahnesine vurgu dairesi, kapanışa alt bilgi şeridi, sakin
+   sahnelere altyazı. Hangi sahnede ne yapıldığı gerekçesiyle listelenir, ardından video ffmpeg ile
+   render edilip sonuç kartında verilir.
+3. **Editör** — çıkan videoya tıklayınca katman bazlı editör açılır ve her şey elle düzeltilebilir.
+
+Editörde:
 
 - **Katmanlar**: altyazı, grafik/hareket (zoom, sarsıntı, flaş, alt bant, wipe, alt bilgi
   şeridi, vurgu dairesi), görsel ve SFX katmanları ayrı ayrı görünür/gizlenir, düzenlenir.

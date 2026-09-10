@@ -14,11 +14,11 @@ const SAMPLE_FPS = 4;      // saniyede kaç kare incelensin
 const SAMPLE_W = 192;      // analiz genişliği (hız için küçük)
 const MAX_FRAMES = 240;
 
-async function sampleFrames(file, dir) {
+async function sampleFrames(file, dir, fps = SAMPLE_FPS) {
   await fs.mkdir(dir, { recursive: true });
   await ffmpeg([
     '-i', file,
-    '-vf', `fps=${SAMPLE_FPS},scale=${SAMPLE_W}:-2`,
+    '-vf', `fps=${fps},scale=${SAMPLE_W}:-2`,
     '-frames:v', String(MAX_FRAMES),
     path.join(dir, 'f_%04d.png'),
   ]);
@@ -35,6 +35,7 @@ function analyzeFrame(img) {
   c.drawImage(img, 0, 0);
   const { data } = c.getImageData(0, 0, w, h);
 
+  let satSum = 0;
   const rowText = new Float32Array(h);
   const rowFlat = new Float32Array(h);   // düz/tek renk satır oranı (kutu, bant)
   const rowColor = new Array(h);
@@ -57,6 +58,7 @@ function analyzeFrame(img) {
       // Yazı pikseli adayı: parlak ya da doygun renkli
       const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
       const sat = mx === 0 ? 0 : (mx - mn) / mx;
+      satSum += sat;
       if (L > 165 || (sat > 0.55 && L > 90)) { bright++; cr += r; cg += g; cb += b; cn++; }
       prevL = L;
     }
@@ -67,7 +69,7 @@ function analyzeFrame(img) {
     rowFlat[y] = flat / w;
     rowColor[y] = cn ? [cr / cn, cg / cn, cb / cn] : null;
   }
-  return { rowText, rowFlat, rowColor, meanL: meanL / (w * h), w, h };
+  return { rowText, rowFlat, rowColor, meanL: meanL / (w * h), sat: satSum / (w * h), w, h };
 }
 
 function hex([r, g, b]) {
@@ -83,6 +85,99 @@ function normalizeColor(rgb) {
   if (sat < 0.22) return mx > 170 ? '#ffffff' : '#000000';
   // 24'lük adımlara yuvarla ki neredeyse aynı tonlar tek renkte toplansın.
   return hex(rgb.map((v) => Math.round(v / 24) * 24));
+}
+
+// Videoyu bir kez örnekleyip kare kare istatistik çıkarır; hem bütün video hem de
+// sahne bazlı analizler bu tek geçişi kullanır.
+export async function perFrameStats(file, { fps = SAMPLE_FPS } = {}) {
+  const dir = path.join(DATA_DIR, 'tmp', newId('fr_'));
+  try {
+    const frames = await sampleFrames(file, dir, fps);
+    const out = [];
+    let prev = null;
+    for (let i = 0; i < frames.length; i++) {
+      const img = await loadImage(frames[i]);
+      const a = analyzeFrame(img);
+      const cv = createCanvas(a.w, a.h);
+      const c = cv.getContext('2d');
+      c.drawImage(img, 0, 0);
+      const cur = c.getImageData(0, 0, a.w, a.h).data;
+      let motion = 0;
+      if (prev) {
+        let diff = 0;
+        for (let k = 0; k < cur.length; k += 16) diff += Math.abs(cur[k] - prev[k]);
+        motion = diff / (cur.length / 16);
+      }
+      prev = cur;
+      out.push({ t: i / fps, ...a, motion });
+      await fs.rm(frames[i], { force: true });
+    }
+    return out;
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+}
+
+// Sahne sahne inceleme: her sahnenin hareketi, parlaklığı, yazı varlığı ve renk
+// doygunluğu ölçülür; kurgu kararları (hangi sahnede animasyon, hangisinde grafik)
+// bu tabloya bakarak verilir.
+export async function analyzeScenes(file, { duration, cuts = [] }, opts = {}) {
+  const stats = await perFrameStats(file, { fps: opts.fps || 4 });
+  if (!stats.length) return [];
+  const dur = duration || stats[stats.length - 1].t;
+
+  // Çok kısa sahneleri birleştir; sınırları kesimlerden kur.
+  const bounds = [0, ...cuts.filter((c) => c > 0.4 && c < dur - 0.4), dur];
+  const merged = [bounds[0]];
+  for (let i = 1; i < bounds.length; i++) {
+    if (bounds[i] - merged[merged.length - 1] >= 0.7 || i === bounds.length - 1) merged.push(bounds[i]);
+  }
+
+  // Kesimsiz uzun çekimler tek "sahne" sayılmasın: hareket eğrisindeki en sakin
+  // noktalardan, en fazla maxSceneLen uzunluğunda alt sahnelere böl.
+  const maxLen = opts.maxSceneLen || 0;
+  if (maxLen > 0) {
+    const split = [merged[0]];
+    for (let i = 1; i < merged.length; i++) {
+      const a = split[split.length - 1], b = merged[i];
+      const span = b - a;
+      if (span > maxLen * 1.5) {
+        const pieces = Math.round(span / maxLen);
+        for (let k = 1; k < pieces; k++) {
+          const target = a + (span * k) / pieces;
+          // Hedefin ±0.5s çevresinde hareketin en düşük olduğu ana kaydır.
+          const near = stats.filter((s) => Math.abs(s.t - target) <= 0.5);
+          const best = near.length ? near.reduce((m, s) => (s.motion < m.motion ? s : m)).t : target;
+          split.push(Math.round(best * 100) / 100);
+        }
+      }
+      split.push(b);
+    }
+    merged.length = 0;
+    merged.push(...split);
+  }
+
+  const scenes = [];
+  for (let i = 0; i < merged.length - 1; i++) {
+    const start = merged[i], end = merged[i + 1];
+    const inScene = stats.filter((s) => s.t >= start && s.t < end);
+    if (!inScene.length) continue;
+    const avg = (pick) => inScene.reduce((a, b) => a + pick(b), 0) / inScene.length;
+    const textRatio = inScene.filter((s) => s.rowText.some((v) => v > 0)).length / inScene.length;
+    const satAvg = avg((s) => s.sat);
+    scenes.push({
+      index: scenes.length,
+      start: Math.round(start * 100) / 100,
+      end: Math.round(end * 100) / 100,
+      duration: Math.round((end - start) * 100) / 100,
+      motion: Math.round(avg((s) => s.motion) * 10) / 10,
+      luma: Math.round(avg((s) => s.meanL)),
+      lumaJump: Math.round(Math.max(...inScene.map((s) => s.meanL)) - Math.min(...inScene.map((s) => s.meanL))),
+      textRatio: Math.round(textRatio * 100) / 100,
+      saturation: Math.round(satAvg * 100) / 100,
+    });
+  }
+  return scenes;
 }
 
 export async function analyzeReferenceVideo(file, meta) {

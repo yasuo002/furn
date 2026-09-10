@@ -8,7 +8,9 @@ import {
   saveMedia, mediaDir, exportDir,
 } from './store.js';
 import { probe, probeAudio, sceneCuts, thumbnail } from './probe.js';
-import { analyzeReferenceVideo } from './vision.js';
+import { analyzeReferenceVideo, analyzeScenes } from './vision.js';
+import { learnFromReferences } from './learn.js';
+import { directTimeline } from './director.js';
 import { buildStyleProfile, buildTimeline } from './style.js';
 import { parseDirective, applyPlanToStyle } from './directive.js';
 import { parseInstruction, applyOps } from './ops.js';
@@ -140,6 +142,101 @@ editorRouter.post('/projects/:id/analyze', wrap(async (req, res) => {
 
   await saveProject(project);
   res.json(project);
+}));
+
+// --- 1) ÖĞREN: örnek videoları sahne sahne incele (SSE ilerleme) ---
+editorRouter.post('/projects/:id/learn', wrap(async (req, res) => {
+  const project = await loadProject(req.params.id);
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  const send = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  try {
+    if (!project.references.length) throw new Error('Önce örnek video yükleyin (önerilen 3-10).');
+    send('log', { message: `${project.references.length} örnek video inceleniyor…` });
+
+    const { perVideo, grammar } = await learnFromReferences(project, { onLog: (m) => send('log', { message: m }) });
+    project.lessons = perVideo;
+    project.grammar = grammar;
+    project.style = buildStyleProfile(project.references);   // vision verileri güncellendi
+    project.learnedAt = new Date().toISOString();
+    await saveProject(project);
+    send('done', { grammar, lessons: perVideo, style: project.style });
+  } catch (e) {
+    send('error', { error: String(e.message || e) });
+  } finally {
+    res.end();
+  }
+}));
+
+// --- 2) KURGULA: hedef videoyu sahne sahne incele, öğrenileni uygula, videoyu üret ---
+editorRouter.post('/projects/:id/build', wrap(async (req, res) => {
+  const project = await loadProject(req.params.id);
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  const send = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  try {
+    if (!project.target) throw new Error('Önce editlenecek videoyu yükleyin.');
+    if (!project.grammar) throw new Error('Önce "Örnekleri incele ve öğren" adımını çalıştırın.');
+
+    project.instruction = req.body?.instruction ?? project.instruction ?? '';
+    const plan = parseDirective(project.instruction);
+    project.plan = plan;
+
+    send('log', { message: 'Hedef video sahne sahne inceleniyor…' });
+    const file = path.join(mediaDir(project.id), project.target.fileName);
+    if (!project.target.cuts) {
+      project.target.cuts = await sceneCuts(file);
+      send('log', { message: `${project.target.cuts.length} kesim bulundu` });
+    }
+    const scenes = await analyzeScenes(
+      file,
+      { duration: project.target.meta.duration, cuts: project.target.cuts },
+      // Örneklerdeki ortalama sahne süresi kadar alt sahnelere böl (kesimsiz çekimler için).
+      { maxSceneLen: Math.min(4, Math.max(1.2, project.grammar.avgSceneDuration || 2.5)) }
+    );
+    project.targetScenes = scenes;
+    send('log', { message: `${scenes.length} sahne çıkarıldı` });
+
+    // Talimatta metin verilmişse birebir kullan.
+    let captionTexts = plan.captionTexts || [];
+    if (LLM_ENABLED && !captionTexts.length && plan.captionMode !== 'none') {
+      try {
+        const want = Math.max(1, Math.round(scenes.length * (project.grammar.textSceneRatio ?? 0.6)));
+        captionTexts = await writeCaptions({ brief: project.instruction, count: want, style: project.style });
+        send('log', { message: `Model ${captionTexts.length} altyazı metni yazdı` });
+      } catch (e) {
+        send('log', { message: `Model altyazı yazamadı (${e.message}); yer tutucu kullanılacak` });
+      }
+    }
+
+    send('log', { message: 'Öğrenilen kurgu sahnelere uygulanıyor…' });
+    const { timeline, decisions } = directTimeline({
+      target: project.target,
+      scenes,
+      grammar: project.grammar,
+      plan,
+      sfx: project.sfx,
+      captionTexts,
+    });
+    project.timeline = timeline;
+    project.decisions = decisions;
+    for (const d of decisions) {
+      send('log', { message: `Sahne ${d.scene} (${d.start}-${d.end}s, ${d.role}): ${d.actions.join(', ')}` });
+    }
+    await saveProject(project);
+
+    send('log', { message: 'Video render ediliyor…' });
+    const out = await renderProject(project, { onLog: (m) => send('log', { message: m }) });
+    project.exports.unshift(out);
+    await saveProject(project);
+    send('done', { export: out, decisions, timeline, plan });
+  } catch (e) {
+    send('error', { error: String(e.message || e) });
+  } finally {
+    res.end();
+  }
 }));
 
 editorRouter.put('/projects/:id/timeline', wrap(async (req, res) => {
