@@ -764,5 +764,12 @@ document.querySelectorAll('#instrChips .chip').forEach((c) => {
   };
 });
 window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
-jfetch(`${api}/config`).then((c) => { $('#modeBadge').textContent = c.llm ? 'yerel + Claude API' : 'yerel (kural tabanlı)'; });
+jfetch(`${api}/config`).then((c) => {
+  $('#modeBadge').textContent = c.llm ? 'yerel + Claude API' : 'yerel (kural tabanlı)';
+  const v = document.createElement('span');
+  v.className = 'badge';
+  v.title = 'Çalışan sürüm — kodu güncelleyip sunucuyu yeniden başlattığınızda değişir';
+  v.textContent = `sürüm ${c.build} · ${(c.features || []).join('/')}`;
+  $('#modeBadge').after(v);
+});
 loadProjects();

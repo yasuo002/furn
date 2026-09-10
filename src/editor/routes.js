@@ -2,6 +2,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'node:path';
+import { execSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import {
   createProject, loadProject, saveProject, listProjects, deleteProject,
@@ -36,8 +37,26 @@ const wrap = (fn) => (req, res) => fn(req, res).catch((e) => {
   res.status(500).json({ error: String(e.message || e) });
 });
 
+// Hangi sürümün çalıştığı tarayıcıdan görülebilsin (eski kopya karışıklığını önler).
+let BUILD = null;
+function buildStamp() {
+  if (BUILD) return BUILD;
+  try {
+    BUILD = execSync('git rev-parse --short HEAD', { cwd: process.cwd() }).toString().trim();
+  } catch {
+    BUILD = 'bilinmiyor';
+  }
+  return BUILD;
+}
+
 editorRouter.get('/config', (_req, res) => {
-  res.json({ llm: LLM_ENABLED, maxReferences: 10, minReferences: 3 });
+  res.json({
+    llm: LLM_ENABLED,
+    maxReferences: 10,
+    minReferences: 3,
+    build: buildStamp(),
+    features: ['learn', 'build', 'scene-analysis', 'vision'],
+  });
 });
 
 editorRouter.get('/projects', wrap(async (_req, res) => res.json(await listProjects())));
