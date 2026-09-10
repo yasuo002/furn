@@ -99,11 +99,21 @@ def desifre(video, dil="tr", ilerleme=None):
         st.accept_waveform(sr, seg)
         rec.decode_stream(st)
         m = st.result.text.strip()
+        m = _temizle(m)
         if m:
             sonuc.append({"s": round(a, 2), "e": round(b, 2), "metin": m})
         if ilerleme:
             ilerleme((i + 1) / len(parca))
     return sonuc
+
+
+# Whisper konuşma dışı sesleri "(Müzik çalıyor)", "[Alkış]" diye yazar
+_GURULTU = re.compile(r"[\(\[][^)\]]*[\)\]]|♪|Altyazı M\.K\.|abone ol", re.I)
+
+
+def _temizle(m):
+    m = _GURULTU.sub(" ", m)
+    return re.sub(r"\s{2,}", " ", m).strip(" ,-")
 
 
 SESLI = "aeıioöuüAEIİOÖUÜ"

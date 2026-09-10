@@ -69,5 +69,5 @@ web/sahne/       motion grafik motoru (motor.js) — şablonları buradan deği�
 
 - **“Konuşma çözümlenemedi”** — videoda ses yok ya da çok kısık.
 - **Export uzun sürüyor** — her kare tarayıcıda çiziliyor; 70 sn'lik dikey
-  video ortalama bir makinede 6–12 dakika sürer. “6 sn önizleme” ile kontrol et.
+  video ortalama bir makinede 3–6 dakika sürer. “6 sn önizleme” ile kontrol et.
 - **Port dolu** — `python app.py 8790` gibi başka bir port ver.
