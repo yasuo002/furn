@@ -50,8 +50,13 @@ npm start
 Örnek videolardan edit tarzını öğrenen, katman tabanlı yerel bir editör.
 `npm start` sonrası **http://localhost:3000/editor.html**.
 
-1. **Örnek alınacak videolar (3–10)** — sahne kesimleri ffmpeg ile çıkarılır;
-   ortalama plan uzunluğu, tempo, altyazı ve efekt yoğunluğu bir *stil profili*ne dönüşür.
+1. **Örnek alınacak videolar (3–10)** — sahne kesimleri ffmpeg ile çıkarılır **ve videolar kare kare
+   incelenir** (`src/editor/vision.js`, saniyede 4 kare): altyazı bandının ekrandaki konumu, puntosu,
+   rengi ve kutulu olup olmadığı; altyazı sıklığı ve ortalama ekranda kalma süresi; flaş sayısı;
+   kurgu/kamera hareket enerjisi; grafik renk paleti. Bunlar kesim temposuyla birlikte bir
+   *stil profili*ne dönüşür ve yeni kurguya uygulanır: öğrenilen yazı stili altyazı katmanlarına,
+   ölçülen flaş/hareket yoğunluğu efekt karışımına (zoom, flaş, sarsıntı, wipe), palet ise
+   grafiklerin rengine gider. Ne öğrenildiği kartın altında özetlenir.
 2. **Editlenecek video** — çıktı kaynak çözünürlüğünü korur, yani dikey giren dikey çıkar.
 3. **SFX (isteğe bağlı)** — vuruş noktalarına otomatik yerleşir, sonra taşınabilir.
 4. **Yapay zekâ talimatı** — *ne yapılacağını* anlatan serbest alan; bu metin ekrana **altyazı olarak

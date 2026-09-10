@@ -8,6 +8,7 @@ import {
   saveMedia, mediaDir, exportDir,
 } from './store.js';
 import { probe, probeAudio, sceneCuts, thumbnail } from './probe.js';
+import { analyzeReferenceVideo } from './vision.js';
 import { buildStyleProfile, buildTimeline } from './style.js';
 import { parseDirective, applyPlanToStyle } from './directive.js';
 import { parseInstruction, applyOps } from './ops.js';
@@ -75,6 +76,8 @@ editorRouter.post('/projects/:id/upload', upload.array('files', 20), wrap(async 
     if (role === 'reference') {
       if (project.references.length >= 10) throw new Error('En fazla 10 örnek video ekleyebilirsiniz.');
       entry.cuts = kind === 'video' ? await sceneCuts(media.abs) : [];
+      // Kesimlerin yanı sıra görüntüyü de incele: altyazı bandı, renkler, flaş/hareket.
+      if (kind === 'video') entry.vision = await analyzeReferenceVideo(media.abs, entry.meta);
       project.references.push(entry);
     } else if (role === 'target') {
       project.target = entry;

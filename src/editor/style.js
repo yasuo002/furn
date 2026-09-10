@@ -17,7 +17,8 @@ export function buildStyleProfile(references) {
   }
   const shotLength = Math.max(0.6, Math.min(6, total / Math.max(1, cuts)));
   const pace = shotLength < 1.4 ? 'hızlı' : shotLength < 2.8 ? 'orta' : 'sakin';
-  return {
+
+  const profile = {
     shotLength: Math.round(shotLength * 100) / 100,
     pace,
     // Fast reference edits get denser captions and more motion accents.
@@ -26,6 +27,70 @@ export function buildStyleProfile(references) {
     portraitBias: portrait > clips.length / 2,
     sampleCount: clips.length,
     totalReferenceDuration: Math.round(total * 10) / 10,
+  };
+
+  return { ...profile, ...mergeVision(clips) };
+}
+
+// Referansların GÖRÜNTÜ analizlerini (vision.js) tek bir öğrenilmiş stile indirger.
+function mergeVision(clips) {
+  const vs = clips.map((c) => c.vision).filter((v) => v && !v.error);
+  if (!vs.length) return { vision: null };
+
+  const avg = (pick) => {
+    const xs = vs.map(pick).filter((x) => typeof x === 'number' && !Number.isNaN(x));
+    return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+  };
+  const withCaptions = vs.filter((v) => v.hasCaptions);
+  const vote = (pick) => {
+    const counts = new Map();
+    for (const v of vs) {
+      const k = pick(v);
+      if (k) counts.set(k, (counts.get(k) || 0) + 1);
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+  };
+
+  const captionsPerMinute = avg((v) => v.captionsPerMinute) || 0;
+  const flashesPerMinute = avg((v) => v.flashesPerMinute) || 0;
+  const motionEnergy = avg((v) => v.motionEnergy) || 0;
+  const avgCaptionDur = avg((v) => v.avgCaptionDur);
+  const coverage = avg((v) => v.captionCoverage) || 0;
+
+  // Öğrenilen efekt karışımı: referansta ne kadar flaş/hareket varsa o kadar kullan.
+  const presets = ['zoom'];
+  if (flashesPerMinute >= 3) presets.push('flash');
+  if (motionEnergy >= 6) presets.push('shake');
+  if (motionEnergy >= 3.5) presets.push('wipe');
+  if (withCaptions.some((v) => v.captionBg === 'box')) presets.push('bar');
+
+  const palette = [...new Set(vs.flatMap((v) => v.palette || []))].slice(0, 5);
+
+  return {
+    vision: {
+      analyzed: vs.length,
+      captionsPerMinute: Math.round(captionsPerMinute),
+      avgCaptionDur: avgCaptionDur ? Math.round(avgCaptionDur * 10) / 10 : null,
+      captionCoverage: Math.round(coverage * 100) / 100,
+      flashesPerMinute: Math.round(flashesPerMinute),
+      motionEnergy: Math.round(motionEnergy * 10) / 10,
+      palette,
+      captionsSeen: withCaptions.length,
+    },
+    learnedCaption: withCaptions.length
+      ? {
+          y: Math.round(avg((v) => v.captionY) || 78),
+          fontSize: Math.round((avg((v) => v.captionFontSize) || 6.4) * 10) / 10,
+          color: vote((v) => v.captionColor) || '#ffffff',
+          bg: vote((v) => v.captionBg) === 'box' ? 'box' : 'none',
+        }
+      : null,
+    learnedPresets: presets,
+    // Görüntüden ölçülen altyazı sıklığı, kesim temposunun önüne geçer.
+    captionRatioFromVision: captionsPerMinute ? Math.min(1, captionsPerMinute / 30) : null,
+    accentRatioFromVision: flashesPerMinute || motionEnergy
+      ? Math.min(1, (flashesPerMinute / 20) + (motionEnergy / 20))
+      : null,
   };
 }
 
@@ -90,7 +155,11 @@ export function buildTimeline({ target, style, sfx = [], plan = null }) {
   const beats = [];
   for (let t = 0; t < dur - 0.25; t += shot) beats.push(Math.round(t * 100) / 100);
 
-  const captionCount = Math.max(0, Math.round(beats.length * style.captionRatio));
+  // Görüntüden ölçülen altyazı sıklığı varsa onu kullan (talimat hâlâ üstüne yazar).
+  const ratio = style.captionRatioFromVision != null && !plan?.pace && plan?.captionMode === 'auto'
+    ? style.captionRatioFromVision
+    : style.captionRatio;
+  const captionCount = Math.max(0, Math.round(beats.length * ratio));
   // Talimat metni altyazıya çevrilmez; metin yalnızca kullanıcı açıkça verdiyse gelir,
   // yoksa editörde doldurulacak yer tutucular oluşur.
   const explicit = plan?.captionTexts?.length ? plan.captionTexts : null;
@@ -98,9 +167,11 @@ export function buildTimeline({ target, style, sfx = [], plan = null }) {
   const placeholderCount = Math.min(captionCount, 4);
   const texts = explicit || Array.from({ length: placeholderCount }, (_, i) => `(metin girin ${i + 1})`);
   const total = explicit ? explicit.length : placeholderCount;
-  const capStyle = { ...DEFAULT_CAPTION_STYLE, ...(plan?.captionStyle || {}) };
+  // Öncelik: talimat > referanslardan öğrenilen stil > varsayılan.
+  const capStyle = { ...DEFAULT_CAPTION_STYLE, ...(style.learnedCaption || {}), ...(plan?.captionStyle || {}) };
   const presets = plan?.effects?.allow?.length ? plan.effects.allow
-    : plan?.effects?.allow ? [] : ['flash', 'zoom', 'shake', 'wipe'];
+    : plan?.effects?.allow ? []
+    : (style.learnedPresets?.length ? style.learnedPresets : ['flash', 'zoom', 'shake', 'wipe']);
   const intensity = plan?.effects?.intensity ?? 1;
   const layers = [];
 
@@ -108,6 +179,7 @@ export function buildTimeline({ target, style, sfx = [], plan = null }) {
   const slots = explicit
     ? explicit.map((_, i) => (i * dur) / explicit.length)
     : beats;
+  const learnedDur = style.vision?.avgCaptionDur || null;
 
   slots.forEach((t, i) => {
     const slotLen = explicit ? dur / explicit.length : shot;
@@ -126,10 +198,16 @@ export function buildTimeline({ target, style, sfx = [], plan = null }) {
   if (presets.length) {
     beats.forEach((t, i) => {
       if (i === 0) return;
-      if (i / beats.length > Math.max(style.accentRatio, 0.5)) return;
+      const accent = style.accentRatioFromVision != null && !plan?.effects?.allow
+        ? Math.max(style.accentRatioFromVision, 0.35)
+        : Math.max(style.accentRatio, 0.5);
+      if (i / beats.length > accent) return;
       const preset = presets[(i - 1) % presets.length];
       const len = preset === 'flash' ? 0.18 : preset === 'wipe' ? 0.4 : preset === 'lowerthird' ? 2.4 : 0.6;
-      layers.push(motionLayer(preset, t, Math.min(dur, t + len), { intensity }));
+      // Grafik rengi referansların paletinden gelir; flaş beyaz kalır.
+      const color = preset === 'flash' ? '#ffffff'
+        : (plan?.captionStyle?.color || style.vision?.palette?.[0] || '#ffffff');
+      layers.push(motionLayer(preset, t, Math.min(dur, t + len), { intensity, color }));
     });
   }
 

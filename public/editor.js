@@ -109,11 +109,28 @@ function renderSetup() {
   $('#targetGrid').innerHTML = project.target ? tile(project.target, 'target') : '';
   $('#sfxGrid').innerHTML = project.sfx.map((s) => tile(s, 'sfx')).join('');
   const s = project.style;
-  $('#styleStat').innerHTML = s
-    ? `<span>Örnek: <b>${s.sampleCount}</b></span><span>Ortalama plan: <b>${s.shotLength}s</b></span>
-       <span>Tempo: <b>${s.pace}</b></span><span>Altyazı yoğunluğu: <b>%${Math.round(s.captionRatio * 100)}</b></span>
-       <span>Efekt yoğunluğu: <b>%${Math.round(s.accentRatio * 100)}</b></span>`
-    : '<span>Örnek video ekleyin (önerilen 3–10).</span>';
+  if (!s) $('#styleStat').innerHTML = '<span>Örnek video ekleyin (önerilen 3–10).</span>';
+  else {
+    const v = s.vision;
+    const lc = s.learnedCaption;
+    const bits = [
+      `Örnek: <b>${s.sampleCount}</b>`,
+      `Ortalama plan: <b>${s.shotLength}s</b>`,
+      `Tempo: <b>${s.pace}</b>`,
+    ];
+    if (v) {
+      bits.push(`Görüntü analizi: <b>${v.analyzed} video</b>`);
+      bits.push(`Altyazı: <b>${v.captionsSeen ? `dk'da ${v.captionsPerMinute}, ort. ${v.avgCaptionDur}s` : 'yok'}</b>`);
+      bits.push(`Flaş: <b>dk'da ${v.flashesPerMinute}</b>`);
+      bits.push(`Hareket enerjisi: <b>${v.motionEnergy}</b>`);
+      if (s.learnedPresets?.length) bits.push(`Öğrenilen efektler: <b>${s.learnedPresets.join(', ')}</b>`);
+      if (v.palette?.length) {
+        bits.push(`Palet: ${v.palette.map((c) => `<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${c};vertical-align:-2px;border:1px solid #333"></span>`).join(' ')}`);
+      }
+    }
+    if (lc) bits.push(`Öğrenilen yazı stili: <b>y%${lc.y}, punto %${lc.fontSize}, ${lc.color}${lc.bg === 'box' ? ', kutulu' : ''}</b>`);
+    $('#styleStat').innerHTML = bits.map((b) => `<span>${b}</span>`).join('');
+  }
   document.querySelectorAll('.tile .x').forEach((b) => {
     b.onclick = (e) => { e.stopPropagation(); removeMedia(b.dataset.role, b.dataset.file); };
   });
