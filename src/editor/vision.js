@@ -37,6 +37,7 @@ function analyzeFrame(img) {
 
   let satSum = 0;
   const rowText = new Float32Array(h);
+  const colText = new Float32Array(w);
   const rowFlat = new Float32Array(h);   // düz/tek renk satır oranı (kutu, bant)
   const rowColor = new Array(h);
   let meanL = 0;
@@ -59,6 +60,7 @@ function analyzeFrame(img) {
       const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
       const sat = mx === 0 ? 0 : (mx - mn) / mx;
       satSum += sat;
+      if (prevL !== null && Math.abs(L - prevL) > 55) colText[x] += 1;
       if (L > 165 || (sat > 0.55 && L > 90)) { bright++; cr += r; cg += g; cb += b; cn++; }
       prevL = L;
     }
@@ -69,7 +71,36 @@ function analyzeFrame(img) {
     rowFlat[y] = flat / w;
     rowColor[y] = cn ? [cr / cn, cg / cn, cb / cn] : null;
   }
-  return { rowText, rowFlat, rowColor, meanL: meanL / (w * h), sat: satSum / (w * h), w, h };
+  // Yazı kutusu: yazı satırlarının dikey aralığı + o bölgedeki yatay yayılım.
+  let y0 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) {
+    if (rowText[y] > 0) { if (y0 < 0) y0 = y; y1 = y; }
+  }
+  let x0 = -1, x1 = -1;
+  if (y0 >= 0) {
+    const colThr = Math.max(1, (y1 - y0 + 1) * 0.12);
+    for (let x = 0; x < w; x++) {
+      if (colText[x] >= colThr) { if (x0 < 0) x0 = x; x1 = x; }
+    }
+  }
+  const textBox = y0 >= 0 && x0 >= 0
+    ? { x0, x1, y0, y1, w: (x1 - x0 + 1) / w, h: (y1 - y0 + 1) / h, cx: ((x0 + x1) / 2) / w, cy: ((y0 + y1) / 2) / h }
+    : null;
+
+  // Hareket kestirimi için küçük gri harita.
+  const gw = Math.floor(w / 2), gh = Math.floor(h / 2);
+  const gray = new Float32Array(gw * gh);
+  for (let y = 0; y < gh; y++) {
+    for (let x = 0; x < gw; x++) {
+      const i = ((y * 2) * w + x * 2) * 4;
+      gray[y * gw + x] = lum(data[i], data[i + 1], data[i + 2]);
+    }
+  }
+
+  return {
+    rowText, rowFlat, rowColor, textBox, gray, gw, gh,
+    meanL: meanL / (w * h), sat: satSum / (w * h), w, h,
+  };
 }
 
 function hex([r, g, b]) {

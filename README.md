@@ -75,12 +75,19 @@ npm start
    atılmış mı, sahne hareketli mi durgun mu. Sonuç bir **kurgu grameri**dir: yazılı sahne oranı,
    kesimde flaş oranı, hareketli sahne oranı, ortalama sahne süresi ve öğrenilen yazı stili.
    İlerleme canlı akar, öğrenilenler sahne listesiyle birlikte ekranda gösterilir.
+   Ayrıca her referansta kullanılan **teknikler** tanınır (`src/editor/techniques.js`):
+   push-in / pull-out zoom, sarsıntı, whip pan, beyaz flaş, renkli silme geçişi ve altyazı giriş
+   animasyonları (pop / kayarak / daktilo / yumuşak). Hangi teknik kaç kez, hangi videoda ve hangi
+   saniyelerde kullanılmış — hepsi listelenir.
 2. **🎬 Videoyu sahne sahne kurgula ve üret** — hedef video da sahnelere ayrılır (kesimsiz uzun
    çekimler, örneklerdeki ortalama sahne süresine göre hareketin en sakin olduğu yerlerden bölünür)
    ve her sahne için karar verilir (`src/editor/director.js`): durgun sahneye zoom, hareketli sahneye
    sarsıntı, kesime flaş/wipe, ürün-detay sahnesine vurgu dairesi, kapanışa alt bilgi şeridi, sakin
    sahnelere altyazı. Hangi sahnede ne yapıldığı gerekçesiyle listelenir, ardından video ffmpeg ile
-   render edilip sonuç kartında verilir.
+   render edilip sonuç kartında verilir. Her sahne için **uygulanabilir tüm teknikler** uygunluk
+   yüzdesi, gerekçesi ve "örneklerde var/yok" bilgisiyle listelenir; uygulananlar ✅, uygulanmayanlar
+   öneri olarak kalır. Tamamı `⬇ Raporu indir (.md)` ile markdown olarak alınabilir
+   (`GET /api/editor/projects/:id/report?download=1`).
 3. **Editör** — çıkan videoya tıklayınca katman bazlı editör açılır ve her şey elle düzeltilebilir.
 
 Editörde:

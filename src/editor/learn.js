@@ -1,7 +1,8 @@
 // Örnek videoları SAHNE SAHNE inceleyip bir "kurgu grameri" çıkarır:
 // hangi sahnede yazı var, kesimlerde flaş atılıyor mu, hareketli sahnelerde
 // sarsıntı mı sakin sahnelerde zoom mu kullanılmış, sahne uzunlukları ne.
-import { analyzeScenes, analyzeReferenceVideo } from './vision.js';
+import { analyzeScenes, analyzeReferenceVideo, perFrameStats } from './vision.js';
+import { detectTechniques, techniqueLabel } from './techniques.js';
 import { mediaDir } from './store.js';
 import path from 'node:path';
 
@@ -16,6 +17,15 @@ export async function learnFromReferences(project, { onLog } = {}) {
     const vision = ref.vision && !ref.vision.error ? ref.vision : await analyzeReferenceVideo(file, ref.meta);
     ref.vision = vision;
     const scenes = await analyzeScenes(file, { duration: ref.meta.duration, cuts: ref.cuts || [] });
+
+    // Kullanılan animasyon ve motion grafik tekniklerini tanı.
+    const stats = await perFrameStats(file, { fps: 10 });
+    const { events, catalog } = detectTechniques(stats, 10, { captionY: vision?.captionY ?? null });
+    if (catalog.length) {
+      onLog?.(`  teknikler: ${catalog.map((c) => `${c.label} ×${c.count}`).join(' · ')}`);
+    } else {
+      onLog?.('  belirgin bir teknik bulunamadı');
+    }
 
     // Her sahneye rol ve gözlem etiketi ver.
     const marked = scenes.map((s, i) => {
@@ -45,6 +55,8 @@ export async function learnFromReferences(project, { onLog } = {}) {
       duration: ref.meta.duration,
       scenes: marked,
       vision,
+      techniques: catalog,
+      techniqueEvents: events,
     });
   }
 
@@ -65,8 +77,13 @@ export async function learnFromReferences(project, { onLog } = {}) {
     avgMotion: avg((s) => s.motion),
     // Öğrenilen yazı stili tüm referansların ortalaması (vision.js ölçtü).
     caption: mergeCaptionStyle(perVideo.map((v) => v.vision).filter(Boolean)),
+    // Referanslarda gerçekten görülen teknikler: neyi ne sıklıkta kullanmışlar.
+    techniques: mergeTechniques(perVideo),
   };
 
+  if (grammar.techniques?.length) {
+    onLog?.(`Öğrenilen teknikler: ${grammar.techniques.map((t) => `${t.label} (dk'da ${t.perMinute})`).join(' · ')}`);
+  }
   onLog?.(`Öğrenildi: ${grammar.scenesStudied} sahne / ${grammar.videosStudied} video — ` +
     `sahnelerin %${Math.round(grammar.textSceneRatio * 100)}'inde yazı, ` +
     `%${Math.round(grammar.flashOnCutRatio * 100)} flaş, ` +
@@ -74,6 +91,25 @@ export async function learnFromReferences(project, { onLog } = {}) {
     `ortalama sahne ${grammar.avgSceneDuration}s`);
 
   return { perVideo, grammar };
+}
+
+// Tüm referanslardaki teknikleri tek katalogda topla.
+function mergeTechniques(perVideo) {
+  const map = new Map();
+  let totalDur = 0;
+  for (const v of perVideo) {
+    totalDur += v.duration || 0;
+    for (const t of v.techniques || []) {
+      const cur = map.get(t.type) || { type: t.type, label: t.label, count: 0, videos: 0, examples: [] };
+      cur.count += t.count;
+      cur.videos += 1;
+      cur.examples.push(`${v.name}: ${t.examples.join(', ')}`);
+      map.set(t.type, cur);
+    }
+  }
+  return [...map.values()]
+    .map((t) => ({ ...t, perMinute: totalDur ? Math.round((t.count / totalDur) * 60) : 0 }))
+    .sort((a, b) => b.count - a.count);
 }
 
 function mergeCaptionStyle(visions) {

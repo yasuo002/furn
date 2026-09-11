@@ -321,6 +321,60 @@ editorRouter.post('/projects/:id/export', wrap(async (req, res) => {
   }
 }));
 
+// Animasyon / motion grafik raporu: öğrenilen teknikler + sahne sahne öneriler.
+editorRouter.get('/projects/:id/report', wrap(async (req, res) => {
+  const project = await loadProject(req.params.id);
+  const g = project.grammar;
+  const d = project.decisions || [];
+  const L = [];
+
+  L.push(`# ${project.name} — animasyon ve motion grafik raporu`, '');
+  L.push(`Oluşturma: ${new Date().toLocaleString('tr-TR')}`, '');
+
+  L.push('## 1) Örnek videolardan öğrenilenler', '');
+  if (!g) L.push('_Henüz öğrenme çalıştırılmadı._', '');
+  else {
+    L.push(`- İncelenen: **${g.videosStudied} video / ${g.scenesStudied} sahne**`);
+    L.push(`- Ortalama sahne süresi: **${g.avgSceneDuration}s**`);
+    L.push(`- Yazılı sahne oranı: **%${Math.round(g.textSceneRatio * 100)}**`);
+    L.push(`- Kesimde flaş oranı: **%${Math.round(g.flashOnCutRatio * 100)}**`);
+    L.push(`- Hareketli sahne oranı: **%${Math.round(g.highMotionRatio * 100)}**`);
+    if (g.caption) {
+      L.push(`- Öğrenilen yazı stili: konum y%${g.caption.y}, punto %${g.caption.fontSize}, renk ${g.caption.color}, ekranda ${g.caption.avgDuration}s, ${g.caption.bg === 'box' ? 'kutulu' : 'konturlu'}`);
+    }
+    L.push('', '### Örneklerde tespit edilen teknikler', '');
+    if (g.techniques?.length) {
+      L.push('| Teknik | Toplam | Kaç videoda | Dakikada | Örnek anlar |', '|---|---|---|---|---|');
+      for (const t of g.techniques) {
+        L.push(`| ${t.label} | ${t.count} | ${t.videos} | ${t.perMinute} | ${t.examples.join(' · ')} |`);
+      }
+    } else L.push('_Belirgin bir teknik tespit edilmedi._');
+    L.push('');
+  }
+
+  L.push('## 2) Hedef videoda kullanılabilecek animasyon / motion grafikler', '');
+  if (!d.length) L.push('_Henüz kurgulama çalıştırılmadı._', '');
+  for (const sc of d) {
+    L.push(`### Sahne ${sc.scene} — ${sc.start}–${sc.end}s (${sc.role}, hareket ${sc.motion}, doygunluk ${sc.saturation ?? '-'})`, '');
+    L.push(`**Uygulandı:** ${sc.actions.join(', ')}`, '');
+    if (sc.proposals?.length) {
+      L.push('| Uygulanabilir teknik | Uygunluk | Örneklerde | Gerekçe | Durum |', '|---|---|---|---|---|');
+      for (const p of sc.proposals) {
+        L.push(`| ${p.label} | ${Math.round(p.fit * 100)}% | ${p.inReferences ? 'var' : 'yok'} | ${p.why} | ${p.applied ? '✅ uygulandı' : p.skipped ? '⛔ ' + p.skipped : '○ öneri'} |`);
+      }
+      L.push('');
+    }
+  }
+
+  const md = L.join('\n');
+  if (req.query.download) {
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="animasyon-raporu-${project.id}.md"`);
+    return res.send(md);
+  }
+  res.json({ markdown: md, grammar: g, decisions: d });
+}));
+
 // Dışa aktarılan dosyayı doğrudan bilgisayara indir.
 editorRouter.get('/projects/:id/download/:file', wrap(async (req, res) => {
   const abs = path.join(exportDir(req.params.id), path.basename(req.params.file));

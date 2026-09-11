@@ -252,6 +252,13 @@ function renderLessons() {
         <span>Hareketli sahne: <b>%${Math.round(g.highMotionRatio * 100)}</b></span>
         ${g.caption ? `<span>Yazı stili: <b>y%${g.caption.y}, punto %${g.caption.fontSize}, ${g.caption.color}, ${g.caption.avgDuration}s</b></span>` : ''}
       </div>
+      ${g.techniques?.length ? `
+        <div style="margin-top:10px"><b style="font-size:12.5px">Örneklerde kullanılan animasyon / motion grafikler</b>
+        <div style="display:grid;gap:3px;margin-top:5px">
+          ${g.techniques.map((t) => `<div class="chip" style="text-align:left">
+            ${t.label} — <b style="color:var(--text)">${t.count} kez</b>, ${t.videos} videoda, dk'da ${t.perMinute}
+          </div>`).join('')}
+        </div></div>` : ''}
       ${rows}
     </div>`;
 }
@@ -285,11 +292,27 @@ function renderDecisions() {
   if (!d?.length) { box.innerHTML = ''; return; }
   box.innerHTML = `
     <div style="margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px;background:#10141d">
-      <b style="font-size:13px">Sahne sahne ne yapıldı</b>
-      <div style="display:grid;gap:3px;margin-top:6px">
-        ${d.map((x) => `<div class="chip" style="text-align:left">
-          Sahne ${x.scene} · ${x.start}–${x.end}s · ${x.role} · hareket ${x.motion} → <b style="color:var(--text)">${x.actions.join(', ')}</b>
-        </div>`).join('')}
+      <div class="row" style="justify-content:space-between">
+        <b style="font-size:13px">Sahne sahne: yapılanlar ve yapılabilecekler</b>
+        <a href="${api}/projects/${project.id}/report?download=1" class="chip" style="text-decoration:none">⬇ Raporu indir (.md)</a>
+      </div>
+      <div style="display:grid;gap:8px;margin-top:8px">
+        ${d.map((x) => `
+          <div style="border:1px solid var(--line);border-radius:9px;padding:8px">
+            <div style="font-size:12.5px">
+              <b>Sahne ${x.scene}</b> · ${x.start}–${x.end}s · ${x.role} · hareket ${x.motion}${x.saturation != null ? ` · doygunluk ${x.saturation}` : ''}
+            </div>
+            <div style="font-size:12.5px;color:var(--ok);margin:4px 0">✅ ${x.actions.join(', ')}</div>
+            <div style="display:grid;gap:2px">
+              ${(x.proposals || []).filter((p) => !p.applied).slice(0, 5).map((p) => `
+                <div class="chip" style="text-align:left;opacity:.9">
+                  ${p.applied ? '✅' : p.skipped ? '⛔' : '○'} ${p.label}
+                  — uygunluk <b style="color:var(--text)">%${Math.round(p.fit * 100)}</b>
+                  · ${p.inReferences ? 'örneklerde var' : 'örneklerde yok'}
+                  · ${p.why}${p.skipped ? ` · ${p.skipped}` : ''}
+                </div>`).join('')}
+            </div>
+          </div>`).join('')}
       </div>
     </div>`;
 }
