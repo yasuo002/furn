@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amazon → eBay Ürün Araştırma</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Amazon → eBay Ürün Araştırma <span class="note" style="color:#94a3b8">yerel · USD · karar desteği</span></h1>
+  <div class="spacer"></div>
+  <button id="btnHistory">Geçmiş</button>
+  <button id="btnSettings">Ayarlar</button>
+</header>
+<main>
+  <section class="card">
+    <div class="controls">
+      <label class="f">Ana kategori<select id="selMain"></select></label>
+      <label class="f">Alt kategori<select id="selSub"></select></label>
+      <label class="f">Dar alt kategori<select id="selLeaf"></select></label>
+      <label class="f">Minimum net kâr marjı (%)<input id="inMargin" type="number" min="0" max="90" step="0.5" value="15"></label>
+      <label class="f">Taranacak ürün sayısı<input id="inCount" type="number" min="1" max="200" value="25"></label>
+      <label class="f">Gönderim modeli<select id="selModel"><option value="self">Kendim gönderiyorum</option><option value="warehouse">Ara depo</option></select></label>
+    </div>
+    <div class="btns" style="margin-top:10px">
+      <button id="btnStart" class="primary">Araştırmayı başlat</button>
+      <button id="btnPause">Duraklat</button>
+      <button id="btnResume">Devam et</button>
+      <button id="btnStop" class="danger">Durdur</button>
+      <span style="flex:1"></span>
+      <label class="note"><input type="checkbox" id="chkDemo"> Demo/test modu (örnek veri — gerçek ürün/fiyat değildir)</label>
+      <button id="btnCheckCat" title="Seçili alt kategorinin Amazon arama adresini araştırma tarayıcısında açıp sonuç dönüp dönmediğini kontrol eder">Kategori adresini doğrula</button>
+    </div>
+    <div class="note" id="catNote" style="margin-top:6px"></div>
+    <div id="setupBanner"></div>
+  </section>
+
+  <section class="card" id="progressCard">
+    <div class="btns" style="margin-bottom:8px"><strong id="runTitle">Araştırma yok</strong><span class="note" id="runMeta"></span></div>
+    <div class="progress">
+      <div class="stat"><b id="stFound">0</b><span>Bulunan Amazon ürünü</span></div>
+      <div class="stat"><b id="stCompared">0</b><span>eBay karşılaştırması tamamlanan</span></div>
+      <div class="stat"><b id="stEligible">0</b><span>Uygun aday</span></div>
+      <div class="stat"><b id="stConditional">0</b><span>Koşullu aday</span></div>
+      <div class="stat"><b id="stRejected">0</b><span>Elenen</span></div>
+      <div class="stat"><b id="stMissing">0</b><span>Veri eksik</span></div>
+    </div>
+    <div class="note" style="margin-top:8px">Şu an: <span id="stAction">—</span></div>
+    <div id="notice"></div>
+    <details style="margin-top:8px"><summary class="note">Motor günlüğü</summary><div class="log" id="log"></div></details>
+  </section>
+
+  <section class="card">
+    <div class="btns" style="margin-bottom:8px">
+      <div class="tabs" id="filterTabs">
+        <button data-f="eligible">Uygun</button><button data-f="conditional">Koşullu</button><button data-f="rejected">Elenen</button><button data-f="all" class="active">Tümü</button>
+      </div>
+      <span style="flex:1"></span>
+      <button id="btnRecheck" title="Seçili ürünlerin Amazon fiyat/stok bilgisini yeniden kontrol eder (yeni gözlem ekler)">Seçilileri yeniden kontrol et</button>
+      <button id="btnExport">CSV dışa aktar</button>
+    </div>
+    <div class="tablewrap"><table id="tbl"><thead><tr>
+      <th data-k="_sel" style="cursor:default"><input type="checkbox" id="chkAll"></th>
+      <th data-k="title">Ürün adı</th><th data-k="cat">Kategori / alt kategori</th>
+      <th data-k="amazonPrice" class="num">Amazon fiyatı</th><th data-k="buyCost" class="num">Toplam alış maliyeti</th><th>Amazon</th>
+      <th data-k="median" class="num">eBay medyan toplam</th><th data-k="q1" class="num">eBay temkinli toplam</th><th data-k="sold90" class="num">Satılmış ilan (dönem)</th><th>eBay kanıt</th>
+      <th data-k="itemPrice" class="num">Önerilen ürün fiyatı</th><th data-k="shipCharged" class="num">Müşteriden kargo</th><th data-k="totalCosts" class="num">Toplam gider</th>
+      <th data-k="net" class="num">Net kâr (USD)</th><th data-k="margin" class="num">Net marj (%)</th><th>Gönderim modeli</th><th data-k="checkedAt">Son kontrol</th><th data-k="decision">Karar</th>
+    </tr></thead><tbody id="tbody"></tbody></table></div>
+    <div class="note" id="tableNote" style="margin-top:6px"></div>
+  </section>
+</main>
+
+<aside class="drawer" id="drawer"></aside>
+<div class="modal-bg" id="settingsModal"><div class="modal" id="settingsBody"></div></div>
+<div class="modal-bg" id="historyModal"><div class="modal" id="historyBody"></div></div>
+<script src="app.js"></script>
+</body>
+</html>

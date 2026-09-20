@@ -1,0 +1,19 @@
+{
+  "name": "amazon-ebay-arbitraj-arastirma",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Yerel Amazon → eBay ürün araştırma ve kâr analizi uygulaması (karar desteği; otomatik satın alma/ilan yok).",
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node server.js",
+    "setup-browser": "playwright install chromium",
+    "test": "node --test tests/*.test.js",
+    "worker": "node src/engine/worker.js",
+    "e2e": "node scripts/e2e-demo.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "1.56.1"
+  }
+}
