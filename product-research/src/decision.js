@@ -7,7 +7,7 @@ export function decide(product, analysis, settings) {
   const minSellers = Number(settings.demandMinSellers ?? 2);
 
   if (product.status === 'pending' || product.status === 'amazon_done') return { decision: 'missing', label: 'Beklemede', reasons: ['Araştırma henüz tamamlanmadı'] };
-  if (product.status === 'error' || product.status === 'blocked' || eb.access === 'blocked' || eb.access === 'error' || (product.amazon && product.amazon.access === 'blocked')) {
+  if (product.status === 'error' || product.status === 'blocked' || eb.access === 'blocked' || eb.access === 'error' || eb.access === 'unverified' || (product.amazon && (product.amazon.access === 'blocked' || product.amazon.access === 'unverified'))) {
     return { decision: 'missing', label: 'Veri eksik', reasons: [product.error || eb.note || 'Erişim sorunu — talep yok anlamına gelmez; yeniden kontrol edin'] };
   }
   if (risk.flagged) return { decision: 'rejected', label: 'Elenen', reasons: risk.reasons.map(r => `Risk: ${r}`) };

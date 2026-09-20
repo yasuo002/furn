@@ -9,6 +9,7 @@ import { EBAY_ACCOUNT_TYPES, EBAY_FEE_SOURCE_URL, EBAY_STORE_FEE_SOURCE_URL, DEF
 import { buildAnalysis } from './src/profit.js';
 import { decide } from './src/decision.js';
 import { toCsv } from './src/csv.js';
+import { effectiveProduct } from './src/effective.js';
 
 db.openDb();
 const app = express();
@@ -41,9 +42,10 @@ function liveWorkerBusy(excludeRunId) {
   return db.listRuns(50).some(r => r.id !== excludeRunId && !r.demo && ACTIVE.has(r.status) && (isFresh(r.heartbeatAt) || children.has(`run:${r.id}`)));
 }
 function enrich(product, settings, run) {
-  const analysis = buildAnalysis(product, settings, run?.config?.fulfillmentModel || 'self');
-  const decision = decide(product, analysis, settings);
-  return { ...product, analysis, decision };
+  const eff = effectiveProduct(product);
+  const analysis = buildAnalysis(eff, settings, run?.config?.fulfillmentModel || 'self');
+  const decision = decide(eff, analysis, settings);
+  return { ...eff, analysis, decision };
 }
 const wrap = (fn) => (req, res) => { try { const out = fn(req, res); if (out && typeof out.then === 'function') out.catch(e => res.status(500).json({ error: e.message })); } catch (e) { res.status(500).json({ error: e.message }); } };
 
@@ -137,6 +139,11 @@ app.put('/api/products/:id/overrides', wrap((req, res) => {
   const allowed = ['shippingCharged', 'outboundCost', 'outboundVerified', 'inboundCost', 'weightOz', 'matchVerdict', 'note'];
   const ov = { ...p.overrides };
   for (const k of allowed) if (k in (req.body || {})) { const v = req.body[k]; if (v === null || v === '' || v === undefined) delete ov[k]; else ov[k] = v; }
+  if (req.body?.listingVerdicts && typeof req.body.listingVerdicts === 'object') {
+    const lv = { ...(ov.listingVerdicts || {}) };
+    for (const [url, v] of Object.entries(req.body.listingVerdicts)) { if (!v) delete lv[url]; else if (['exact', 'uncertain', 'mismatch'].includes(v)) lv[url] = v; }
+    if (Object.keys(lv).length) ov.listingVerdicts = lv; else delete ov.listingVerdicts;
+  }
   ov.updatedAt = db.now();
   const updated = db.updateProduct(p.id, { overrides: ov });
   res.json(enrich(updated, db.getSettings(), db.getRun(p.runId)));
@@ -160,6 +167,13 @@ app.post('/api/categories/:leafId/check', wrap((req, res) => {
   if (!demo && liveWorkerBusy()) return res.status(409).json({ error: 'Araştırma tarayıcısı meşgul' });
   const child = spawnWorker(['check-category', leaf.id], demo ? { RESEARCH_DEMO: '1' } : {});
   child.on('exit', () => {});
+  res.json({ started: true });
+}));
+app.post('/api/selfcheck', wrap((req, res) => {
+  const demo = !!req.body?.demo;
+  if (!demo && liveWorkerBusy()) return res.status(409).json({ error: 'Araştırma tarayıcısı meşgul' });
+  db.saveSettings({ lastSelfCheck: { status: 'running', startedAt: db.now(), demo } });
+  spawnWorker(['selfcheck'], demo ? { RESEARCH_DEMO: '1' } : {});
   res.json({ started: true });
 }));
 app.post('/api/open-url', wrap((req, res) => {

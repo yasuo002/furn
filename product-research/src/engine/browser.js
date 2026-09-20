@@ -72,3 +72,16 @@ export async function politeGoto(page, url, { settings, onBlocked, maxRetries = 
     await randomDelay(settings);
   }
 }
+
+// Site yapısı tanınmadığında sayfanın HTML'ini data/debug altına kaydeder (en fazla 30 dosya tutulur).
+export async function saveDebugSnapshot(page, label) {
+  try {
+    const dir = path.join(DATA_DIR, 'debug'); fs.mkdirSync(dir, { recursive: true });
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.html')).sort();
+    for (const f of files.slice(0, Math.max(0, files.length - 29))) fs.unlinkSync(path.join(dir, f));
+    const name = `${new Date().toISOString().replace(/[:.]/g, '-')}-${label.replace(/[^a-z0-9_-]+/gi, '_')}.html`;
+    const html = await page.content();
+    fs.writeFileSync(path.join(dir, name), `<!-- url: ${page.url()} -->\n` + html);
+    return path.join(dir, name);
+  } catch { return null; }
+}

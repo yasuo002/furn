@@ -66,3 +66,14 @@ test('engel tespiti', () => {
 test('CSV formül enjeksiyonu engellenir', () => {
   assert.equal(csvCell('=HYPERLINK("x")'), `"'=HYPERLINK(""x"")"`); assert.equal(csvCell('+1'), "'+1"); assert.equal(csvCell('normal'), 'normal'); assert.equal(csvCell('a,b'), '"a,b"');
 });
+
+test('ilan bazında kullanıcı kararı istatistikleri yeniden hesaplar (kaynak veri değişmez)', async () => {
+  const { effectiveProduct } = await import('../src/effective.js');
+  const now = new Date().toISOString().slice(0, 10);
+  const L = (u, v) => ({ url: u, title: 't', price: 20, shipping: 0, shippingKnown: true, soldAt: now, seller: 's' + u, match: { verdict: v, reasons: [] } });
+  const p = { ebay: { checkedAt: new Date().toISOString(), sold: { listings: [L('a', 'exact'), L('b', 'uncertain'), L('c', 'uncertain')] }, active: { listings: [] }, stats: { exactSold90: 1 }, matchSummary: { verdict: 'exact' } }, overrides: { listingVerdicts: { b: 'exact', a: 'mismatch' } } };
+  const e = effectiveProduct(p);
+  assert.equal(e.ebay.stats.exactSold90, 1); assert.equal(e.ebay.stats.uncertainSold90, 1); assert.equal(e.ebay.stats.userAdjusted, true);
+  assert.equal(p.ebay.sold.listings[0].match.verdict, 'exact'); // kaynak dokunulmadı
+  assert.equal(effectiveProduct({ ebay: p.ebay, overrides: {} }).ebay.stats.exactSold90, 1);
+});

@@ -40,11 +40,12 @@ Sağ üstteki **Ayarlar** panelinden şunları girip **"Maliyet girdilerini göz
 
 ## Kullanım
 
+0. İlk canlı çalıştırmadan önce **Canlı erişim testi** düğmesine basın: araştırma tarayıcısı Amazon ve eBay'de birer arama açar; erişim engeli olup olmadığını ve sayfa yapısının tanınıp tanınmadığını (kart, fiyat, satış tarihi, satıcı, kargo alanları) raporlar. Yapı tanınmazsa sayfanın HTML anlık görüntüsü `data/debug/` altına kaydedilir.
 1. Üstte **ana kategori → alt kategori → dar alt kategori** seçin. Liste **elle tanımlanmış güvenli kategorilerden** oluşur (elektriksiz ofis düzenleyicileri, gıda ile temas etmeyen ev düzenleme, basit hobi aksesuarları); Amazon'un canlı kategori ağacı değildir. Her yaprak bir Amazon arama sorgusuna karşılık gelir; **"Kategori adresini doğrula"** ile sorgunun sonuç döndürdüğünü kendi makinenizde kontrol edebilirsiniz.
 2. Minimum marj (%15), ürün sayısı (25) ve gönderim modelini seçin, **Araştırmayı başlat**.
 3. Görünür bir Chromium penceresi açılır. **CAPTCHA, giriş veya erişim engeli** görülürse araştırma duraklar ve arayüzde açıklama çıkar; sorunu tarayıcı penceresinde elle giderip **Devam et**'e basın. CAPTCHA otomatik çözülmez, engel aşılmaz.
 4. Sonuçlar araştırma sürerken tabloya eklenir. **Uygun / Koşullu / Elenen / Tümü** filtreleri ve sütun sıralaması vardır. Satıra tıklayınca detay paneli açılır: Amazon bilgileri, her eBay satışının bağlantısı/tarihi/fiyatı, eşleşme gerekçesi, tüm maliyet kalemleri, baz/temkinli hesap, kendi gönderim ve 3/4/5 $ depo senaryoları, stres testi, %15 marjı koruyan azami alış fiyatı, eksik bilgiler ve varsayımlar.
-5. Detay panelinde kullanıcı tahminlerini (kargo tahsilatı, gönderim maliyeti, ağırlık, eşleşme kararı) girdiğinizde marj yeniden hesaplanır; kaynak verilerle kullanıcı değişiklikleri ayrı saklanır.
+5. Detay panelinde kullanıcı tahminlerini (kargo tahsilatı, gönderim maliyeti, ağırlık, eşleşme kararı) girdiğinizde marj yeniden hesaplanır; kaynak verilerle kullanıcı değişiklikleri ayrı saklanır. Satılmış ilan listesinde her ilanın eşleşme kararını (birebir / belirsiz / uyumsuz) elle düzeltebilirsiniz; satış sayısı, medyan ve karar buna göre yeniden hesaplanır.
 6. **Geçmiş**: eski araştırmaları açın, CSV alın veya silin. **Seçilileri yeniden kontrol et**: Amazon fiyat/stokunu yeniden okur ve **yeni gözlem** ekler (eski sonuç silinmez).
 7. **CSV dışa aktar**: bağlantılar dahildir; harici metinlerde formül çalıştırılması engellenir.
 

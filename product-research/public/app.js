@@ -37,11 +37,17 @@ function fillCategories() {
   };
   main.onchange = onMain; sub.onchange = onSub; leaf.onchange = onLeaf; onMain();
 }
+function selfCheckHtml(r) {
+  if (!r) return '';
+  if (r.status === 'running') return `<div class="banner info">Canlı erişim testi çalışıyor (araştırma tarayıcısı açıldı)…</div>`;
+  const part = (n, x) => x ? `<b>${n}:</b> ${x.ok ? '<span class="tag ok">tamam</span>' : `<span class="tag no">${x.blocked ? 'engel/CAPTCHA' : 'sorun'}</span>`} ${esc(x.note || '')}${x.withSoldDate != null ? ` · tarih ${x.withSoldDate}/${x.items}, satıcı ${x.withSeller}/${x.items}, kargo ${x.withShipping}/${x.items}, fiyat ${x.withPrice}/${x.items}` : ''}${x.withPrice != null && x.withSoldDate == null ? ` · fiyatlı ${x.withPrice}/${x.items}` : ''}` : `<b>${n}:</b> —`;
+  return `<div class="banner ${r.amazon?.ok && r.ebay?.ok ? 'info' : 'warn'}">Son canlı erişim testi (${dt(r.finishedAt)})${r.demo ? ' <span class="tag">DEMO</span>' : ''}: ${part('Amazon', r.amazon)}<br>${part('eBay', r.ebay)}${r.error ? `<br>Hata: ${esc(r.error)}` : ''}</div>`;
+}
 function setupBanner() {
   const s = state.meta.settings; const items = [];
   if (!s.setupConfirmed) items.push('İlk kurulum maliyetleri onaylanmadı (Amazon alış vergisi, paketleme, operasyon, gönderim tarifesi). Ayarlar panelinden girip kaydedin.');
   if (!s.ebayFeeVerified) items.push(`eBay komisyon oranı (%${s.ebayFeeRate} + ${s.ebayFeeFixedOver10} $) resmî kaynaktan doğrulanmadı; kaynak: ${s.ebayFeeSource}. Doğrulanana kadar tüm sonuçlar "Koşullu" kalır.`);
-  $('#setupBanner').innerHTML = items.length ? `<div class="banner warn">${items.map(esc).join('<br>')}</div>` : '';
+  $('#setupBanner').innerHTML = (items.length ? `<div class="banner warn">${items.map(esc).join('<br>')}</div>` : '') + selfCheckHtml(s.lastSelfCheck);
 }
 
 // ---------- araştırma ----------
@@ -143,7 +149,7 @@ async function openDetail(id, scroll) {
   let p; try { p = await api(`/api/products/${id}`); } catch (e) { alert(e.message); return; }
   const az = p.amazon || {}; const eb = p.ebay || {}; const s = eb.stats || {}; const a = p.analysis; const ov = p.overrides || {};
   const sold = (eb.sold?.listings || []); const active = (eb.active?.listings || []);
-  const lrow = (l) => `<tr><td><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a>${l.bestOffer ? ' <span class="tag">Best Offer — fiyat kesin değil</span>' : ''}${l.qtySoldText ? ` <span class="tag" title="Tarih aralığı bilinmiyor; 30/90 günlük satış olarak sayılmaz">${esc(l.qtySoldText)}</span>` : ''}</td><td>${l.soldAt || '—'}</td><td class="num">${usd(l.price)}${l.priceRange ? ' <span class="note">aralık</span>' : ''}</td><td class="num">${l.shippingKnown ? usd(l.shipping) : '<span class="tag no">bilinmiyor</span>'}</td><td class="num">${usd(l.total)}</td><td>${esc(l.seller || '—')}</td><td><span class="pill ${l.match?.verdict === 'exact' ? 'eligible' : l.match?.verdict === 'uncertain' ? 'conditional' : 'rejected'}" title="${esc((l.match?.reasons || []).join('\n'))}">${l.match?.verdict === 'exact' ? 'birebir' : l.match?.verdict === 'uncertain' ? 'belirsiz' : 'uyumsuz'}</span></td></tr>`;
+  const lrow = (l) => `<tr><td><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a>${l.bestOffer ? ' <span class="tag">Best Offer — fiyat kesin değil</span>' : ''}${l.qtySoldText ? ` <span class="tag" title="Tarih aralığı bilinmiyor; 30/90 günlük satış olarak sayılmaz">${esc(l.qtySoldText)}</span>` : ''}</td><td>${l.soldAt || '—'}</td><td class="num">${usd(l.price)}${l.priceRange ? ' <span class="note">aralık</span>' : ''}</td><td class="num">${l.shippingKnown ? usd(l.shipping) : '<span class="tag no">bilinmiyor</span>'}</td><td class="num">${usd(l.total)}</td><td>${esc(l.seller || '—')}</td><td><span class="pill ${l.match?.verdict === 'exact' ? 'eligible' : l.match?.verdict === 'uncertain' ? 'conditional' : 'rejected'}" title="${esc((l.match?.reasons || []).join('\n'))}">${l.match?.verdict === 'exact' ? 'birebir' : l.match?.verdict === 'uncertain' ? 'belirsiz' : 'uyumsuz'}</span>${l.kind === 'sold' && l.url ? `<br><select class="lv" data-url="${esc(l.url)}" title="İncelemenizden sonra bu ilanın eşleşme kararını düzeltin"><option value="">motor</option><option value="exact" ${l.userVerdict === 'exact' ? 'selected' : ''}>birebir</option><option value="uncertain" ${l.userVerdict === 'uncertain' ? 'selected' : ''}>belirsiz</option><option value="mismatch" ${l.userVerdict === 'mismatch' ? 'selected' : ''}>uyumsuz</option></select>` : ''}</td></tr>`;
   const d = $('#drawer'); delete d.dataset.editing;
   d.innerHTML = `<button class="close" id="closeDrawer">Kapat ✕</button>
   <h2>${esc(p.title || p.asin)}</h2>
@@ -171,7 +177,7 @@ async function openDetail(id, scroll) {
   <h3>eBay eşleştirme ve gerçekleşmiş satışlar</h3>
   <div class="kv">
     <div>Erişim</div><div>${eb.access === 'ok' ? 'tamam' : `<span class="tag no">${esc(eb.access || 'yapılmadı')}</span> ${esc(eb.note || '')}`}</div>
-    <div>Eşleşme gerekçesi</div><div>${esc(eb.matchSummary?.reason || '—')} ${ov.matchVerdict ? `<span class="tag">kullanıcı: ${esc(ov.matchVerdict)}</span>` : ''}</div>
+    <div>Eşleşme gerekçesi</div><div>${esc(eb.matchSummary?.reason || '—')} ${s.userAdjusted ? '<span class="tag">ilan bazında kullanıcı düzeltmeleri uygulandı</span>' : ''} ${ov.matchVerdict ? `<span class="tag">kullanıcı: ${esc(ov.matchVerdict)}</span>` : ''}</div>
     <div>Sorgular</div><div>${(eb.queries || []).map(q => `<a href="${esc(q.url || '#')}" target="_blank" rel="noopener">${esc(q.type)}: ${esc(q.q)}</a>${q.error ? ` <span class="tag no">${esc(q.error)}</span>` : ''}`).join('<br>') || '—'}</div>
     <div>Satılmış ilan (birebir)</div><div><b>${s.exactSold90 ?? '—'}</b> son 90 gün · ${s.exactSold30 ?? '—'} son 30 gün · belirsiz ${s.uncertainSold90 ?? 0} · incelenen ${s.listingsExamined ?? 0} (yinelenen ${s.duplicatesRemoved ?? 0} ayıklandı)</div>
     <div>Satılan birim</div><div>${s.unitsSold ?? 'doğrulanamadı'} <span class="note">${esc(s.unitsSoldNote || '')}</span></div>
@@ -220,7 +226,8 @@ async function openDetail(id, scroll) {
     body.outboundVerified = f.get('outboundVerified') === 'on' ? true : null; body.matchVerdict = f.get('matchVerdict') || null; body.note = f.get('note') || null;
     try { await api(`/api/products/${id}/overrides`, { method: 'PUT', body: JSON.stringify(body) }); await refresh(); openDetail(id, false); } catch (err) { alert(err.message); }
   };
-  $('#ovClear').onclick = async () => { await api(`/api/products/${id}/overrides`, { method: 'PUT', body: JSON.stringify({ shippingCharged: null, outboundCost: null, outboundVerified: null, inboundCost: null, weightOz: null, matchVerdict: null, note: null }) }); await refresh(); openDetail(id, false); };
+  d.querySelectorAll('select.lv').forEach(sel => sel.onchange = async () => { try { await api(`/api/products/${id}/overrides`, { method: 'PUT', body: JSON.stringify({ listingVerdicts: { [sel.dataset.url]: sel.value || null } }) }); await refresh(); openDetail(id, false); } catch (e) { alert(e.message); } });
+  $('#ovClear').onclick = async () => { await api(`/api/products/${id}/overrides`, { method: 'PUT', body: JSON.stringify({ shippingCharged: null, outboundCost: null, outboundVerified: null, inboundCost: null, weightOz: null, matchVerdict: null, note: null, listingVerdicts: Object.fromEntries(Object.keys(ov.listingVerdicts || {}).map(u => [u, null])) }) }); await refresh(); openDetail(id, false); };
   renderTable();
 }
 
@@ -289,6 +296,7 @@ async function init() {
   $('#inMargin').value = state.meta.settings.minMarginPct;
   $('#btnStart').onclick = startRun; $('#btnPause').onclick = () => command('pause'); $('#btnResume').onclick = () => command('resume'); $('#btnStop').onclick = () => { if (confirm('Araştırma durdurulsun mu? (Tamamlanan sonuçlar korunur)')) command('stop'); };
   $('#btnSettings').onclick = openSettings; $('#btnHistory').onclick = openHistory;
+  $('#btnSelfCheck').onclick = async () => { try { await api('/api/selfcheck', { method: 'POST', body: JSON.stringify({ demo: $('#chkDemo').checked }) }); state.meta.settings.lastSelfCheck = { status: 'running' }; setupBanner(); const t0 = Date.now(); const poll = setInterval(async () => { state.meta = await api('/api/meta'); setupBanner(); if (state.meta.settings.lastSelfCheck?.status !== 'running' || Date.now() - t0 > 120000) clearInterval(poll); }, 3000); } catch (e) { alert(e.message); } };
   $('#btnExport').onclick = () => { if (state.run) location.href = `/api/runs/${state.run.id}/export.csv`; };
   $('#btnRecheck').onclick = async () => { if (!state.selected.size) return alert('Tabloda ürün seçin'); try { await api('/api/recheck', { method: 'POST', body: JSON.stringify({ productIds: [...state.selected] }) }); alert('Yeniden kontrol başlatıldı; sonuç yeni gözlem olarak eklenir (eski sonuç silinmez).'); } catch (e) { alert(e.message); } };
   $('#btnCheckCat').onclick = async () => { try { await api(`/api/categories/${$('#selLeaf').value}/check`, { method: 'POST', body: JSON.stringify({ demo: $('#chkDemo').checked }) }); alert('Doğrulama araştırma tarayıcısında başlatıldı; sonuç birkaç saniye içinde kategori listesinde görünür.'); setTimeout(async () => { state.meta = await api('/api/meta'); fillCategories(); }, 15000); } catch (e) { alert(e.message); } };

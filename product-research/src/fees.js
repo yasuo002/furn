@@ -51,6 +51,7 @@ export const DEFAULT_SETTINGS = {
   ebayMaxResultPages: 1,
   requestDelayMinMs: 2500,
   requestDelayMaxMs: 6000,
+  lastSelfCheck: null,            // son canlı erişim testi sonucu (motor yazar)
 };
 
 export function estimateOutbound(weightOz, settings) {

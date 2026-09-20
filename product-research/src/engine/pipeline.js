@@ -1,12 +1,13 @@
 // Araştırma motoru: arayüzden bağımsız, ayrı süreçte çalışır; durumunu SQLite'a yazar.
 import { getRun, updateRun, getSettings, insertProduct, listProducts, updateProduct, addObservation, addEvent, now, productAsinsForRun, getProduct } from '../db.js';
-import { launchResearchBrowser, politeGoto, randomDelay, sleep, StopSignal } from './browser.js';
+import { launchResearchBrowser, politeGoto, randomDelay, sleep, StopSignal, saveDebugSnapshot } from './browser.js';
 import { parseSearchPageInBrowser, parseProductPageInBrowser, normalizeProduct, AMAZON_DP } from './amazon.js';
 import { buildEbayUrl, parseEbayResultsInBrowser, normalizeListing, buildQueries } from './ebay.js';
 import { matchListing, summarizeEbay, matchSummary } from '../matcher.js';
 import { assessRisk } from '../risk.js';
 import { buildAnalysis } from '../profit.js';
 import { decide } from '../decision.js';
+import { effectiveProduct } from '../effective.js';
 
 const MAX_SEARCH_PAGES = 5;
 
@@ -15,7 +16,8 @@ export function computeProgress(runId, settings, run) {
   const p = { found: products.length, compared: 0, eligible: 0, conditional: 0, rejected: 0, missing: 0 };
   for (const pr of products) {
     if (['done', 'error', 'blocked', 'risk'].includes(pr.status)) p.compared++;
-    const d = decide(pr, buildAnalysis(pr, settings, run?.config?.fulfillmentModel || 'self'), settings).decision;
+    const eff = effectiveProduct(pr);
+    const d = decide(eff, buildAnalysis(eff, settings, run?.config?.fulfillmentModel || 'self'), settings).decision;
     if (d === 'eligible') p.eligible++; else if (d === 'conditional') p.conditional++; else if (d === 'rejected') p.rejected++; else if (pr.status !== 'pending' && pr.status !== 'amazon_done') p.missing++;
   }
   return p;
@@ -72,7 +74,7 @@ export async function runResearch(runId) {
         const res = await politeGoto(page, url, gotoOpts);
         if (!res.ok) { log(`Amazon listesi alınamadı: ${res.error}`, 'error'); updateRun(runId, { userNotice: `Amazon kategori listesi alınamadı: ${res.error}. İnternet bağlantısını ve tarayıcı penceresini kontrol edin; araştırma tamamlanmış sayılmaz.` }); break; }
         const parsed = await page.evaluate(parseSearchPageInBrowser);
-        if (!parsed.layoutOk) { log('Amazon arama sayfası yapısı tanınamadı (ürün kartı bulunamadı). Site yapısı değişmiş olabilir.', 'error'); updateRun(runId, { userNotice: 'Amazon arama sayfası yapısı tanınamadı; sonuç kartları bulunamadı. Tarayıcıdaki sayfayı kontrol edin.' }); break; }
+        if (!parsed.layoutOk) { const snap = await saveDebugSnapshot(page, 'amazon-search'); log(`Amazon arama sayfası yapısı tanınamadı (ürün kartı bulunamadı). Site yapısı değişmiş olabilir. Anlık görüntü: ${snap}`, 'error'); updateRun(runId, { userNotice: 'Amazon arama sayfası yapısı tanınamadı; sonuç kartları bulunamadı. Tarayıcıdaki sayfayı kontrol edin.' }); break; }
         let added = 0;
         for (const it of parsed.items) {
           if (it.sponsored || !it.asin || seen.has(it.asin)) continue;
@@ -122,7 +124,7 @@ export async function fetchAmazonProduct({ page, url, gotoOpts }) {
   if (!res.ok) return { access: res.blocked ? 'blocked' : 'error', note: res.error, checkedAt: now() };
   const raw = await page.evaluate(parseProductPageInBrowser);
   const az = normalizeProduct(raw, now());
-  if (!az.layoutOk) { az.access = 'unverified'; az.note = 'Amazon ürün sayfası yapısı tanınamadı (başlık bulunamadı)'; }
+  if (!az.layoutOk) { const snap = await saveDebugSnapshot(page, 'amazon-product'); az.access = 'unverified'; az.note = `Amazon ürün sayfası yapısı tanınamadı (başlık bulunamadı). Anlık görüntü: ${snap}`; }
   return az;
 }
 
@@ -161,7 +163,7 @@ export async function processProduct({ page, product, run, settings, log, setAct
       const res = await politeGoto(page, url, gotoOpts);
       if (!res.ok) { blocked = res; break; }
       const parsed = await page.evaluate(parseEbayResultsInBrowser);
-      if (!parsed.layout && !parsed.noResults) { ebay.queries.push({ ...q, url, error: 'eBay sonuç sayfası yapısı tanınamadı' }); log(`${product.asin}: eBay sayfa yapısı tanınamadı`, 'warn'); ebay.access = 'unverified'; break; }
+      if (!parsed.layout && !parsed.noResults) { const snap = await saveDebugSnapshot(page, 'ebay-search'); ebay.queries.push({ ...q, url, error: 'eBay sonuç sayfası yapısı tanınamadı' }); log(`${product.asin}: eBay sayfa yapısı tanınamadı. Anlık görüntü: ${snap}`, 'warn'); ebay.access = 'unverified'; ebay.note = `eBay sonuç sayfası yapısı tanınamadı (anlık görüntü: ${snap})`; break; }
       itemsSeen += parsed.items.length;
       for (const raw of parsed.items) { if (raw.sponsored) continue; const l = normalizeListing(raw, { sold: true }); l.match = matchListing(amazonInfo, l); l.query = q.type; listings.push(l); }
       hasMore = parsed.hasNext; ebay.queries.push({ ...q, url, page: pageNo, items: parsed.items.length, resultCountText: parsed.resultCountText });
