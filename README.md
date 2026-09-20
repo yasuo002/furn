@@ -48,4 +48,5 @@ npm start
 
 `remotion/` klasöründe belgesel tadında YouTube videosu üreten bir Remotion projesi var (ilk bölüm: Derinkuyu Yeraltı Şehri).
 - Kanal analizi ve içerik önerileri: `docs/kanal-analizi-ve-icerik-onerileri.md`
-- Seslendirme metni: `remotion/SCRIPT.md` · Storyboard: `remotion/STORYBOARD.md` · Kullanım: `remotion/README.md`
+- Kuzey Kore bölümü: `remotion/SCRIPT-kuzey-kore.md`, `remotion/STORYBOARD-kuzey-kore.md`
+- Seslendirme metni (Derinkuyu): `remotion/SCRIPT.md` · Storyboard: `remotion/STORYBOARD.md` · Kullanım: `remotion/README.md`

@@ -53,3 +53,7 @@ const present = new Set(getStaticFiles().map((f) => f.name.replace(/^\/?/, '')))
 
 export const hasImage = (key: ImageKey) => present.has(`images/${imageFiles[key]}`);
 export const imageSrc = (key: ImageKey) => staticFile(`images/${imageFiles[key]}`);
+
+/** Serbest dosya yolu (public/ altina gore), ornegin "images/nk/pyongyang.jpg". */
+export const hasFile = (rel: string) => present.has(rel.replace(/^\/?/, ''));
+export const fileSrc = (rel: string) => staticFile(rel);

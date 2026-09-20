@@ -12,7 +12,7 @@ mkdirSync(resolve('out'), {recursive: true});
 const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE;
 const envVariables = {REMOTION_OFFLINE_FONTS: process.env.REMOTION_OFFLINE_FONTS ?? ''};
 const serveUrl = await bundle({entryPoint: resolve('src/index.ts')});
-const composition = await selectComposition({serveUrl, id: 'Derinkuyu', browserExecutable, envVariables});
+const composition = await selectComposition({serveUrl, id: process.env.COMP ?? 'Derinkuyu', browserExecutable, envVariables});
 let last = 0;
 await renderMedia({
   composition, serveUrl, codec: 'h264', outputLocation: out, scale, crf, browserExecutable, envVariables,

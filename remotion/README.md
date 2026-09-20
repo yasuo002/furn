@@ -20,6 +20,13 @@ Eksik dosyalar yer tutucuyla render edilir; `npm run check-assets` eksikleri lis
    (ya da tek parça kaydı en üst `AbsoluteFill` içine tek `<Audio>` olarak koy).
 4. Süreleri değiştirince alt sahneler orantılı ölçeklenir; ince ayar için `src/scenes/index.tsx` içindeki `w` ağırlıklarını oynat.
 
+## İkinci video: Kuzey Kore
+Kompozisyon `KuzeyKore` (`src/nk/`). Metin: `SCRIPT-kuzey-kore.md`, storyboard: `STORYBOARD-kuzey-kore.md`, görseller: `public/images/nk/manifest.json`.
+```bash
+npx remotion render KuzeyKore out/kuzey-kore.mp4
+COMP=KuzeyKore node scripts/render-preview.mjs 0.5 28   # hızlı önizleme
+```
+
 ## Render
 ```bash
 npm run render            # 1080p, out/derinkuyu.mp4

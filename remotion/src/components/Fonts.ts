@@ -57,3 +57,16 @@ if (hasLocalSans) {
 
 export const serif = serifFamily;
 export const sans = sansFamily;
+
+/* ---- Kuzey Kore videosu: dar/kalın başlık yazı tipi (Oswald) ---- */
+const DISPLAY_FALLBACK = '"DejaVu Sans", "Liberation Sans", Arial, sans-serif';
+let displayFamily = DISPLAY_FALLBACK;
+if (files.has('fonts/Oswald-Bold.ttf')) {
+  loadLocal('OswaldLocal', 'fonts/Oswald-Bold.ttf', '700', 'normal');
+  loadLocal('OswaldLocal', 'fonts/Oswald-Regular.ttf', '400', 'normal');
+  displayFamily = `OswaldLocal, ${DISPLAY_FALLBACK}`;
+} else if (!offline) {
+  import('@remotion/google-fonts/Oswald').then((m) => m.loadFont('normal', {weights: ['400', '500', '700'], subsets: ['latin', 'latin-ext']}));
+  displayFamily = `Oswald, ${DISPLAY_FALLBACK}`;
+}
+export const display = displayFamily;

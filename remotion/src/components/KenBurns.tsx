@@ -1,11 +1,12 @@
 import React from 'react';
 import {AbsoluteFill, Img, interpolate, useCurrentFrame, useVideoConfig, Easing} from 'remotion';
-import {hasImage, imageSrc, ImageKey} from '../assets';
+import {hasImage, imageSrc, ImageKey, hasFile, fileSrc} from '../assets';
 import {theme} from '../theme';
 import {sans} from './Fonts';
 
 type Props = {
-  image: ImageKey;
+  image?: ImageKey;
+  file?: string; // public/ altina gore serbest yol (image yerine)
   caption?: string; // ekranda alt yazi (kaynak)
   from?: number; // baslangic olcegi
   to?: number; // bitis olcegi
@@ -20,6 +21,7 @@ type Props = {
 /** Gercek fotograf icin yavas zoom/pan. Dosya yoksa stilize yer tutucu. */
 export const KenBurns: React.FC<Props> = ({
   image,
+  file,
   caption,
   from = 1.05,
   to = 1.18,
@@ -42,15 +44,16 @@ export const KenBurns: React.FC<Props> = ({
     [0, 1, 1, 0],
     {extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.inOut(Easing.quad)},
   );
-  const exists = hasImage(image);
+  const exists = file ? hasFile(file) : image ? hasImage(image) : false;
+  const src = file ? fileSrc(file) : image ? imageSrc(image) : '';
 
   return (
     <AbsoluteFill style={{opacity}}>
       <AbsoluteFill style={{transform: `scale(${scale}) translate(${tx}px, ${ty}px)`}}>
         {exists ? (
-          <Img src={imageSrc(image)} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+          <Img src={src} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
         ) : (
-          <Placeholder label={label ?? image} />
+          <Placeholder label={label ?? file ?? image ?? ''} />
         )}
       </AbsoluteFill>
       <AbsoluteFill style={{background: `rgba(0,0,0,${darken})`}} />

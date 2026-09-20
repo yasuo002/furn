@@ -1,0 +1,25 @@
+{
+  "_not": "Kuzey Kore videosu icin gercek gorseller. Dosyalari public/images/nk/ altina AYNI adla koy. Yoksa sahne yer tutucu cizer. Lisans ve fotografci adini aciklamaya yaz.",
+  "images": [
+    {"file": "pyongyang-skyline.jpg", "search": "Pyongyang skyline Taedong river", "category": "Category:Pyongyang", "use": "Başlık kartı arka planı"},
+    {"file": "korea-1945-liberation.jpg", "search": "Korea 1945 Soviet troops Pyongyang OR US troops Incheon 1945", "category": "Category:Division of Korea", "use": "Bölüm 1 · 1945 (ABD Ordusu arşivi, kamu malı)"},
+    {"file": "dmz-jsa.jpg", "search": "Joint Security Area Panmunjom blue buildings", "category": "Category:Joint Security Area", "use": "DMZ, kapanış"},
+    {"file": "kim-il-sung-statue.jpg", "search": "Mansudae Grand Monument Pyongyang", "category": "Category:Mansu Hill Grand Monument", "use": "Bölüm 2 · CRT çerçeve"},
+    {"file": "kim-1.jpg", "search": "Kim Il-sung portrait", "category": "Category:Kim Il Sung", "use": "Hanedan kartı 1 (telif durumunu kontrol et; yoksa siluet kalır)"},
+    {"file": "kim-2.jpg", "search": "Kim Jong-il portrait", "category": "Category:Kim Jong Il", "use": "Hanedan kartı 2"},
+    {"file": "kim-3.jpg", "search": "Kim Jong-un portrait 2019 (Kremlin.ru CC BY 4.0)", "category": "Category:Kim Jong Un", "use": "Hanedan kartı 3"},
+    {"file": "portraits-home.jpg", "search": "portraits Kim Il-sung Kim Jong-il wall North Korea", "category": "Category:Portraits of Kim Il Sung and Kim Jong Il", "use": "Her evde iki portre"},
+    {"file": "pyongyang-apartments.jpg", "search": "Pyongyang Mirae Scientists Street OR Ryomyong Street", "category": "Category:Buildings in Pyongyang", "use": "Pyongyang ayrıcalığı"},
+    {"file": "jangmadang-market.jpg", "search": "North Korea market Rason OR Tongil market", "category": "Category:Markets in North Korea", "use": "Jangmadang (az sayıda fotoğraf var; alternatif: Çin sınırı ticareti)"},
+    {"file": "bangladesh-bank.jpg", "search": "Bangladesh Bank building Motijheel", "category": "Category:Bangladesh Bank", "use": "2016 soygunu"},
+    {"file": "nk-soldiers.jpg", "search": "Korean People's Army soldiers parade", "category": "Category:Korean People's Army", "use": "Rusya'ya asker"},
+    {"file": "pyongyang-boulevard.jpg", "search": "Pyongyang street pastel apartments Changjon Street", "category": "Category:Streets in Pyongyang", "use": "Vitrin"},
+    {"file": "ryugyong.jpg", "search": "Ryugyong Hotel", "category": "Category:Ryugyong Hotel", "use": "Ryugyong fotoğrafı"},
+    {"file": "kijong-dong.jpg", "search": "Kijong-dong flagpole propaganda village", "category": "Category:Kijŏng-dong", "use": "Propaganda köyü"},
+    {"file": "usb-smuggling.jpg", "search": "USB flash drives pile", "category": "Category:USB flash drives", "use": "USB kaçakçılığı (temsili)"},
+    {"file": "missile-parade.jpg", "search": "Hwasong missile parade Kim Il-sung Square", "category": "Category:Military parades in North Korea", "use": "Bugün"},
+    {"file": "kim-ju-ae.jpg", "search": "Kim Ju-ae (KCNA görüntüsü; telif için haber ajansı lisansı gerekebilir, yoksa yer tutucu bırak)", "category": "-", "use": "Dördüncü kuşak"},
+    {"file": "wonsan-kalma.jpg", "search": "Wonsan Kalma coastal tourist zone", "category": "Category:Wonsan", "use": "Turizm"}
+  ],
+  "night_satellite_note": "Gerçek NASA gece görüntüsünü kullanmak istersen: NASA Earth Observatory 'Korean Peninsula at night' (2014, kamu malı) dosyasını nasa-night.jpg olarak koy ve ColdOpen'da KoreaMap yerine KenBurns file='images/nk/nasa-night.jpg' kullan. Şematik harita yine de gerçek coğrafya verisiyle çiziliyor."
+}
