@@ -1,68 +1,87 @@
 # Seslendirme Metni — "Dünyanın En Kapalı Ülkesi Nasıl Hâlâ Ayakta? · Kuzey Kore"
 
-- Süre: ~8,5 dk (128 kelime/dk + nefes payları). Metnin aynısı `src/nk/script.ts` içinde.
-- Ton: sohbet; kısa cümle; her bölüm bir soruya ya da vurucu cümleye bağlanır.
-- Köşeli parantez okunmaz.
+- Süre: ~10 dk (128 kelime/dk + nefes payları). Metnin aynısı `src/nk/script.ts` içinde.
+- Ton: arkadaşına anlatır gibi. "Sen" diye hitap, kısa cümle, günlük hayattan karşılaştırmalar.
+- Köşeli parantez içindekiler okunmaz; ekranda o sırada ne olduğunu gösterir.
+- Kayıt ipucu: her bölümü ayrı dosya olarak kaydet; süreyi `overrideSeconds` alanına yaz.
 
-## 00 · Soğuk açılış [gece uydu haritası → 3 satırlık ifade → başlık]
-Bu fotoğraf uzaydan çekildi. Gece. Sağ altta Güney Kore, ışıl ışıl. Üstte Çin, aynı şekilde. Ama ikisinin arasında simsiyah bir boşluk var. Sanki orada deniz varmış gibi.
+## 00 · Soğuk açılış
+Şu fotoğrafa bir bak. Uzaydan çekilmiş, gece vakti. Sağ altta Güney Kore, resmen Noel ağacı gibi ışıl ışıl. Üstte Çin, o da öyle. Peki ikisinin arasındaki bu simsiyah boşluk ne? İlk bakışta deniz sanıyorsun. Değil. Orada yirmi altı milyon insan yaşıyor. Yani İstanbul'un neredeyse iki katı nüfus, ve geceleyin tek bir ışık noktası: başkent Pyongyang.
 
-[duraklama] Orada deniz yok. Orada yirmi altı milyon insan yaşıyor. Karanlığın ortasındaki o tek ışık noktası, başkent Pyongyang.
-
-Bu ülke yetmiş yıldır kapalı. İnterneti yok, ama tarihin en büyük kripto soygununu yaptı. Halkı kıtlık gördü, ama nükleer bombası var. Bugün şu soruya cevap arayacağız: Kuzey Kore nasıl hâlâ ayakta?
+Şimdi şöyle düşün. Bu ülke yetmiş yıldır kapalı. İnterneti yok, ama tarihin en büyük kripto soygununu yapmış. Halkı kıtlık görmüş, ama elinde nükleer bomba var. Ben de bugün şunu merak ediyorum, seninle beraber cevabını arayalım: Kuzey Kore nasıl hâlâ ayakta?
 
 ## 01 · Bir Çizgi [1945 arşiv → 38. paralel haritası → savaş cephesi animasyonu → DMZ]
-Her şey bir çizgiyle başlıyor. 1945, İkinci Dünya Savaşı bitiyor. Kore, otuz beş yıllık Japon işgalinden kurtuluyor. Ama kurtaranlar iki farklı ordu: kuzeyden Sovyetler, güneyden Amerikalılar. Washington'da iki genç subay, bir gece, harita üzerinde geçici bir sınır çiziyor: otuz sekizinci paralel. Otuz dakikada. Planları geçici. Ama o çizgi bugün hâlâ orada.
+Bak, her şey aslında bir çizgiyle başlıyor. 1945, savaş bitmiş. Kore otuz beş yıldır Japon işgali altında, nihayet kurtuluyor. Ama kurtaranlar iki farklı ordu: kuzeyden Sovyetler geliyor, güneyden Amerikalılar. Ve Washington'da bir gece, iki genç subay masaya bir harita açıyor.
 
-1950'de Kuzey, güneyi işgal ediyor. Üç yılda cephe önce güneyin ucuna, sonra Çin sınırına, sonra yeniden ortaya gidip geliyor. Milyonlarca insan ölüyor. 1953'te savaş bitmiyor, sadece duruyor. Bir ateşkes imzalanıyor, barış antlaşması asla. Yani teknik olarak bu savaş bugün de sürüyor.
+Ellerinde düzgün bir harita bile yok, bir dergi haritası. Diyorlar ki, şuradan bölelim: otuz sekizinci paralel. Bütün iş otuz dakika sürüyor. Geçici olsun diye çiziyorlar. Geçici. O çizgi seksen yıldır orada duruyor. Sonra 1950. Kuzey güneye saldırıyor. Üç yıl boyunca cephe bir aşağı bir yukarı gidip geliyor: önce ta güneyin ucuna kadar iniyor, sonra Çin sınırına dayanıyor, sonra yine ortada kalıyor.
 
-Ateşkes çizgisinin iki yanında dört kilometre genişliğinde bir şerit boşaltılıyor: Silahsızlandırılmış Bölge. İsmi böyle. Ama gerçekte dünyanın en ağır silahlandırılmış sınırı.
+Bu arada milyonlarca insan ölüyor. Ve 1953'te ilginç bir şey oluyor: savaş bitmiyor. Sadece duruyor. Ateşkes imzalanıyor ama barış antlaşması hiç imzalanmıyor. Yani kâğıt üstünde bu savaş bugün de devam ediyor. Ateşkes çizgisinin iki yanında dört kilometrelik bir şerit boşaltıyorlar.
+
+Adı Silahsızlandırılmış Bölge. Adı böyle ama gerçekte dünyanın en ağır silahlı sınırı orası.
 
 ## 02 · Üç Kim [CRT arşiv → JUCHE kartı → hanedan zaman çizelgesi → portreler]
-Kuzeyde iktidara Sovyetlerin seçtiği bir adam geliyor: Kim İl-sung. Bir gerilla komutanı. Ve kısa sürede sadece lider değil, bir tanrı figürüne dönüşüyor. Kendi ideolojisini yazıyor: Juche. Kabaca kendine yeterlilik demek. Kimseye muhtaç olmayacağız, her şeyi kendimiz yapacağız.
+Kuzey tarafında başa Sovyetlerin seçtiği bir adam geçiyor: Kim İl-sung. Eski bir gerilla komutanı. Ama kısa sürede lider olmaktan çıkıyor, resmen tanrı figürüne dönüşüyor. Kendi ideolojisini bile yazıyor: Juche. Türkçesi kabaca "kendi kendine yeterlilik". Yani kimseye muhtaç olmayacağız, her şeyi kendimiz yapacağız.
 
-1994'te ölüyor. Ama ölmüyor: anayasa onu ebedi başkan ilan ediyor. Yerine oğlu Kim Jong-il geçiyor. 2011'de o da ölünce üçüncü kuşak: Kim Jong-un. O sırada yirmili yaşlarının sonunda. Dünya, birkaç ay dayanmaz diyor. On beş yıl geçti.
+1994'te ölüyor. Ama şöyle bir şey var, ölünce de ölmüyor: anayasaya onu "ebedi başkan" diye yazıyorlar. Ülkenin başkanı hâlâ o, ölü bir adam. Yerine oğlu Kim Jong-il geçiyor. 2011'de o da ölüyor, sıra toruna geliyor: Kim Jong-un. Düşünsene, adam o sırada yirmi yedi yaşında.
 
-Bugün her evde, her kurumda iki portre asılı: baba ve dede. Ve fotoğraf çekerken kadrajı kesmek bile suç sayılabiliyor.
+Herkes "birkaç ay dayanmaz" diyor. On beş yıl oldu, hâlâ orada. Bugün ülkede her evde, her okulda, her ofiste duvarda iki portre var: dede ve baba. Ve mesela fotoğraf çekerken portrenin yarısını kadraj dışında bırakmak bile başına iş açabiliyor.
 
-## 03 · Doğuştan Dosya [Songbun piramidi + kişisel dosya kartı → Pyongyang → ifade kartı]
-Peki bu sistem içeride nasıl tutunuyor? Cevabın adı Songbun. Herkesin, doğduğu anda ailesine göre bir sınıfı var. Üçe ayrılıyor: çekirdek, kararsız ve düşman. Deden 1950'de güneye kaçmış mı? Ailen toprak sahibi miymiş? Bir akraban Japonya'da mı yaşıyor? Bunlar senin dosyanda. Ve dosya, nerede yaşayacağını, hangi okula gideceğini, hangi işe gireceğini belirliyor.
+## 03 · Doğuştan Dosya [Songbun piramidi + dosya kartı → Pyongyang → ifade]
+Peki bu düzen içeride nasıl ayakta kalıyor? Cevabın adı Songbun. Şöyle anlatayım: doğduğun an, daha adın konmadan, ailene göre bir sınıfa yazılıyorsun. Üç sınıf var: çekirdek, kararsız ve düşman. Deden 1950'de güneye kaçmış mı? Ailenin eskiden toprağı var mıymış?
 
-Pyongyang'da yaşamak bir hak değil, bir ayrıcalık. İzinle olur. Bir de şu var: bir kişi suç işleyince ceza tek kişiye değil, üç kuşağa gidebiliyor. Bu yüzden kimse, komşusunun önünde bile konuşmuyor. Korku dışarıdan gelen bir şey değil. Sistemin içine gömülü.
+Japonya'da bir akraban mı var? Hepsi dosyanda yazıyor. Ve o dosya senin hayatını belirliyor: hangi şehirde yaşayacaksın, hangi okula gideceksin, hangi işe gireceksin. Mesela Pyongyang'da yaşamak bir hak değil, ayrıcalık. İzin almadan başkente taşınamıyorsun. Bir de şu var, bence en ürkütücü kısmı bu: biri suç işlediğinde ceza sadece ona gitmiyor.
+
+Anne babasına, çocuklarına, üç kuşağa gidebiliyor. O yüzden kimse komşusunun yanında bile ağzını açmıyor. Yani korku dışarıdan gelen bir şey değil orada. Sistemin ta kendisi.
 
 ## 04 · Işıklar Sönüyor [ışık ızgarası sönüyor → pazar tezgâhları → ifade]
-Sonra 1991. Sovyetler Birliği dağılıyor. Kuzey Kore'nin ucuz petrolü, gübresi, yedek parçası bir gecede kesiliyor. Traktörler duruyor, fabrikalar duruyor. Üstüne 1995'te seller geliyor. Ve ülke kıtlığa giriyor. Rejim buna bir isim koyuyor: Zorlu Yürüyüş. Kaç kişi öldü? Bilmiyoruz. Tahminler yüz binlerden bir milyonun üzerine çıkıyor. Devletin erzak sistemi çöküyor.
+Sonra 1991 geliyor. Sovyetler Birliği dağılıyor. Kuzey Kore'nin bedavaya yakın petrolü, gübresi, yedek parçası bir gecede kesiliyor. Traktörler duruyor, fabrikalar duruyor. Üstüne 1995'te büyük seller. Ve ülke kıtlığa giriyor. Rejim buna bir de isim buluyor: "Zorlu Yürüyüş".
 
-Ve işte burada ilginç bir şey oluyor: insanlar hayatta kalmak için kendi pazarlarını kuruyor. Jangmadang. Sokak tezgâhları, takas, Çin'den kaçak mal. Devlet önce yasaklıyor, sonra göz yumuyor, sonra vergilendiriyor. Bugün Kuzey Kore'de hane gelirinin büyük kısmı bu gri pazardan geliyor. Yani ülke resmen sosyalist, ama insanlar gayri resmi kapitalizmle yaşıyor. Bunu aklınızda tutun, çünkü rejimin para bulma yöntemi de aynı gri alandan geçiyor.
+Kaç kişi öldü? Kimse tam bilmiyor. Tahminler yüz binlerden başlıyor, bir milyonun üstüne çıkıyor. Devletin herkese yemek dağıttığı sistem çöküyor. Ve işte tam burada ilginç bir şey oluyor. İnsanlar aç kalınca ne yapıyor? Kendi pazarlarını kuruyor. Jangmadang deniyor bunlara.
+
+Sokakta tezgâh açıyorlar, takas yapıyorlar, Çin'den kaçak mal getiriyorlar. Devlet önce yasaklıyor. Sonra bakıyor olmuyor, göz yumuyor. Sonra da vergisini almaya başlıyor. Bugün Kuzey Kore'de bir ailenin gelirinin büyük kısmı bu gri pazardan geliyor. Yani ülke kâğıt üstünde sosyalist, ama insanlar aslında el altından kapitalizmle geçiniyor.
+
+Bunu aklında tut, çünkü rejimin kendi parası da aynı gri yollardan geliyor.
 
 ## 05 · Para Nereden Geliyor? [951 M sayacı → "fandation" daktilo → dünya yayları → 1,5 milyar → akış diyagramı]
-Şimdi büyük soru. Yaptırım altındaki, ihracatı yok denecek kadar az bir ülke, nükleer programı ve füzeleri nasıl finanse ediyor? Cevap dört kanaldan geliyor.
+Şimdi asıl büyük soru. Yaptırım altındasın, doğru düzgün ihracatın yok. Nükleer programı, füzeleri nasıl ödüyorsun? Cevap dört kanaldan geliyor. Birincisi: hackerlar. 2016'da bir gece, Bangladeş Merkez Bankası'nın hesabından yaklaşık bir milyar dolar çekilmeye çalışılıyor.
 
-Birincisi: hackerlar. 2016'da Bangladeş Merkez Bankası'nın hesaplarından bir gecede yaklaşık bir milyar dolar çekilmeye çalışılıyor. Seksen bir milyon dolar gidiyor. Gerisini durduran şey ne biliyor musunuz? Bir transfer talimatındaki yazım hatası. Foundation kelimesi fandation yazılmış, bir banka çalışanı şüphelenip işlemi durdurmuş. Bu operasyonun arkasında Kuzey Kore'ye bağlı Lazarus grubu vardı. 2017'de WannaCry virüsü dünyada yüz binlerce bilgisayarı kilitledi. Ve Şubat 2025: kripto borsası Bybit'ten yaklaşık bir buçuk milyar dolar çalındı. Tarihin en büyük kripto soygunu. FBI bunu da Kuzey Kore'ye bağladı. Birleşmiş Milletler uzmanlarına göre son yıllarda çalınan kripto milyarlarca doları buldu.
+Seksen bir milyonu gerçekten gidiyor. Peki gerisini ne durduruyor biliyor musun? Bir yazım hatası. Transfer talimatında "foundation" yazılacak, "fandation" yazılmış. Bankadaki bir çalışan "bu ne ya" diyor, işlemi durduruyor. O operasyonun arkasında Kuzey Kore'ye bağlı Lazarus grubu var.
 
-İkinci kanal: sahte serbest çalışanlar. Kuzey Koreli yazılımcılar, çalıntı kimliklerle Batılı şirketlerde uzaktan işe giriyor, maaşlar Pyongyang'a akıyor. Üçüncü kanal: yurt dışına gönderilen işçiler. Rusya ve Çin'de inşaat, ormancılık, tekstil. Maaşın büyük kısmı devlete. Dördüncü kanal en yenisi: 2024'ten itibaren Rusya'ya mühimmat ve on binden fazla asker. Karşılığında petrol, para ve teknoloji.
+2017'de WannaCry diye bir virüs dünyada yüz binlerce bilgisayarı kilitliyor, İngiltere'de hastaneler bile duruyor. Ve Şubat 2025: Bybit adlı kripto borsasından yaklaşık bir buçuk milyar dolar çalınıyor. Tarihin en büyük kripto soygunu. FBI bunu da Kuzey Kore'ye bağlıyor.
 
-Yani tablo şu: dışarıya kapalı bir ülke, dünyanın finans sisteminin tam içinde yaşıyor.
+Birleşmiş Milletler uzmanları son yıllarda çalınan kriptonun milyarlarca doları bulduğunu söylüyor. İkinci kanal daha sinsi: sahte serbest çalışanlar. Kuzey Koreli yazılımcılar çalıntı kimliklerle Batılı şirketlerde uzaktan işe giriyor. Belki senin şirketinde de biri var, kim bilir.
 
-## 06 · Vitrin [Pyongyang → Ryugyong kat kat animasyonu → DMZ kesiti (direk yarışı) → Kijong-dong]
-Bir de rejimin dünyaya göstermek istediği yüz var. Pyongyang. Geniş bulvarlar, pastel renkli apartmanlar, dev anıtlar. Şehrin üstünde yüz beş katlı, piramit şeklinde bir bina yükseliyor: Ryugyong Oteli. İnşaatına 1987'de başlandı. Bugün hâlâ açılmadı. Dünyanın en yüksek boş binası.
+Maaşlar Pyongyang'a akıyor. Üçüncüsü: yurt dışına gönderilen işçiler. Rusya'da, Çin'de inşaatta, ormanda, tekstilde çalışıyorlar, maaşın büyük kısmını devlet alıyor. Dördüncüsü en yenisi: 2024'ten beri Rusya'ya mühimmat ve on binden fazla asker gönderdiler. Karşılığında petrol, para, teknoloji.
 
-Şimdi sınıra gidelim. Silahsızlandırılmış Bölge'nin hemen kuzeyinde bir köy var: Kijong-dong. Güzel evler, renkli çatılar. Ama Güney'den bakanlar yıllar içinde bir şeyi fark etti: binaların içinde kat yok, pencerelerde cam yok, ışıklar hep aynı saatte yanıp sönüyor. Bu köy, sınırın diğer tarafına bakın ne kadar iyiyiz demek için var. Bir de bayrak direği: yüz altmış metre. Güney seksenlerde yaklaşık yüz metrelik bir direk dikince, Kuzey daha uzununu dikti. Uzun süre dünyanın en yüksek bayrak direğiydi.
+Yani şöyle bir tablo var: dünyaya kapalı bir ülke, ama dünyanın finans sisteminin tam göbeğinde yaşıyor.
 
-## 07 · Mit ve Gerçek [3 kart: YANLIŞ / YANLIŞ / DOĞRU → kapalı ağ diyagramı → USB → 34.000 sayacı]
-Peki içeride hayat gerçekten nasıl? Burada dikkatli olmamız lazım, çünkü Kuzey Kore hakkında dolaşan haberlerin bir kısmı doğru değil. Mesela sadece yirmi sekiz saç modeline izin var iddiası. Kaynağı belirsiz, ülkeden kaçanlar böyle bir liste görmediklerini söylüyor. Ya da Kim'in amcası köpeklere yedirildi haberi. Çin'de bir hiciv yazısından çıkmış, dünya gerçek sanmış.
+## 06 · Vitrin [Pyongyang → Ryugyong animasyonu → DMZ kesiti (direk yarışı) → Kijong-dong]
+Bir de rejimin dışarıya göstermek istediği yüz var. Pyongyang. Geniş bulvarlar, pastel renkli apartmanlar, dev anıtlar. Ve şehrin tepesinde yüz beş katlı, piramit gibi bir bina: Ryugyong Oteli. 1987'de başlamışlar yapmaya. Bugün hâlâ açılmadı. Dünyanın en yüksek boş binası.
 
-Şimdi doğru olanlar. Ülkede milyonlarca cep telefonu var, ama internet yok. Kwangmyong denen kapalı bir ağ var, sadece devletin izin verdiği siteler. Radyolar devlet frekansına mühürlü. Yine de Çin'den gelen USB belleklerle Güney Kore dizileri elden ele dolaşıyor. Yakalanırsan ceza ağır. Ülkeden kaçıp Güney'e ulaşanların sayısı otuz dört bini geçti, ama sınır 2020'de tamamen kapanınca bu sayı yılda birkaç yüze düştü.
+Düşünsene, otuz dokuz yıldır misafir bekleyen bir otel. Şimdi sınıra gidelim. Silahsızlandırılmış Bölge'nin hemen kuzeyinde şirin bir köy var: Kijong-dong. Güzel evler, renkli çatılar. Ama Güney tarafından dürbünle bakanlar yıllar içinde bir şey fark ediyor: binaların içinde kat yok.
 
-Yani resim şu: propaganda posterlerindeki ülke değil, ama karikatürlerdeki ülke de değil.
+Pencerelerde cam yok. Işıklar her akşam aynı saatte yanıp aynı saatte sönüyor. Yani köy, karşı tarafa "bakın biz ne güzel yaşıyoruz" demek için var. Bir de bayrak direği hikâyesi var, çok hoşuma gidiyor. Güney seksenlerde yaklaşık yüz metrelik bir direk dikiyor.
+
+Kuzey buna dayanamıyor, yüz altmış metrelik direk dikiyor. Uzun süre dünyanın en yüksek bayrak direği oydu. Komşuyla balkon yarışının devlet versiyonu.
+
+## 07 · Mit ve Gerçek [3 kart: YANLIŞ / YANLIŞ / DOĞRU → kapalı ağ → USB → 34.000 sayacı]
+Peki içeride hayat gerçekten nasıl? Burada biraz dikkatli olalım, çünkü Kuzey Kore hakkında internette dolaşan haberlerin bir kısmı düpedüz uydurma. Mesela şunu duymuşsundur: "sadece yirmi sekiz saç modeline izin var." Kaynağı belli değil, ülkeden kaçanlar böyle bir liste görmediklerini söylüyor.
+
+Ya da "Kim amcasını köpeklere yedirdi" haberi. O da Çin'de bir mizah yazısından çıkmış, bütün dünya gerçek sanmış. Şimdi doğru olanlara gelelim. Ülkede milyonlarca cep telefonu var. Ama internet yok. Kwangmyong diye kapalı bir ağ var, sadece devletin izin verdiği siteler açılıyor.
+
+Radyolar fabrikadan devlet frekansına mühürlü geliyor, kanal değiştiremiyorsun. Yine de Çin'den gelen USB belleklerle Güney Kore dizileri elden ele dolaşıyor. Yakalanırsan ceza çok ağır ama insanlar yine de izliyor. Ülkeden kaçıp Güney'e ulaşanların sayısı otuz dört bini geçmiş.
+
+Ama 2020'de sınır tamamen kapanınca bu sayı yılda birkaç yüze düşmüş. Yani şöyle özetleyeyim: propaganda posterlerindeki ülke değil orası. Ama karikatürlerdeki ülke de değil.
 
 ## 08 · Bugün [Punggye-ri haritası → geçit töreni → Ju-ae → Wonsan → ifade]
-Bugün Kuzey Kore altı nükleer deneme yapmış durumda. Kıtalararası füzeleri Amerika'ya ulaşabilecek menzilde. Rusya ile karşılıklı savunma maddesi içeren bir antlaşma imzaladı. Kim Jong-un'un genç kızı Ju-ae törenlerde yanında görünüyor. Dördüncü kuşak şimdiden sahnede. Ve ülke turizme açılıyor: Rus turistler için deniz kıyısında yepyeni bir tatil köyü.
+Bugüne gelelim. Kuzey Kore altı kere nükleer deneme yaptı. Füzeleri Amerika'ya ulaşabilecek menzilde. Rusya'yla "sana saldırırlarsa ben gelirim" maddesi olan bir antlaşma imzaladılar. Kim Jong-un'un küçük kızı Ju-ae törenlerde babasının yanında boy gösteriyor, yani dördüncü kuşak şimdiden sahnede.
 
-Kapalı ama izole değil. Fakir ama silahlı. Çökecek deniyor, ama çökmüyor. Nedeni tek cümle: rejim, hayatta kalmayı bir sanayi hâline getirdi.
+Ve ülke turizme açılıyor: Rus turistler için deniz kenarında yepyeni bir tatil köyü yaptılar. Yani tablo şu: kapalı ama izole değil. Fakir ama silahlı. Otuz yıldır "yakında çöker" deniyor ama çökmüyor. Nedeni bence tek cümle: bu rejim hayatta kalmayı bir meslek hâline getirdi.
 
 ## 09 · Kapanış
-Toparlayalım. Kuzey Kore ayakta, çünkü içeride korku bir sisteme dönüştü, dışarıda gri para akmaya devam ediyor ve nükleer silah rejime bir sigorta sağlıyor. Bir sonraki videoda o sınırın tam üstüne gideceğiz: iki askerin göz göze durduğu mavi barakalara. Görüşmek üzere.
+Toparlayalım. Kuzey Kore neden ayakta? Çünkü içeride korku bir sisteme dönüşmüş. Dışarıda gri para akmaya devam ediyor. Ve elindeki nükleer silah rejime bir nevi sigorta sağlıyor. Bir sonraki videoda o sınırın tam üstüne gideceğiz: iki askerin birbirinin gözünün içine baktığı o mavi barakalara.
+
+Görüşmek üzere.
 
 ---
 
