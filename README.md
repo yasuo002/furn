@@ -43,3 +43,9 @@ npm start
 | `server.js`         | Express server, form endpoint, SSE progress stream  |
 | `src/pipeline.js`   | The pipeline (one function per n8n node)            |
 | `public/index.html` | The upload form + live log + result viewer          |
+
+## Belgesel video üretimi (Remotion)
+
+`remotion/` klasöründe belgesel tadında YouTube videosu üreten bir Remotion projesi var (ilk bölüm: Derinkuyu Yeraltı Şehri).
+- Kanal analizi ve içerik önerileri: `docs/kanal-analizi-ve-icerik-onerileri.md`
+- Seslendirme metni: `remotion/SCRIPT.md` · Storyboard: `remotion/STORYBOARD.md` · Kullanım: `remotion/README.md`

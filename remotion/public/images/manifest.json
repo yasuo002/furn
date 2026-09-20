@@ -1,0 +1,28 @@
+{
+  "_not": "Bu dosyalari public/images/ altina AYNI adla koy. Hepsi Wikimedia Commons'ta serbest lisansli (CC BY-SA / CC0 / kamu mali). Her birinin sayfasindaki lisansi ve fotografci adini video aciklamasina yaz. Dosya yoksa sahne otomatik yer tutucu cizer.",
+  "_nasil": "commons.wikimedia.org > arama kutusuna 'search' anahtarini yaz > en yuksek cozunurluklu (Original file) indir > buradaki 'file' adiyla kaydet.",
+  "images": [
+    {"file": "cappadocia-balloons.jpg", "search": "Cappadocia balloons Göreme sunrise", "category": "Category:Hot air balloons in Cappadocia", "use": "Bölüm 1 açılış, yüzeydeki Kapadokya"},
+    {"file": "fairy-chimneys.jpg", "search": "Fairy chimneys Pasabag Cappadocia", "category": "Category:Fairy chimneys of Cappadocia", "use": "Jeoloji ve kapanış kesitleri"},
+    {"file": "derinkuyu-entrance.jpg", "search": "Derinkuyu Underground City entrance", "category": "Category:Underground City of Derinkuyu", "use": "Soğuk açılış ve 'Son sakinler'"},
+    {"file": "derinkuyu-corridor.jpg", "search": "Derinkuyu Underground City corridor Nevit Dilmen", "category": "Category:Underground City of Derinkuyu", "use": "Dar koridor sahneleri (çok kullanılıyor)"},
+    {"file": "derinkuyu-stone-door.jpg", "search": "Derinkuyu Underground City stone door", "category": "Category:Underground City of Derinkuyu", "use": "Taş kapı, başlık kartı arka planı"},
+    {"file": "derinkuyu-ventilation-shaft.jpg", "search": "Derinkuyu ventilation shaft", "category": "Category:Underground City of Derinkuyu", "use": "Havalandırma bacası"},
+    {"file": "derinkuyu-church.jpg", "search": "Derinkuyu Underground City church cruciform", "category": "Category:Underground City of Derinkuyu", "use": "Kilise sahneleri"},
+    {"file": "derinkuyu-stable.jpg", "search": "Derinkuyu Underground City stable", "category": "Category:Underground City of Derinkuyu", "use": "Ahırlar / kiler"},
+    {"file": "derinkuyu-school.jpg", "search": "Derinkuyu Underground City missionary school barrel vault", "category": "Category:Underground City of Derinkuyu", "use": "Tonozlu salon"},
+    {"file": "derinkuyu-wine-press.jpg", "search": "Derinkuyu wine press underground city", "category": "Category:Underground City of Derinkuyu", "use": "Presler"},
+    {"file": "kaymakli.jpg", "search": "Kaymaklı Underground City", "category": "Category:Kaymaklı Underground City", "use": "Yedek (Kaymaklı tüneli)"},
+    {"file": "erciyes.jpg", "search": "Mount Erciyes Kayseri", "category": "Category:Mount Erciyes", "use": "Volkan sahnesi"},
+    {"file": "hasan-dagi.jpg", "search": "Hasan Dağı volcano", "category": "Category:Mount Hasan", "use": "Yedek volkan"},
+    {"file": "xenophon-bust.jpg", "search": "Xenophon bust Prado", "category": "Category:Xenophon", "use": "Ksenophon alıntı arka planı (kamu malı büst fotoğrafı)"},
+    {"file": "phrygian-rock.jpg", "search": "Midas monument Yazılıkaya Phrygian", "category": "Category:Midas Monument", "use": "Frig kaya işçiliği"},
+    {"file": "byzantine-cappadocia-church.jpg", "search": "Göreme Open Air Museum church fresco", "category": "Category:Göreme Open Air Museum", "use": "Bizans dönemi kaya kilisesi"},
+    {"file": "population-exchange-1923.jpg", "search": "Population exchange between Greece and Turkey 1923 refugees", "category": "Category:Population exchange between Greece and Turkey", "use": "1923 mübadele (kamu malı arşiv fotoğrafı)"},
+    {"file": "nevsehir-castle-kayasehir.jpg", "search": "Nevşehir Castle", "category": "Category:Nevşehir Castle", "use": "Kayaşehir bölümü"},
+    {"file": "tuff-texture.jpg", "search": "volcanic tuff Cappadocia rock texture", "category": "Category:Tuff", "use": "Tüf dokusu yakın plan"}
+  ],
+  "video_footage_optional": [
+    {"note": "Remotion <OffthreadVideo> ile kullanmak istersen public/video/ altina koy ve KenBurns yerine OffthreadVideo bilesenini kullan.", "search": "Pexels / Pixabay: 'Cappadocia drone', 'cave tunnel torch', 'balloons sunrise' (ticari kullanim serbest)"}
+  ]
+}

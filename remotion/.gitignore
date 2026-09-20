@@ -1,0 +1,8 @@
+node_modules
+out
+public/images/*.jpg
+public/images/*.jpeg
+public/images/*.png
+public/images/*.webp
+!public/images/README.md
+!public/images/manifest.json
